@@ -2,6 +2,7 @@
 Pi-MP3_Player
 
 Designed to be used with a Pi and the Pi 7" Touchscreen LCD.
+
 (Using a PC display may not put all the displayed items in the correct places, I don't know why)
 
 Tested on Pi 2 v1.1 and Pi 4, using Buster.
@@ -36,7 +37,9 @@ so in File Manager you will see the Tracks under
 If you don't have a /home/pi/Queue.txt file when you start the script it will generate one from the tracks it finds on the USB stick(s).
 Clicking on New Track List will make a new list from the USB stick(s).
 
-You can Play or Stop Tracks (remember to Stop BEFORE closing the script or click QUIT ), Shuffle the tracks, Restore to original track order, switch to next USB drive, Artist, Album or Next / Previous Track. You can also set a SLEEP period and the pi will shutdown after that, or SHUTDOWN will shutdown immediately.
+You can Play or Stop Tracks (remember to Stop BEFORE closing the script or click QUIT ), Shuffle the tracks, Restore to original A-Z Artist track order, switch to next / previous Artist, Album Track. 
+
+You can also set a SLEEP period and the pi will shutdown after that, or SHUTDOWN will shutdown immediately.
 
 You'll need to run...
 
@@ -46,7 +49,7 @@ sudo apt-get install mplayer
 
 sudo pip3 install mutagen
 
-On the PI right click on the Task Bar, choose Panel Settings, choose Advanced, tick Minimize panel when not in use, click Close.
+On the Pi right click on the Task Bar, choose Panel Settings, choose Advanced, tick Minimize panel when not in use, click Close.
 
 To get the script to run at boot, assuming you are booting to the GUI
 
