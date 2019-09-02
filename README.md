@@ -4,6 +4,10 @@ Pi-MP3_Player
 Designed to be used with a Pi and the Pi 7" Touchscreen LCD.
 (Using a PC display may not put all the displayed items in the correct places, I don't know why)
 
+## LCD Screenshot
+
+![screenshot](pi_lcd.jpg)
+
 I use the analog audio output on the 3.5" 4way socket. Bluetooth may work BUT I found it kept dropping out.
 
 The playlist is stored in /home/pi/Queue.txt with the following format...
