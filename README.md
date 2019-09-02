@@ -1,5 +1,6 @@
 # Pi-MP3_Player
 Pi-MP3_Player
+
 The playlist is stored in /home/pi/Queue.txt with the following format...
 
 Who^The Very Best of the Who^01 I Can't Explain.mp3^8A51-08B8
@@ -21,7 +22,9 @@ You can Play or Stop Tracks (remember to Stop BEFORE closing the script or click
 
 You'll need to run
 sudo apt-get install python3-alsaaudio
+
 sudo apt-get install mplayer
+
 sudo pip3 install mutagen
 
 On the PI right click on the Task Bar, choose Panel Settings, choose Advanced, tick Minimize panel when not in use, click Close.
