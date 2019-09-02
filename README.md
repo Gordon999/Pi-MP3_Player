@@ -4,6 +4,8 @@ Pi-MP3_Player
 Designed to be used with a Pi and the Pi 7" Touchscreen LCD.
 (Using a PC display may not put all the displayed items in the correct places, I don't know why)
 
+Tested on Pi 2 v1.1 and Pi 4, using Buster.
+
 ## LCD Screenshot
 
 ![screenshot](pi_lcd.jpg)
