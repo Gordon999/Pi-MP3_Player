@@ -4,11 +4,17 @@ Pi-MP3_Player
 The playlist is stored in /home/pi/Queue.txt with the following format...
 
 Who^The Very Best of the Who^01 I Can't Explain.mp3^8A51-08B8
+
 Who^The Very Best of the Who^02 Anyway, Anyhow, Anywhere.mp3^8A51-08B8
+
 Who^The Very Best of the Who^03 My Generation.mp3^8A51-08B8
+
 Who^The Very Best of the Who^04 Substitute.mp3^8A51-08B8
+
 Who^The Very Best of the Who^05 I'm a Boy.mp3^8A51-08B8
+
 Who^The Very Best of the Who^06 Boris the Spider.mp3^8A51-08B8
+
 
 in this case 8A51-08B8 is the name of the USB stick. Listed by Artist name^Album name^Track name^Drive name Note the use of ^ as a seperator as , can be in Track names.
 
@@ -21,6 +27,7 @@ Clicking on New Track List will make a new list from the USB stick(s).
 You can Play or Stop Tracks (remember to Stop BEFORE closing the script or click QUIT ), Shuffle the tracks, Restore to original track order, switch to next USB drive, Artist, Album or Next / Previous Track. You can also set a SLEEP period and the pi will shutdown after that, or SHUTDOWN will shutdown immediately.
 
 You'll need to run
+
 sudo apt-get install python3-alsaaudio
 
 sudo apt-get install mplayer
