@@ -50,6 +50,6 @@ To get the script to run at boot, assuming you are booting to the GUI
 
 add the following line to /etc/xdg/lxsession/LXDE-pi/autostart
 
-@/usr/bin/python3 /home/pi/MP3player.py 
+@/usr/bin/python3 /home/pi/MP3_player.py 
 
-(NOTE: assuming you saved the script as MP3player.py)
+(NOTE: assuming you saved the script as MP3_player.py)
