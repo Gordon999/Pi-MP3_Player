@@ -37,7 +37,8 @@ so in File Manager you will see the Tracks under
 If you don't have a /home/pi/Queue.txt file when you start the script it will generate one from the tracks it finds on the USB stick(s).
 Clicking on New Track List will make a new list from the USB stick(s).
 
-You can Play or Stop Tracks (remember to Stop BEFORE closing the script or click QUIT ), Shuffle the tracks, Restore to original A-Z Artist track order, switch to next / previous Artist, Album Track. 
+You can Play or Stop Tracks (remember to Stop BEFORE closing the script or click QUIT or SHUTDOWN ), Shuffle the tracks, Restore to original A-Z Artist track order, switch to next / previous Artist, Album or Track.
+Clicking A-Z Artist track after the initial sort will step through the artists from A to Z, showing the first one for each letter. To select others with the same starting letter use NEXT ARTIST.
 
 You can also set a SLEEP period and the pi will shutdown after that, or SHUTDOWN will shutdown immediately.
 
@@ -57,4 +58,4 @@ add the following line to /etc/xdg/lxsession/LXDE-pi/autostart
 
 @/usr/bin/python3 /home/pi/MP3_player.py 
 
-(NOTE: assuming you saved the script as MP3_player.py)
+(NOTE: assuming you saved the script as MP3_player.py in /home/pi/)
