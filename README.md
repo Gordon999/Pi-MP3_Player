@@ -11,7 +11,7 @@ Tested on Pi 2 v1.1 and Pi 4, using Buster.
 
 I use the analog audio output on the 3.5" 4way socket. Bluetooth may work BUT I found it kept dropping out.
 
-The default playlist is stored in  /home/pi/Documents/ALLTracks.m3u with the following format...
+The default playlist is stored in /home/pi/Documents/ALLTracks.m3u with the following format...
 
 /media/pi/JUKEBOX/Roxy Music/For Your Pleasure/01 Do The Strand.mp3
 
