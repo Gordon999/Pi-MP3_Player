@@ -3,6 +3,8 @@ Pi-MP3_Player
 
 Designed to be used with a Pi and the Pi 7" Touchscreen LCD. Playing tracks from USB sticks under /media/pi/
 
+You could put mp3 files on the SD card under /media/pi/, just make a directory there eg. /media/pi/MUSIC/ and put the mp3s in an appropriate directory eg. /media/pi/MUSIC/Rolling Stones/Exile on Mainstreet/
+
 Tested on Pi 2 v1.1 and Pi 4, using Buster.
 
 ## LCD Screenshot
@@ -19,26 +21,28 @@ The default playlist is stored in /home/pi/Documents/ALLTracks.m3u with the foll
 
 in this case JUKEBOX is the name of the USB stick. 
 
-You can put other .m3u files in the /home/pi/Documents/ directory and they can be accessed using the P-List buttons.
-Remember to include the full path to the tracks.
-
 On the USB sticks the format must be /Artist Name/Album Name/Track Name 
 so in File Manager you will see the Tracks under /media/pi/JUKEBOX/Roxy Music/For Your Pleasure/
 
 If you don't have a /home/pi/Documents/ALLTracks.m3u file when you start the script it will generate one from the tracks it finds on the USB stick(s).
 
-Clicking on RELOAD ALLTracks will make a new playlist from the USB stick(s).
+You can put other .m3u files in the /home/pi/Documents/ directory and they can be accessed using the P-List buttons.
+Remember to include the full path to the tracks in them.
 
-You can Play or Stop Tracks (remember to Stop BEFORE closing the script or click QUIT or SHUTDOWN ), Shuffle ON/OFF, Repeat ON/OFF, Chnage to A-Z Artist track order, switch to next / previous Artist, Album or Track.
-Clicking A-Z Artists track after the initial sort will step through the artists from A to Z, showing the first one for each letter. To select others with the same starting letter use NEXT ARTIST.
+Clicking on 'RELOAD ALLTracks' will make a new ALLTracks.m3u playlist from the USB stick(s).
 
-You can also generate .m3u files. Choose the album or track from ALLTracks.m3u, enter a name for the .m3u list (if you don't it will make a name based on date & time), then press either ADD track to .m3u or ADD album to .m3u. ADD P-LIst to .m3u will allow you to make larger .m3us from other m3us. You can now access the new playlist with the P-list buttons.
+You can PLAY or STOP Tracks (remember to Stop BEFORE closing the script or click QUIT or SHUTDOWN ), Shuffle ON/OFF, Repeat ON/OFF, Change to A-Z Artist track order, switch to next / previous Artist, Album or Track.
+Clicking A-Z Artists track after the initial sort will step through the artists from A to Z, showing the first one for each letter. To select other Artists with the same starting letter use ARTIST >.
+
+You can also generate .m3u files. Choose the album or track from ALLTracks.m3u ( or other m3u playlist when you have more), enter a name for the .m3u list (if you don't it will make a name based on date & time), then press either 'ADD track to .m3u' or 'ADD album to .m3u'. You can now access the new playlist with the P-list buttons. 
+
+'ADD P-List to .m3u' will allow you to make larger .m3us from other m3us, or you can DELETE a .m3u file, enter the name and press the 'DEL .m3u' button. Note you CANNOT DELETE the ALLTrack.m3u or ADD it to another list.
 
 You can also set a SLEEP period and the pi will shutdown after that, or SHUTDOWN will shutdown immediately.
 
-You can add images of the album covers in the album directories, name ending in .jpg MAX sixe 218 x 218
+You can add images of the album covers in the album directories, name ending in .jpg MAX size 218 x 218 pixels.
 
-You'll need to run...
+After install you'll need to run...
 
 sudo apt-get install python3-alsaaudio
 
