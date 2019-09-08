@@ -14,6 +14,7 @@ I use the analog audio output on the 3.5" 4way socket. Bluetooth may work BUT I 
 The default playlist is stored in  /home/pi/Documents/ALLTracks.m3u with the following format...
 
 /media/pi/JUKEBOX/Roxy Music/For Your Pleasure/01 Do The Strand.mp3
+
 /media/pi/JUKEBOX/Roxy Music/For Your Pleasure/02 Beauty Queen.mp3
 
 in this case JUKEBOX is the name of the USB stick. 
@@ -34,6 +35,8 @@ Clicking A-Z Artists track after the initial sort will step through the artists 
 You can also generate .m3u files. Choose the album or track from ALLTracks.m3u, enter a name for the .m3u list (if you don't it will make a name based on date & time), then press either ADD track to .m3u or ADD album to .m3u. ADD P-LIst to .m3u will allow you to make larger .m3us from other m3us. You can now access the new playlist with the P-list buttons.
 
 You can also set a SLEEP period and the pi will shutdown after that, or SHUTDOWN will shutdown immediately.
+
+You can add images of the album covers in the album directories, name ending in .jpg MAX sixe 218 x 218
 
 You'll need to run...
 
