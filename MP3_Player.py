@@ -647,7 +647,7 @@ class Player(Frame):
 def main(): 
     root = Tk()
     root.title("MP3 Player")
-    #root.wm_attributes('-type', 'splash')
+    root.wm_attributes('-type', 'splash')
     ex = Player()
     root.geometry("800x480")
     root.mainloop() 
