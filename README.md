@@ -9,7 +9,7 @@ Tested on Pi 2 v1.1 and Pi 4, using Buster.
 
 ## LCD Screenshot
 
-
+![screenshot](lcd.jpg)
 
 I use the analog audio output on the 3.5" 4way socket. Bluetooth may work BUT I found it kept dropping out.
 
