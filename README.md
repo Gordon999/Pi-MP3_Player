@@ -1,7 +1,7 @@
 # Pi-MP3_Player
 Pi-MP3_Player
 
-Designed to be used with a Pi and the Pi 7" Touchscreen LCD. Playing tracks from USB sticks under /media/pi/
+Designed to be used with a Pi and the Pi 7" Touchscreen LCD. Playing tracks from USB sticks (or HDD) under /media/pi/
 
 You could put mp3 files on the SD card under /media/pi/, just make a directory there eg. /media/pi/MUSIC/ and put the mp3s in an appropriate directory eg. /media/pi/MUSIC/Rolling Stones/Exile on Mainstreet/
 
@@ -32,7 +32,8 @@ Remember to include the full path to the tracks in them.
 Clicking on 'RELOAD ALLTracks' will make a new ALLTracks.m3u playlist from the USB stick(s).
 
 You can PLAY or STOP Tracks (remember to Stop BEFORE closing the script or click QUIT or SHUTDOWN ), Shuffle ON/OFF, Repeat ON/OFF, Change to A-Z Artist track order, switch to next / previous Artist, Album or Track.
-Clicking A-Z Artists track after the initial sort will step through the artists from A to Z, showing the first one for each letter. To select other Artists with the same starting letter use ARTIST >.
+
+Clicking 'next A-Z' will step through the artists from A to Z, showing the first one for each letter. To select other Artists with the same starting letter use ARTIST >.
 
 You can also generate .m3u files. Choose the album or track from ALLTracks.m3u ( or other m3u playlist when you have more), enter a name for the .m3u list (if you don't it will make a name based on date & time), then press either 'ADD track to .m3u' or 'ADD album to .m3u'. You can now access the new playlist with the P-list buttons. 
 
