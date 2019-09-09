@@ -29,7 +29,7 @@ If you don't have a /home/pi/Documents/ALLTracks.m3u file when you start the scr
 You can put other .m3u files in the /home/pi/Documents/ directory and they can be accessed using the P-List buttons.
 Remember to include the full path to the tracks in them.
 
-Clicking on 'RELOAD ALLTracks' will make a new ALLTracks.m3u playlist from the USB stick(s).
+Clicking on 'RELOAD ALLTracks' will make a new ALLTracks.m3u playlist from the USB stick(s). Use this if you add tracks to the USB stick, or insert another USB stick.
 
 You can PLAY or STOP Tracks (remember to Stop BEFORE closing the script or click QUIT or SHUTDOWN ), Shuffle ON/OFF, Repeat ON/OFF, Change to A-Z Artist track order, switch to next / previous Artist, Album or Track.
 
