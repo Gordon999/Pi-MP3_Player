@@ -37,7 +37,7 @@ You can PLAY or STOP Tracks (remember to Stop BEFORE closing the script or click
 
 Clicking 'next A-Z' will step through the artists from A to Z, showing the first one for each letter. To select other Artists with the same starting letter use ARTIST >.
 
-You can also generate .m3u files. Choose the album or track from ALLTracks.m3u ( or other m3u playlist when you have more), enter a name for the .m3u list (if you don't it will make a name based on date & time), then press either 'ADD track to .m3u' or 'ADD album to .m3u'. You can now access the new playlist with the P-list buttons. 
+You can also generate .m3u files. Choose the album or track from ALLTracks.m3u ( or other m3u playlist when you have more), enter a name for the .m3u list (if you don't it will make a name based on date & time), then press either 'ADD track to .m3u' or 'ADD album to .m3u'. Repeat process to add more tracks or albums. Click 'Stop Play' to clear .m3u field.You can now access the new playlist with the P-list buttons. 
 
 'ADD P-List to .m3u' will allow you to make larger .m3us from other m3us, or you can DELETE a .m3u file, enter the name and press the 'DEL .m3u' button. Note you CANNOT DELETE the ALLTrack.m3u or ADD it to another list.
 
