@@ -53,6 +53,8 @@ sudo apt-get install mplayer
 
 sudo pip3 install mutagen
 
+Copy MP3_player.py and mp3.jpg to /home/pi
+
 To get the script to run at boot, assuming you are booting to the GUI
 
 add the following line to /etc/xdg/lxsession/LXDE-pi/autostart
