@@ -7,6 +7,14 @@ You could put mp3 files on the SD card under /media/pi/, just make a directory t
 
 Tested on Pi 2 v1.1 and Pi 4, using Buster.
 
+You can also try v86 BETA with new features.
+
+-Adds a display of Playlist time, and time left to play.
+
+-External volume controls and STOP switch, on GPIO 36,38 & 40. switches to gnd to operate.
+
+-ADD album to .m3u will find all tracks in the album if shuffle switched on.
+
 ## LCD Screenshot
 
 ![screenshot](lcd.jpg)
