@@ -17,7 +17,7 @@ New features.
 
 ## LCD Screenshot
 
-
+![screenshot](lcd.jpg)
 
 I use the analog audio output on the 3.5" 4way socket. Bluetooth may work BUT I found it kept dropping out.
 
