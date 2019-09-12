@@ -9,7 +9,7 @@ Tested on Pi 2 v1.1 and Pi 4, using Buster.
 
 New features.
 
--Adds a display of Playlist time, and time left to play.
+-Adds a display of Playlist time, and time left to play (upto 120 minutes).
 
 -Optional external volume UP/DOWN and START/STOP switches, on GPIO 36,38 & 40. switches to gnd to operate.
 
