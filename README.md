@@ -63,6 +63,8 @@ sudo apt-get install mplayer
 
 sudo pip3 install mutagen
 
+sudo pip3 install mplayer.py
+
 
 To get the script to run at boot, assuming you are booting to the GUI
 
