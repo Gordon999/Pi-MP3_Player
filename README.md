@@ -53,7 +53,9 @@ You can also set a SLEEP period and the pi will shutdown after that, or SHUTDOWN
 
 You can add images of the album covers in the album directories, name ending in .jpg MAX size 218 x 218 pixels.
 
-After install you'll need to run...
+==========================================================================
+
+To install copy MP3_Player.py and mp3.jpg to /home/pi/ and then run...
 
 sudo apt-get install python3-alsaaudio
 
