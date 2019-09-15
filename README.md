@@ -34,6 +34,10 @@ in this case JUKEBOX is the name of the USB stick.
 On the USB sticks the format must be /Artist Name/Album Name/Track Name 
 so in File Manager you will see the Tracks under /media/pi/JUKEBOX/Roxy Music/For Your Pleasure/
 
+## File structure Screenshot
+
+![screenshot](tree.jpg)
+
 If you don't have a /home/pi/Documents/ALLTracks.m3u file when you start the script it will generate one from the tracks it finds on the USB stick(s).
 
 You can put other .m3u files in the /home/pi/Documents/ directory and they can be accessed using the P-List buttons.
