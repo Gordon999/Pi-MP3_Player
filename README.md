@@ -40,7 +40,7 @@ so in File Manager you will see the Tracks...
 
 If you don't have a /home/pi/Documents/ALLTracks.m3u file when you start the script it will generate one from the tracks it finds on the USB stick(s).
 
-You can put other .m3u files in the /home/pi/Documents/ directory and they can be accessed using the P-List buttons.
+You can put, or use the script to generate, other .m3u files in the /home/pi/Documents/ directory and they can be accessed using the P-List buttons.
 Remember to include the full path to the tracks in them.
 
 Clicking on 'RELOAD ALLTracks' will make a new ALLTracks.m3u playlist from the USB stick(s). Use this if you add or remove tracks to/from the USB stick, or insert another USB stick.
