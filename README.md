@@ -32,7 +32,7 @@ The default playlist is stored in /home/pi/Documents/ALLTracks.m3u with the foll
 in this case JUKEBOX is the name of the USB stick. 
 
 On the USB sticks the format must be /Artist Name/Album Name/Track Name 
-so in File Manager you will see the Tracks under /media/pi/JUKEBOX/Roxy Music/For Your Pleasure/
+so in File Manager you will see the Tracks...
 
 ## File structure Screenshot
 
