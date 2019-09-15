@@ -1,7 +1,7 @@
 # Pi-MP3_Player
 Pi-MP3_Player
 
-Designed to be used with a Pi and the Pi 7" Touchscreen LCD. Playing tracks from USB sticks (or HDD) under /media/pi/
+Designed to be used with a Pi and the Pi 7" Touchscreen LCD, but will work on other monitors. Playing tracks from USB sticks (or HDD) under /media/pi/
 
 You could put mp3 files on the SD card under /media/pi/, just make a directory there eg. /media/pi/MUSIC/ and put the mp3s in an appropriate directory eg. /media/pi/MUSIC/Rolling Stones/Exile on Mainstreet/
 
