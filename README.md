@@ -41,19 +41,19 @@ Remember to include the full path to the tracks in them.
 
 Clicking on 'RELOAD ALLTracks' will make a new ALLTracks.m3u playlist from the USB stick(s). Use this if you add tracks to the USB stick, or insert another USB stick.
 
-You can PLAY or STOP Tracks (remember to Stop BEFORE closing the script or click QUIT or SHUTDOWN ), Shuffle ON/OFF, Repeat ON/OFF, Change to A-Z Artist track order, switch to next / previous Artist, Album or Track.
+You can PLAY, PAUSE or STOP Tracks (remember to Stop BEFORE closing the script or click QUIT or SHUTDOWN ), Shuffle ON/OFF, Repeat ON/OFF, Change to A-Z Artist track order, switch to next / previous Artist, Album or Track.
 
 'Repeat ON' will constant repeat the playlist.
 
 Clicking 'next A-Z' will step through the artists from A to Z, showing the first one for each letter. To select other Artists with the same starting letter use ARTIST >.
 
-You can also generate .m3u files. Choose the album or track from ALLTracks.m3u ( or other m3u playlist when you have more), enter a name for the .m3u list (if you don't it will make a name based on date & time), then press either 'ADD track to .m3u' or 'ADD album to .m3u'. Repeat process to add more tracks or albums. Click 'Stop Play' to clear .m3u field.You can now access the new playlist with the P-list buttons. 
+You can also generate .m3u files. Choose the album or track from ALLTracks.m3u ( or other m3u playlist when you have more), enter a name for the .m3u list (if you don't it will make a name based on date & time), then press either 'ADD track to .m3u' , 'ADD album to .m3u' or 'ADD artist to .m3u'. Repeat process to add more tracks or albums. Click 'Stop Play' to clear .m3u field.You can now access the new playlist with the P-list buttons. 
 
 'ADD P-List to .m3u' will allow you to make larger .m3us from other m3us, or you can DELETE a .m3u file, enter the name and press the 'DEL .m3u' button. Note you CANNOT DELETE the ALLTrack.m3u or ADD it to another list.
 
 You can also set a SLEEP period and the pi will shutdown after that, or SHUTDOWN will shutdown immediately.
 
-You can add images of the album covers in the album directories, name ending in .jpg MAX size 218 x 218 pixels.
+You can add images of the album covers in the album directories for displaying, name ending in .jpg MAX size 218 x 218 pixels.
 
 ==========================================================================
 
@@ -67,6 +67,7 @@ sudo pip3 install mutagen
 
 sudo pip3 install mplayer.py
 
+To run python3 MP3_Player.py
 
 To get the script to run at boot, assuming you are booting to the GUI
 
