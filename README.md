@@ -9,7 +9,7 @@ Tested on Pi 2 v1.1 and Pi 4, using Buster.
 
 New features.
 
-- Pause
+- Pause OR Pre-Start. Pre-Start is used for live albums where you don't want a gap between tracks. It starts the next track BEFORE the previous tracks end to ensure no gap. Currently set for a 2 second overlap. Pause and Pre-Start cannot be used together.
 
 - Adds a display of Playlist time, and time left to play (upto 120 minutes).
 
