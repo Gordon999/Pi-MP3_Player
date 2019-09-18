@@ -11,6 +11,8 @@ New features.
 
 - Pause OR Pre-Start. Pre-Start is used for live albums where you don't want a gap between tracks. It starts the next track BEFORE the previous tracks end to ensure no gap. Currently set for a 2 second overlap. Pause and Pre-Start cannot be used together.
 
+- clicking on the volume value will MUTE the output, click again to UNMUTE.
+
 - Adds a display of Playlist time, and time left to play (upto 120 minutes).
 
 - Optional external volume UP/DOWN and START/STOP switches, on GPIO 36,38 & 40. switches to gnd to operate.
