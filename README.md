@@ -13,6 +13,8 @@ New features.
 
 - clicking on the volume value will MUTE the output, click again to UNMUTE.
 
+- Album ot Track titles > 50 chars will scroll.
+
 - Adds a display of Playlist time, and time left to play (upto 120 minutes).
 
 - Optional external volume UP/DOWN and START/STOP switches, on GPIO 36,38 & 40. switches to gnd to operate.
