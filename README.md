@@ -9,6 +9,8 @@ Tested on Pi 2 v1.1 and Pi 4, using Buster.
 
 New features.
 
+- Play Album ( & Shutdown) added. Choose your album and click 'Play Album', this will play the album and then stop. Clicking it again and it will set SLEEP to shutdown the Pi after playing the album.
+
 - Pause OR Pre-Start. Pre-Start is used for live albums where you don't want a gap between tracks. It starts the next track BEFORE the previous tracks end to ensure no gap. Currently set for a 2 second overlap. Pause and Pre-Start cannot be used together.
 
 - clicking on the volume value will MUTE the output, click again to UNMUTE.
