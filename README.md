@@ -27,7 +27,7 @@ New features.
 
 ![screenshot](lcd.jpg)
 
-I use the analog audio output on the 3.5" 4way socket. Bluetooth may work BUT I found it kept dropping out.
+I use the analog audio output on the 3.5mm 4way socket. Bluetooth may work BUT I found it kept dropping out.
 
 The default playlist is stored in /home/pi/Documents/ALLTracks.m3u with the following format...
 
