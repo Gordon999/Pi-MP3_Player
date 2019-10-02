@@ -11,7 +11,7 @@ Tested on Pi 2 v1.1 and Pi 4, using Buster.
 
 New features.
 
-- Changed clicking on Sleep time to CANCEL SLEEP.
+- Changed clicking on Sleep time to CANCEL SLEEP. Max sleep time now 999 minutes.
 
 - Play Album ( & SLEEP) added. Choose your album and click 'Play Album', this will play the album and then stop. Clicking it again and it will set SLEEP to shutdown the Pi after playing the album.
 
