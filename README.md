@@ -11,6 +11,8 @@ Tested on Pi 2 v1.1 and Pi 4, using Buster.
 
 New features.
 
+- Changed clicking on Sleep time to CANCEL SLEEP.
+
 - Play Album ( & SLEEP) added. Choose your album and click 'Play Album', this will play the album and then stop. Clicking it again and it will set SLEEP to shutdown the Pi after playing the album.
 
 - Pause OR Gapless. Gapless is used for live albums where you don't want a gap between tracks. It starts the next track BEFORE the previous tracks end to ensure no gap. Currently set for a 2 second overlap. Pause and Gapless cannot be used together.
