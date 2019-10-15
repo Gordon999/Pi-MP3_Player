@@ -11,6 +11,10 @@ Tested on Pi 2 v1.1 and Pi 4, using Buster.
 
 New features.
 
+- New 'wheel' added which will allow you to step through P-List, Artist, Album or Track. Rotate on it either clockwise or anti-clockwise. Choice of P-List, Artist, Album or Track selected by clicking the centre button, which will highlight the choice set in red. The 'wheel' will set volume and the centre button will MUTE/UNMUTE whilst playing tracks.
+
+- A-Z Artists can now order by Artist, Album or Track.
+
 - Changed clicking on Sleep time to CANCEL SLEEP. Max sleep time now 999 minutes.
 
 - Play Album ( & SLEEP) added. Choose your album and click 'Play Album', this will play the album and then stop. Clicking it again and it will set SLEEP to shutdown the Pi after playing the album.
