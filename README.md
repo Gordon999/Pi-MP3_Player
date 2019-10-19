@@ -9,6 +9,10 @@ All directories, default playlist name etc are definable in the script.
 
 Tested on Pi 2 v1.1 and Pi 4, using Buster.
 
+## LCD Screenshot
+
+![screenshot](lcd.jpg)
+
 New features.
 
 - New 'wheel' added which will allow you to step through P-List, Artist, Album or Track. Rotate on it either clockwise or anti-clockwise. Choice of P-List, Artist, Album or Track selected by clicking the centre button, which will highlight the choice set in red. The 'wheel' will skip forwards / backwards (in 10 second steps), and the centre button will MUTE/UNMUTE, whilst playing tracks (assuming GAPLESS is not ON!).
@@ -31,9 +35,6 @@ New features.
 
 - 'ADD artist to .m3u' will make a m3u file with all tracks by a selected artist.
 
-## LCD Screenshot
-
-![screenshot](lcd.jpg)
 
 I use the analog audio output on the 3.5mm 4way socket. Bluetooth may work BUT I found it kept dropping out.
 
