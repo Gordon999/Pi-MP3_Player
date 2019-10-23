@@ -15,7 +15,9 @@ Tested on Pi 2 v1.1 and Pi 4, using Buster.
 
 New features.
 
-- ALBUM Repeat added
+- 'Add Track to FAV .m3u' button added to make your Favourite Tracks playlist
+
+- 'ALBUM Repeat' added
 
 - Next / Prev Track enabled during ALBUM play
 
