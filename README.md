@@ -17,7 +17,7 @@ New features.
 
 - 'Add Track to FAV .m3u' button added to make your Favourite Tracks playlist
 
-- 'ALBUM Repeat' added
+- 'ALBUM Repeat' and 'ALBUM shuffle' added
 
 - Next / Prev Track enabled during ALBUM play
 
