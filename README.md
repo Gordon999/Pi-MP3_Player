@@ -15,6 +15,8 @@ Tested on Pi 2 v1.1 and Pi 4, using Buster.
 
 New features.
 
+-  Progress Bar added, Searches more directories, including /home/pi/Music.
+
 - 'Add Track to FAV .m3u' button added to make your Favourite Tracks playlist
 
 - 'ALBUM Repeat' and 'ALBUM shuffle' added
