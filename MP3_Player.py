@@ -1602,7 +1602,7 @@ def main():
     root = Tk()
     root.title("Pi MP3 Player")
     if root.winfo_screenwidth() == 800 and root.winfo_screenheight() == 480:
-        root.wm_attributes('-fullscreen','true',bg='black')
+        root.wm_attributes('-fullscreen','true')
     ex = MP3Player()
     root.geometry("800x480")
     root.mainloop() 
