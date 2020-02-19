@@ -16,7 +16,7 @@ Tested on Pi 2 v1.1 and Pi 4, using Buster.
 
 New features.
 
-- gpio_enable added to allow the external gpio switches to be disabled if using a HyperPixel4 display, as it upsets the colours. You can leave them enabled but colours will be affected.
+- gpio_enable added to allow the external gpio switches to be disabled if using a HyperPixel4 display, as it upsets the colours. 
 
 -  % Progress Bar added (Load/Track/Album/Playlist), Searches more directories, including /home/pi/Music, .jpgs automatically sized.
 
