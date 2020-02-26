@@ -16,6 +16,8 @@ Tested on Pi 2 v1.1 and Pi 4, using Buster.
 
 New features.
 
+- Playlists can be generated using a word in the track names. Enter a word in the .m3u box and click 'DEL .m3u', this will make a m3u with all tracks with that word in the title, and switch to it.
+
 - gpio_enable added to allow the external gpio switches to be disabled if using a HyperPixel4 display, as it upsets the colours. Should automatically detect HyperPixel4 LCD
 
 -  % Progress Bar added (Load/Track/Album/Playlist), Searches more directories, including /home/pi/Music, .jpgs automatically sized.
