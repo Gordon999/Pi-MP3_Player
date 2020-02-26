@@ -8,7 +8,7 @@ You could put mp3 files on the SD card under /home/pi/Music or /media/pi/Music, 
 Default playlist name etc are definable in the script.
 Avoid any directory/track names with [ ] (square brackets) in.
 
-Tested on Pi 2 v1.1 and Pi 4, using Buster.
+Tested on Pi 2 v1.1, Pi 3B and Pi 4, using Buster.
 
 See the end of this document for installation instructions.
 
