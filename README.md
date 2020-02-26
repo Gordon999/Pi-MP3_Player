@@ -10,6 +10,8 @@ Avoid any directory/track names with [ ] (square brackets) in.
 
 Tested on Pi 2 v1.1 and Pi 4, using Buster.
 
+See the end of this document for installation instructions.
+
 ## LCD Screenshot
 
 ![screenshot](lcd.jpg)
