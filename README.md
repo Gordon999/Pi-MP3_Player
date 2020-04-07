@@ -18,6 +18,8 @@ See the end of this document for installation instructions.
 
 New features.
 
+- Bluetooth audio now supported
+
 - Playlists can be generated using a word in the track names. Enter a word in the .m3u box and click 'DEL .m3u', this will make a m3u with all tracks with that word in the title, and switch to it. If you enter a word which matches an existing m3u it will DELETE the m3u ! (as before).
 
 - gpio_enable added to allow the external gpio switches to be disabled if using a HyperPixel4 display, as it upsets the colours. Should automatically detect HyperPixel4 LCD
