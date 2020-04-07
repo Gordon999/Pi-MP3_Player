@@ -109,6 +109,13 @@ To get the script to run at boot, assuming you are booting to the GUI
 
 add the following line to /etc/xdg/lxsession/LXDE-pi/autostart
 
-@/usr/bin/python3 /home/pi/MP3_player.py 
+@/home/pi/myscript.sh
 
-(NOTE: assuming you saved the script as MP3_player.py in /home/pi/)
+and make a file called myscript.sh containing
+
+#!/bin/bash
+sleep 10
+/usr/bin/python3 /home/pi/MP3_Player.py
+
+and make it executable with  sudo chmod +x myscript.sh
+
