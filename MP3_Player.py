@@ -18,6 +18,7 @@ import RPi.GPIO as GPIO
 from mplayer import Player
 Player.introspect()
 player = Player()
+global fullscreen
 fullscreen = 1
 global cutdown
 cutdown = 0 # 0 = 800x480, 1 = 320x240, 2 = 640 x 480
