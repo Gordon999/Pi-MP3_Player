@@ -16,6 +16,10 @@ See the end of this document for installation instructions.
 
 ![screenshot](lcd.jpg)
 
+## Cutdown Screenshot
+
+![screenshot](screen320.jpg)
+
 New features.
 
 - 'Add artist to .m3u' will generate a .m3u file with the artists name, if no name specified.
