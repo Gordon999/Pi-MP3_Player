@@ -16,7 +16,7 @@ See the end of this document for installation instructions.
 
 ![screenshot](lcd.jpg)
 
-## Cutdown Screenshot
+## Cutdown 320 x 240 Screenshot
 
 ![screenshot](screen320.jpg)
 
