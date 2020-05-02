@@ -113,6 +113,10 @@ sudo pip3 install mutagen
 
 sudo pip3 install mplayer.py
 
+If you see ImportError: cannot import name 'ImageTk' from 'PIL' (/usr/lib/python3/dist-packages/PIL/__init__.py)
+
+then sudo pip3 install Pillow
+
 To run python3 MP3_Player.py
 
 To get the script to run at boot, assuming you are booting to the GUI
