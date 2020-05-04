@@ -22,8 +22,6 @@ See the end of this document for installation instructions.
 
 New features.
 
-- Will shutdown if low supply volts, for battery use.
-
 - Cutdown option for 320 x 240 or 640 x 480 screen. Set variable cutdown = 1 or 2 in script
 
 - 'Add artist to .m3u' will generate a .m3u file with the artists name, if no name specified.
@@ -115,7 +113,7 @@ sudo pip3 install mplayer.py
 
 If you see ImportError: cannot import name 'ImageTk' from 'PIL' (/usr/lib/python3/dist-packages/PIL/__init__.py)
 
-then sudo pip3 install Pillow
+then sudo apt-get install python3-pil.imagetk
 
 To run python3 MP3_Player.py
 
