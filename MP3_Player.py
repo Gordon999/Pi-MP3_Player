@@ -103,16 +103,19 @@ class MP3Player(Frame):
         self.counter5        = 0
 
         #Low supply volts
-        import RPi.GPIO as GPIO
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(35,GPIO.IN,pull_up_down = GPIO.PUD_UP)
+        #import RPi.GPIO as GPIO
+        #GPIO.setmode(GPIO.BCM)
+        #GPIO.setwarnings(False)
+        #GPIO.setup(35,GPIO.IN,pull_up_down = GPIO.PUD_UP)
         
         # check for HyperPixel4 LCD and if so disable GPIO controls.
         if os.path.exists ('/sys/devices/platform/i2c@0'): 
             self.gpio_enable = 0
         else:
             self.gpio_enable = 1
+            import RPi.GPIO as GPIO
+            GPIO.setmode(GPIO.BCM)
+            GPIO.setwarnings(False)
             GPIO.setup(self.voldn,GPIO.IN, pull_up_down=GPIO.PUD_UP)
             GPIO.setup(self.stop_start,GPIO.IN, pull_up_down=GPIO.PUD_UP)
             GPIO.setup(self.volup,GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -1047,12 +1050,12 @@ class MP3Player(Frame):
                     self.Play()
                     
         # shut down if low supply volts 
-        if GPIO.input(35) == 0:
-            self.LVS +=1
-            if self.LVS > 5:
-                os.system("sudo shutdown -h now")
-        else:
-            self.LVS = 0
+        #if GPIO.input(35) == 0:
+        #    self.LVS +=1
+        #    if self.LVS > 5:
+        #        os.system("sudo shutdown -h now")
+        #else:
+        #    self.LVS = 0
             
         if self.cutdown == 0 or self.cutdown == 2:
             # Reshow Album cover jpg (assuming one present) after 2 second delay
