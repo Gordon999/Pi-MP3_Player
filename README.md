@@ -101,7 +101,9 @@ You can add images of the album covers in the album directories for displaying, 
 
 ==========================================================================
 
-To install copy MP3_Player.py and mp3.jpg to /home/pi/ and then run...
+To install Download the Zip, Extract, and copy MP3_Player.py, mp3c.py and mp3.jpg to /home/pi/ 
+
+and then run...
 
 sudo apt-get install python3-alsaaudio
 
