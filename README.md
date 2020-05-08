@@ -22,7 +22,7 @@ See installation_instructions.txt for how to install and run.
 
 New features.
 
-- Cutdown option for 320 x 240 or 640 x 480 screen. Set variable cutdown = 1 or 2 in script
+- Cutdown option for 320 x 240, 640 x 480 or 480 x 800 screen. Set variable cutdown = 1,2 or 3 in script
 
 - 'Add artist to .m3u' will generate a .m3u file with the artists name, if no name specified.
 
