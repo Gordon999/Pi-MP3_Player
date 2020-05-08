@@ -10,7 +10,7 @@ Avoid any directory/track names with [ ] (square brackets) in.
 
 Tested on Pi 2 v1.1, Pi 3B and Pi 4, using Buster.
 
-See the end of this document for installation instructions.
+See installation_instructions.txt for how to install and run.
 
 ## LCD Screenshot
 
