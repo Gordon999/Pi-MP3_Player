@@ -32,7 +32,7 @@ New features.
 
 - gpio_enable added to allow the external gpio switches to be disabled if using a HyperPixel4 display, as it upsets the colours. Should automatically detect HyperPixel4 LCD
 
--  % Progress Bar added (Load/Track/Album/Playlist), Searches more directories, including /home/pi/Music, .jpgs automatically sized.
+-  % Progress Bar added (Load/Track/Album/Playlist), Searches more directories, including /media/pi/Music, .jpgs automatically sized.
 
 - 'Add Track to FAV .m3u' button added to make your Favourite Tracks playlist
 
