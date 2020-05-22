@@ -21,7 +21,7 @@ player = Player()
 global fullscreen
 fullscreen = 1
 global cutdown
-cutdown = 1 # 0 = 800x480, 1 = 320x240, 2 = 640x480, 3 = 480x800
+cutdown = 0 # 0 = 800x480, 1 = 320x240, 2 = 640x480, 3 = 480x800
 
 # Pi_MP3_Player v15.23
 
