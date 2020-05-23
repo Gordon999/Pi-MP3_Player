@@ -6,9 +6,9 @@ Designed to be used with a Pi and the Pi 7" Touchscreen LCD, but will work on ot
 You could put mp3 files on the SD card under /media/pi/Music, and put the mp3s in an appropriate directory eg. /media/pi/Music/Rolling Stones/Exile on Mainstreet/
 
 Default playlist name etc are definable in the script.
-Avoid any directory/track names with [ ] (square brackets) in.
+Avoid any directory/track names with [] (square brackets) in.
 
-Tested on Pi 2 v1.1, Pi 3B and Pi 4, using Buster.
+Tested on Pi 2 v1.1, 3A, 3B, 4B, Zero v1.2 & v1.3 , all using Buster.
 
 See installation_instructions.txt for how to install and run.
 
@@ -22,7 +22,7 @@ See installation_instructions.txt for how to install and run.
 
 New features.
 
-- Cutdown option for 320 x 240, 640 x 480 or 480 x 800 screen. Set variable cutdown = 1,2 or 3 in script
+- Cutdown option for 800 x 480, 320 x 240, 640 x 480 or 480 x 800 screen. Set variable cutdown = 0,1,2 or 3 in script
 
 - 'Add artist to .m3u' will generate a .m3u file with the artists name, if no name specified.
 
