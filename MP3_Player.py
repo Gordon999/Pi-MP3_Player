@@ -929,9 +929,10 @@ class MP3Player(Frame):
                     self.track_no +=1
                 if self.BT == 1:
                     os.killpg(self.p.pid, signal.SIGTERM)
-                    poll = self.p.poll()
-                    while poll == None:
-                        poll = self.p.poll()
+                    time.sleep(1)
+                    #poll = self.p.poll()
+                    #while poll == None:
+                    #    poll = self.p.poll()
                 # stop if playlist last track and repeat OFF
                 if self.track_no > len(self.tunes) - 1 and self.repeat == 0 and self.repeat_album == 0:
                     if self.trace == 1:
