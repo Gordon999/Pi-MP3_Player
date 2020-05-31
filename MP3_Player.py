@@ -45,7 +45,7 @@ class MP3Player(Frame):
         self.voldn          = 16                     # external volume down gpio input
         self.volup          = 21                     # external volume up gpio input
         self.mute           = 20                     # external mute gpio input
-        self.scroll_rate    = 2                      # scroll rate 1 (slow) to 10 (fast)
+        self.scroll_rate    = 3                      # scroll rate 1 (slow) to 10 (fast)
         self.repeat         = 0
         self.play           = 0
         self.track_no       = 0
