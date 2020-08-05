@@ -2,6 +2,8 @@
 To run this GUI you must have "Raspbian Full" otherwise known as "Raspbian Buster with desktop and recommended software"
 loaded on your Pi.
 
+## WARNING!! If using the Waveshare 2.8" LCD DON'T do the OS updates when installing latest Raspberry OS or the screen won't work !! (kernel 5.4 issue?).
+
 To download the MP3 Player go to the Clone or Download button above and select Download ZIP to download the file.
 
 Unzip the downloaded file and copy or move three files, MP3_Player.py, mp3.jpg, and mp3c.jpg to /home/pi/ 
