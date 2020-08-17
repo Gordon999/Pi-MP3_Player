@@ -14,7 +14,7 @@ See installation_instructions.txt for how to install and run.
 
 ## LCD Screenshot
 
-![screenshot](lcd.jpg)
+![screenshot](800x480.jpg)
 
 ## Cutdown 4 Waveshare 320 x 240 Screenshot
 
@@ -22,7 +22,7 @@ See installation_instructions.txt for how to install and run.
 
 ## Cutdown 320 x 240 Screenshot
 
-![screenshot](screen320.jpg)
+![screenshot](320x240.jpg)
 
 New features.
 
