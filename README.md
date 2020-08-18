@@ -8,7 +8,8 @@ You could put mp3 files on the SD card under /media/pi/Music, and put the mp3s i
 Default playlist name etc are definable in the script.
 Avoid any directory/track names with [] (square brackets) in.
 
-Tested on Pi 2 v1.1, 3A, 3B, 4B, Zero v1.2 & v1.3 , and Pi4 with 64bit Raspberry OS, all using Buster.
+Tested on Pi 2 v1.1, 3A, 3B, 4B, Zero v1.2 & v1.3 , and Pi4 with 64bit Raspberry OS, all using Buster*.
+* Don't do any upgrades if using the Waveshare 2.8" touchscreen.
 
 See installation_instructions.txt for how to install and run.
 
