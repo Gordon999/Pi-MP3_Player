@@ -27,6 +27,8 @@ See installation_instructions.txt for how to install and run.
 
 New features.
 
+- Cutdown option 5 for 800x480 (SIMPLE LAYOUT, only default Playlist)
+
 - Cutdown option 4 for Waveshare 2.8" LCD https://thepihut.com/collections/raspberry-pi-screens/products/spi-2-8-320x240-touch-screen-gpio
 
   Note although this screen is 320x240 it works at 480x320 with Raspberry OS.
