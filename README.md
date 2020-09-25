@@ -28,6 +28,7 @@ See installation_instructions.txt for how to install and run.
 New features.
 
 - Cutdown option 4 for Waveshare 2.8" LCD https://thepihut.com/collections/raspberry-pi-screens/products/spi-2-8-320x240-touch-screen-gpio
+
   Note although this screen is 320x240 it works at 480x320 with Raspberry OS.
   
   KEY1 - Vol UP, KEY2 - VOL DN, KEY3 - MUTE, KEY4- STOP
@@ -38,7 +39,10 @@ New features.
 
 - Bluetooth audio now supported. Note limitations no pause, no gapless and limited wheel.
 
-- Playlists can be generated using a word in the track names. Enter a word in the .m3u box and click 'DEL .m3u', this will make a m3u with all tracks with that word in the title, and switch to it. If you enter a word which matches an existing m3u it will DELETE the m3u ! (as before).
+- Playlists can be generated using a word in the track names. Enter a word in the .m3u box and click 'Search to .m3u', this will make a m3u with all tracks with that word in the title, and switch to it.
+
+- to DELETE a .m3u enter the name in the .m3u field and click DEL .m3u. 
+  If you don't have a keyboard then choose the P-List, then set the Vol to 0, (click button between < Vol and Vol >),  and then click DEL .m3u.
 
 - gpio_enable added to allow the external gpio switches to be disabled if using a HyperPixel4 display, as it upsets the colours. Should automatically detect HyperPixel4 LCD
 
