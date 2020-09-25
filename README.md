@@ -29,7 +29,7 @@ New features.
 
 - Cutdown option 4 for Waveshare 2.8" LCD https://thepihut.com/collections/raspberry-pi-screens/products/spi-2-8-320x240-touch-screen-gpio
   Note although this screen is 320x240 it works at 480x320 with Raspberry OS.
-   ## !! When installing latest Raspberry OS DON'T do the updates or the screen won't work !! (kernel issue?).
+  
   KEY1 - Vol UP, KEY2 - VOL DN, KEY3 - MUTE, KEY4- STOP
 
 - Cutdown option for 800 x 480, 320 x 240, 640 x 480 or 480 x 800 screen. Set variable cutdown = 0,1,2 or 3 in script
