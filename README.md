@@ -26,6 +26,12 @@ See installation_instructions.txt for how to install and run.
 
 New features.
 
+- CD sets, eg 2 CDs, can be treated as 1 album. Ensure the albums are named the same except for the last character eg.
+  'The Best of CD1' and 'The Best of CD2'. When 'Album Play' is clicked it will play both as 1 album.
+  Creating a .m3u by clicking 'Album to .m3u' will also include both.
+  
+- SLEEP. Selecting SLEEP during Album Play will initially set the album time, subsequent clicks will set a time in 15 minutes steps.
+
 - Cutdown option 5 for 800x480 (SIMPLE LAYOUT, only default Playlist)
 
 - Cutdown option 4 for Waveshare 2.8" LCD https://thepihut.com/collections/raspberry-pi-screens/products/spi-2-8-320x240-touch-screen-gpio
