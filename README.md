@@ -26,6 +26,8 @@ See installation_instructions.txt for how to install and run.
 
 New features.
 
+- Wheel has an option to step through Artists by A to Z.
+
 - CD sets, eg 2 CDs, can be treated as 1 album. Ensure the albums are named the same except for the last character eg.
   'The Best of - CD1' and 'The Best of - CD2'. When 'Album Play' is clicked it will play both as 1 album.
   Creating a .m3u by clicking 'ADD Album to .m3u' will also include both.
