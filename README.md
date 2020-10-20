@@ -26,8 +26,8 @@ See installation_instructions.txt for how to install and run.
 
 New features.
 
-- Wheel has an option to step through Artists by A to Z. Click on the wheel centre button until Next-AZ turns red, then use the wheel to select.
-  Click on centre button again to turn Artist red and use wheel to select the artist.
+- The 'Wheel' has an option to step through Artists by A to Z. Click on the 'Wheel Centre Button' until 'NextA-Z' turns red, then use the 'Wheel' to select.
+  Click on 'Wheel Centre Button' again to turn 'Artist' red and use the 'Wheel', or the 'Artist' buttons, to select the artist.
 
 - CD sets, eg 2 CDs, can be treated as 1 album. Ensure the albums are named the same except for the last character eg.
   'The Best of - CD1' and 'The Best of - CD2'. When 'Album Play' is clicked it will play both as 1 album.
