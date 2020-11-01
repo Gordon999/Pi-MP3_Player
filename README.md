@@ -26,6 +26,8 @@ See installation_instructions.txt for how to install and run.
 
 New features.
 
+- Support for .flacs added
+
 - 'Radio' button added for playing radio streams. Edit self.Radio_Stns = [  ] to add / remove stations. Format is "Name1","URL1","Name2","URL2",...
   If you want an image displayed for the Radio Station place the .jpg file in /home/pi/Documents. jpg filename must be 'Name1.jpg' to match the station name.
 
