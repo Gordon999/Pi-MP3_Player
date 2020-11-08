@@ -26,6 +26,9 @@ See installation_instructions.txt for how to install and run.
 
 New features.
 
+- Info button added. Will read and display an 'info.txt' file in an album directory. ONLY on cutdown = 0 screen (default).
+  Change 'self.Button_info_on = 0' to disable.
+
 - Support for .flacs added
 
 - 'Radio' button added for playing radio streams. Edit self.Radio_Stns = [  ] to add / remove stations. Format is "Name1","URL1","Name2","URL2",...
