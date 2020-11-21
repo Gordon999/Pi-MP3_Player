@@ -3,7 +3,7 @@ To run this GUI you must have "Raspbian Full" otherwise known as "Raspbian Buste
 
 To download the MP3 Player go to the Clone or Download button above and select Download ZIP to download the file.
 
-Unzip the downloaded file and copy or move four files, MP3_Player.py, mp3.jpg, and mp3c.jpg to /home/pi/, and copy file radio.jpg to /home/pi/
+Unzip the downloaded file and copy or move four files, MP3_Player.py, mp3.jpg, mp3c.jpg and radio.jpg to /home/pi/
 and then run the following code in terminal.
 
 sudo apt-get install python3-alsaaudio
