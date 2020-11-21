@@ -6,7 +6,7 @@ loaded on your Pi.
 
 To download the MP3 Player go to the Clone or Download button above and select Download ZIP to download the file.
 
-Unzip the downloaded file and copy or move three files, MP3_Player.py, mp3.jpg, and mp3c.jpg to /home/pi/ 
+Unzip the downloaded file and copy or move four files, MP3_Player.py, mp3.jpg, and mp3c.jpg to /home/pi/, and copy file radio2.jpg to /home/pi/Documents
 and then run the following code in terminal.
 
 sudo apt-get install python3-alsaaudio
@@ -16,6 +16,9 @@ sudo apt-get install mplayer
 sudo pip3 install mutagen
 
 sudo pip3 install mplayer.py
+
+sudo apt-get install streamripper
+
 
 To boot up the GUI run the following code in terminal "python3 MP3_Player.py" without the quotes. 
 The GUI should now be open.
