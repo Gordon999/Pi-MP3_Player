@@ -29,7 +29,7 @@ New features.
 - Time shift streaming Radio channel. If you are listening to a programme and need to do something else you can click on 'RECORD', set the time required in ten 
   minute steps by clicking on 'RECORD', and leave it. (You can now mute the sound if required) .
   It will record this to RAM and on return you can listen to it by Stopping Radio (or STOP RECORD at any time) and playback the recording.
-  Note this recording will ONLY be available in the playlist whilst the Pi is powered.
+  Note this recording will ONLY be available in the playlist whilst the Pi is powered. Install streamripper with sudo apt install streamripper, and copy    radio2.jpg to /home/pi/Documents
 
 - Info button added. Will read and display an 'info.txt' file in an album directory. ONLY on cutdown = 0 screen (default).
   Change 'self.Button_info_on = 0' to disable.
