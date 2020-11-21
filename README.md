@@ -26,6 +26,11 @@ See installation_instructions.txt for how to install and run.
 
 New features.
 
+- Time shift streaming Radio channel. If you are listening to a programme and need to do something else you can click on 'RECORD', set the time required in ten 
+  minute steps by clicking on 'RECORD', and leave it. (You can now mute the sound if required) .
+  It will record this to RAM and on return you can listen to it by Stopping Radio (or STOP RECORD at any time) and playback the recording.
+  Note this recording will ONLY be available in the playlist whilst the Pi is powered.
+
 - Info button added. Will read and display an 'info.txt' file in an album directory. ONLY on cutdown = 0 screen (default).
   Change 'self.Button_info_on = 0' to disable.
 
@@ -144,6 +149,8 @@ sudo apt-get install mplayer
 sudo pip3 install mutagen
 
 sudo pip3 install mplayer.py
+
+sudo apt-get install streamripper
 
 If you see ImportError: cannot import name 'ImageTk' from 'PIL' (/usr/lib/python3/dist-packages/PIL/__init__.py)
 
