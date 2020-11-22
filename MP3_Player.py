@@ -40,7 +40,9 @@ class MP3Player(Frame):
         
     def initUI(self):
         # Radio Stations List, add to them by adding a 'name','URL','recordable'
-        self.Radio_Stns = ["JB Radio-2 (320)","http://cristina.torontocast.com:8007/mp3-320",1,
+        self.Radio_Stns = ["Radio Paradise Main", "http://stream.radioparadise.com/flac",0,
+                           "Radio Paradise Main (320)","http://stream.radioparadise.com/mp3-320",1,
+                           "JB Radio-2 (320)","http://cristina.torontocast.com:8007/mp3-320",1,
                            "Radio Caroline", "http://sc6.radiocaroline.net:10558/",0
                            ]
         self.Button_info_on = 1                         # show Info button, only available in cutdown = 0
