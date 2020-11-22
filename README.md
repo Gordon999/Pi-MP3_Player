@@ -28,7 +28,7 @@ New features.
 
 - Time shift streaming Radio channel. If you are listening to a programme and need to do something else you can click on 'RECORD', set the time required in ten 
   minute steps by clicking on 'RECORD', and leave it. (You can now mute the sound if required) .
-  You can name the recording by entering the name before clicking 'RECORD'.
+  You can name the recording by entering the name before clicking 'RECORD' on cutdown = 0 option.
   
   NOTE: It will NOT play all types of stream, MP3 and Flacs are normally OK. It will NOT record all types of stream, MP3s are OK. 
   In the script you can identify which ones are recordable by setting to 1.
