@@ -28,14 +28,16 @@ New features.
 
 - Time shift streaming Radio channel. If you are listening to a programme and need to do something else you can click on 'RECORD', set the time required in ten 
   minute steps by clicking on 'RECORD', and leave it. (You can now mute the sound if required) .
+  You can name the recording by entering the name before clicking 'RECORD'.
   
-  NOTE: It will NOT record all types of stream, MP3s are OK. In the script you can identify which ones are recordable by setting to 1.
+  NOTE: It will NOT play all types of stream, MP3 and Flacs are normally OK. It will NOT record all types of stream, MP3s are OK. 
+  In the script you can identify which ones are recordable by setting to 1.
   
   eg. "JB Radio-2 (320)","http://cristina.torontocast.com:8007/mp3-320",1,
   
   It will record this to RAM and on return you can listen to it by Stopping Radio (or STOP RECORD at any time) and 'PLAY ALBUM' to playback the recording.
-  Note this recording will ONLY be available in the playlist whilst the Pi is powered. Install streamripper with sudo apt install streamripper, and copy 
-  radio.jpg to /home/pi/
+  Note this recording will ONLY be available in the playlist whilst the Pi is powered. 
+  Install streamripper with sudo apt install streamripper, and copy radio.jpg to /home/pi/
 
 - Info button added. Will read and display an 'info.txt' file in an album directory. ONLY on cutdown = 0 screen (default).
   Change 'self.Button_info_on = 0' to disable.
