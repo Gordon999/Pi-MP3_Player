@@ -3078,7 +3078,7 @@ class MP3Player(Frame):
             if sock is not None:
                 sock.close
             if self.Radio_ON == 1:
-                self.after(6000, self.StillConnected)
+                self.after(600000, self.StillConnected)
             return True
         except OSError:
             if self.Radio_RON == 1:
