@@ -1,4 +1,4 @@
-# Pi-MP3_Player
+# Pi-MP3 and Radio Stream Player
 Pi-MP3_Player
 
 Designed to be used with a Pi and the Pi 7" Touchscreen LCD, but will work on other monitors. Playing tracks from USB sticks (or HDD) under /media/pi/usb_stick_name/artist name/album_name/tracks, or SD card under /media/pi/Music etc.
@@ -9,6 +9,7 @@ Default playlist name etc are definable in the script.
 Avoid any directory/track names with [] (square brackets) in.
 
 Tested on Pi 2 v1.1, 3A, 3B, 4B, Zero W, v1.2 & v1.3 , and Pi4 with 64bit Raspberry OS, all using Buster.
+For Radio Stream use Pi3, Pi4 or Pi400 recommended.
 
 See installation_instructions.txt for how to install and run.
 
@@ -25,6 +26,16 @@ See installation_instructions.txt for how to install and run.
 ![screenshot](320x240.jpg)
 
 New features.
+
+- Radio use:
+  - Artist & Track Name shown, if available in stream, when listening / recording.
+  - Will record to end of track, if Track Name in stream. (-ve times shown)
+  - Will stop recording if low amount RAM available.
+  - 'CLR RAM' will remove old recordings from RAM.
+  - 'SLEEP' will STOP Radio, but not shutdown , or you will lose recording from RAM.
+  - On 'STOP Radio' will switch to MP3 Player showing the Radio Recording for playing.
+ 
+- Volume stored in config file
 
 - Time shift streaming Radio channel. If you are listening to a programme and need to do something else you can click on 'RECORD', set the time required in ten 
   minute steps by clicking on 'RECORD', and leave it. (You can now mute the sound if required) .
