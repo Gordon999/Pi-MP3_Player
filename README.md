@@ -6,7 +6,7 @@ Designed to be used with a Pi and the Pi 7" Touchscreen LCD, but will work on ot
 You could put mp3 files on the SD card under /media/pi/Music, and put the mp3s in an appropriate directory eg. /media/pi/Music/Rolling Stones/Exile on Mainstreet/
 
 Default playlist name etc are definable in the script.
-Avoid any directory/track names with [] (square brackets) in.
+Avoid any directory/track names with [ ] (square brackets) in.
 
 Tested on Pi 2 v1.1, 3A, 3B, 4B, Zero W, v1.2 & v1.3 , and Pi4 with 64bit Raspberry OS, all using Buster.
 For Radio Stream use Pi3, Pi4 or Pi400 recommended.
