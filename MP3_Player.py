@@ -71,7 +71,7 @@ class MP3Player(Frame):
         self.max_sleep      = 120
         self.record         = 1
         self.record_time    = 0
-        self.ram_min        = 1820
+        self.ram_min        = 100
         self.tracking       = 0
         self.max_record     = 180
         self.total_record   = 0
