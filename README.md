@@ -9,6 +9,7 @@ Default playlist name etc are definable in the script.
 Avoid any directory/track names with [ ] (square brackets) in.
 
 Tested on Pi 2 v1.1, 3A, 3B, 4B, Zero W, v1.2 & v1.3 , and Pi4 with 64bit Raspberry OS, all using Buster.
+
 For Radio Stream use Pi3, Pi4 or Pi400 recommended.
 
 See installation_instructions.txt for how to install and run.
