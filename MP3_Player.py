@@ -1912,7 +1912,7 @@ class MP3Player(Frame):
             else:
                 self.muted = 0
                 volume = self.volume
-            #self.m.setvolume(volume)
+            self.m.setvolume(volume)
             os.system("amixer -D pulse sset Master " + str(volume) + "%")
             if self.cutdown == 0 or self.cutdown == 2:
                 self.Button_volume.config(text = volume)
