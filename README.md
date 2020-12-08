@@ -28,13 +28,21 @@ See installation_instructions.txt for how to install and run.
 
 New features.
 
+- Can be configured to boot to PLAY, PLAY ALBUM, RADIO or RADIO RECORD.
+
+- For boot to Play         : Choose track, Click on SHUFFLE if required, then press PLAY PLAYLIST, then SHUTDOWN. 
+- For boot to Play ALBUM   : Choose track, then press PLAY ALBUM, then SHUTDOWN.
+- For boot to Radio        : Choose Radio Station then press SHUTDOWN.
+- For boot to Radio RECORD : Choose Radio Station, press RECORD to set time, then press  SHUTDOWN.
+
+
 - Radio use:
   - Artist & Track Name shown, if available in stream, when listening / recording.
   - Will record to end of track, if Track Name in stream. (-ve times shown)
   - Will stop recording if low amount RAM available.
   - 'CLR RAM' will remove old recordings from RAM.
   - 'SLEEP' will STOP Radio, but not shutdown , or you will lose recording from RAM.
-  - On 'STOP Radio' will switch to MP3 Player showing the Radio Recording for playing.
+  - On 'STOP RECORD' or Record Timer expiring it will switch to MP3 Player showing the Radio Recording for playing.
  
 - Volume stored in config file
 
