@@ -10,7 +10,7 @@ Avoid any directory/track names with [ ] (square brackets) in.
 
 Tested on Pi 2 v1.1, 3A, 3B, 4B, Zero W, v1.2 & v1.3 , and Pi4 with  32 and 64bit Pi OS, all using Buster.
 
-For Radio Stream use Pi3, Pi4 or Pi400 recommended.
+For Radio Stream use Pi3, Pi4 or Pi400 recommended, as it requires at least 1 GB
 
 See installation_instructions.txt for how to install and run.
 
