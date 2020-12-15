@@ -39,8 +39,11 @@ with the same name as the track.
 Format: Track start time text
 
 000:01 Introduction
+
 001:50 Track Name 1
+
 006:23 Track Name 2
+
 
 
 - Can be configured to boot to PLAY, PLAY ALBUM, RADIO or RADIO RECORD.
