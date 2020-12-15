@@ -30,8 +30,8 @@ New features
 
 - Radio Use -
 
-- Will now display track names on playing back recorded radio, if they were available in the stream. The playlist can be shonw by pressing INFO button.
- Note this will not work if you already have a file named "info", "md5" or "ffp".
+- Will now display track names on playing back recorded radio, if they were available in the stream. 
+ The playlist can be shown by pressing INFO button. Note this will not work if you already have a file named "info", "md5" or "ffp".
 
 You could also add track names to other tracks, for example a recorded session with multiple tracks, by adding a .txt file in the album directory
 with the same name as the track.  
