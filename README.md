@@ -26,7 +26,22 @@ See installation_instructions.txt for how to install and run.
 
 ![screenshot](320x240.jpg)
 
-New features.
+New features
+
+- Radio Use -
+
+- Will now display track names on playing back recorded radio, if they were available in the stream. The playlist can be shonw by pressing INFO button.
+ Note this will not work if you already have a file named "info", "md5" or "ffp".
+
+You could also add track names to other tracks, for example a recorded session with multiple tracks, by adding a .txt file in the album directory
+with the same name as the track.  
+
+Format: Track start time text
+
+000:01 Introduction
+001:50 Track Name 1
+006:23 Track Name 2
+
 
 - Can be configured to boot to PLAY, PLAY ALBUM, RADIO or RADIO RECORD.
 
