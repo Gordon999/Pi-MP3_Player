@@ -180,9 +180,11 @@ You can also generate .m3u files. Choose the artist, album or track from ALLTrac
 
 'ADD P-List to .m3u' will allow you to make larger .m3us from other m3us, or you can DELETE a .m3u file, enter the name and press the 'DEL .m3u' button. Note you CANNOT DELETE the ALLTrack.m3u or ADD it to another list.
 
-You can also set a SLEEP period and the pi will shutdown after that, or SHUTDOWN will shutdown immediately.
+You can also set a SLEEP period and the pi will shutdown after that, or SHUTDOWN will shutdown immediately, unless you are recording Radio.
 
 You can add images of the album covers in the album directories for displaying, name ending in .jpg MAX size 218 x 218 pixels.
+
+You can add images of the Radio Stations in /home/pi/Documents for displaying, name ending in .jpg MAX size 218 x 218 pixels.
 
 ==========================================================================
 
