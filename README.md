@@ -30,6 +30,8 @@ New features
 
 - Radio Use -
 
+- Progress bar implemented during Radio Recording. Info button (cutdown = 0 only) shows playlist (if available in stream) during recording.
+
 - Will now display track names on playing back recorded radio, if they were available in the stream. 
  The playlist can be shown by pressing INFO button. Note this will not work if you already have a file named "info", "md5" or "ffp".
 
