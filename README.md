@@ -18,6 +18,10 @@ See installation_instructions.txt for how to install and run.
 
 ![screenshot](800x480.jpg)
 
+## Cutdown 6 Screenshot
+
+![screenshot](cutdown6.jpg)
+
 ## Cutdown 4 Waveshare 320 x 240 Screenshot
 
 ![screenshot](480x320.jpg)
