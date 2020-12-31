@@ -32,7 +32,10 @@ See installation_instructions.txt for how to install and run.
 
 New features
 
-- cutdown = 6 added:
+
+- support for Pi-DAC pro added.
+
+- cutdown = 6 added:-
 
 - Lists 10 album / playlist tracks, which can be clicked on to play.
 
