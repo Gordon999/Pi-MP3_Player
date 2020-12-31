@@ -10,7 +10,7 @@ Avoid any directory/track names with [ ] (square brackets) in.
 
 Tested on Pi 2 v1.1, 3A, 3B, 4B, Zero W, v1.2 & v1.3 , and Pi4 with  32 and 64bit Pi OS, all using Buster.
 
-For Radio Stream use Pi3, Pi4 or Pi400 recommended, as it requires at least 1 GB
+For Radio Stream use Pi3, Pi4 or Pi400 recommended as it requires RAM space.
 
 See installation_instructions.txt for how to install and run.
 
@@ -31,6 +31,14 @@ See installation_instructions.txt for how to install and run.
 ![screenshot](320x240.jpg)
 
 New features
+
+- cutdown = 6 added:
+
+- Lists 10 album / playlist tracks, which can be clicked on to play.
+
+- Lists first 9 Radio Stations form list, which can be clicked on to play.
+
+- Info button will list album tracks, or tracks from radio recording if they were available in the stream.
 
 - Radio Use -
 
