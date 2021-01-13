@@ -32,7 +32,7 @@ global cutdown
 # Pi_MP3_Player v16.42
 
 #set display format
-cutdown = 5 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks,7:800x480 with scrollbars
+cutdown = 0 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks,7:800x480 with scrollbars
 
 class MP3Player(Frame):
     
