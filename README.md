@@ -14,21 +14,11 @@ For Radio Stream use Pi3, Pi4 or Pi400 recommended as it requires RAM space.
 
 See installation_instructions.txt for how to install and run.
 
-## LCD Screenshot
+## LCD Screenshots
 
-![screenshot](800x480.jpg)
+![screenshot](cutdowns.jpg)
 
-## Cutdown 6 Screenshot
 
-![screenshot](cutdown6.jpg)
-
-## Cutdown 4 Waveshare 320 x 240 Screenshot
-
-![screenshot](480x320.jpg)
-
-## Cutdown 320 x 240 Screenshot
-
-![screenshot](320x240.jpg)
 
 New features
 
