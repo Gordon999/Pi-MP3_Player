@@ -22,6 +22,7 @@ See installation_instructions.txt for how to install and run.
 
 New features
 
+- cutdown 7 added, providing lookups for artists, albums and tracks.
 
 - support for Pi-DAC pro added.
 
