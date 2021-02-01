@@ -22,6 +22,13 @@ See installation_instructions.txt for how to install and run.
 
 New features
 
+- Default set to cutdown = 7
+
+- Skip Fwd button added. With skip forward 10% of track length, useful for long tracks.
+
+- Radio stations can be added in a file called /home/pi/radio_stns.txt (saves typing them in again on new versions).
+  format: Name,URL,Recordable on each line (no " " around names / URLs)
+
 - cutdown 7 added, providing lookups for artists (radio stations), albums and tracks.
 
 - support for Pi-DAC pro added.
