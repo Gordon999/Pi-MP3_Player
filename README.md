@@ -22,7 +22,7 @@ See installation_instructions.txt for how to install and run.
 
 New features
 
-- Default set to cutdown = 7
+- Additional Audio file formats added, DSD (.dsf) and ALAC (.M4A). Note some features not available with these.
 
 - Skip Fwd button added. With skip forward 10% of track length, useful for long tracks.
 
