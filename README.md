@@ -42,6 +42,10 @@ then sudo apt-get install python3-pil.imagetk
 
 To run python3 MP3_Player.py
 
+To run at boot (assuming booting to GUI)...
+
+add @/usr/bin/python3 /home/pi/MP3_Player.py to the end of /etc/xdg/lxsession/LXDE-pi/autostart
+
 # New features
 
 - Additional Audio file formats added, DSD (.dsf) and ALAC (.M4A). Note some features not available with these.
