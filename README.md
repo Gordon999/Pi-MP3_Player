@@ -19,7 +19,25 @@ See installation_instructions.txt for how to install and run.
 
 ![screenshot](cutdowns.jpg)
 
+To install Download the Zip, Extract, and copy MP3_Player.py, mp3c.py and mp3.jpg to /home/pi/
 
+and then run...
+
+sudo apt-get install python3-alsaaudio
+
+sudo apt-get install mplayer
+
+sudo pip3 install mutagen
+
+sudo pip3 install mplayer.py
+
+sudo apt-get install streamripper
+
+If you see ImportError: cannot import name 'ImageTk' from 'PIL' (/usr/lib/python3/dist-packages/PIL/init.py)
+
+then sudo apt-get install python3-pil.imagetk
+
+To run python3 MP3_Player.py
 
 New features
 
