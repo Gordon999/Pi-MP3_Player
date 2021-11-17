@@ -58,6 +58,8 @@ add @/usr/bin/python3 /home/pi/MP3_Player.py to the end of /etc/xdg/lxsession/LX
 On the USB sticks the format must be /Artist Name/Album Name/Track Name 
 so in File Manager you will see the Tracks...
 
+Note that my USB stick was called JUKEBOX but maybe called something like 0845-A56E or 31 GB Volume, there is no need to name / rename it.
+
 ## File structure Screenshot
 
 ![screenshot](tree.jpg)
