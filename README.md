@@ -20,7 +20,9 @@ See installation_instructions.txt for how to install and run.
 
 ![screenshot](cutdowns.jpg)
 
-To install Download the Zip, Extract, and copy MP3_Player.py, mp3c.py and mp3.jpg to /home/pi/
+# To install 
+
+Download the Zip, Extract, and copy MP3_Player.py, mp3c.py and mp3.jpg to /home/pi/
 
 and then run...
 
@@ -40,7 +42,7 @@ then sudo apt-get install python3-pil.imagetk
 
 To run python3 MP3_Player.py
 
-New features
+# New features
 
 - Additional Audio file formats added, DSD (.dsf) and ALAC (.M4A). Note some features not available with these.
 
