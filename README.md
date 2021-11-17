@@ -10,7 +10,7 @@ Default playlist name etc are definable in the script.
 Avoid any directory/track names with [ ] (square brackets) in.
 
 Tested on Pi 2 v1.1, 3A, 3B, 4B, Zero W, v1.2 & v1.3 , Pi400 and Pi4 with  32 and 64bit Pi OS, all using Buster.
-Alos tested on a Pi4 4GB using FULL 32bit BULLSEYE,
+Also tested on a Pi4 4GB using FULL 32bit BULLSEYE,
 
 For Radio Stream use Pi3, Pi4 or Pi400 recommended as it requires RAM space.
 
@@ -36,9 +36,9 @@ sudo pip3 install mplayer.py
 
 sudo apt-get install streamripper
 
-If you see ImportError: cannot import name 'ImageTk' from 'PIL' (/usr/lib/python3/dist-packages/PIL/init.py)
+(If you see ImportError: cannot import name 'ImageTk' from 'PIL' (/usr/lib/python3/dist-packages/PIL/init.py)
 
-then sudo apt-get install python3-pil.imagetk
+then sudo apt-get install python3-pil.imagetk)
 
 To run python3 MP3_Player.py
 
