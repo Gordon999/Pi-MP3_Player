@@ -46,6 +46,22 @@ To run at boot (assuming booting to GUI)...
 
 add @/usr/bin/python3 /home/pi/MP3_Player.py to the end of /etc/xdg/lxsession/LXDE-pi/autostart
 
+- Can be configured to boot to PLAY, PLAY ALBUM, RADIO or RADIO RECORD.
+
+- For boot to Play         : Choose track, Click on SHUFFLE if required, then press PLAY PLAYLIST, then SHUTDOWN. 
+- For boot to Play ALBUM   : Choose track, then press PLAY ALBUM, then SHUTDOWN.
+- For boot to Radio        : Choose Radio Station then press SHUTDOWN.
+- For boot to Radio RECORD : Choose Radio Station, press RECORD to set time, then press  SHUTDOWN.
+
+# File structure
+
+On the USB sticks the format must be /Artist Name/Album Name/Track Name 
+so in File Manager you will see the Tracks...
+
+## File structure Screenshot
+
+![screenshot](tree.jpg)
+
 # New features
 
 - Additional Audio file formats added, DSD (.dsf) and ALAC (.M4A). Note some features not available with these.
@@ -84,16 +100,6 @@ Format: Track start time text
 001:50 Track Name 1
 
 006:23 Track Name 2
-
-
-
-- Can be configured to boot to PLAY, PLAY ALBUM, RADIO or RADIO RECORD.
-
-- For boot to Play         : Choose track, Click on SHUFFLE if required, then press PLAY PLAYLIST, then SHUTDOWN. 
-- For boot to Play ALBUM   : Choose track, then press PLAY ALBUM, then SHUTDOWN.
-- For boot to Radio        : Choose Radio Station then press SHUTDOWN.
-- For boot to Radio RECORD : Choose Radio Station, press RECORD to set time, then press  SHUTDOWN.
-
 
 - Radio use:
   - Artist & Track Name shown, if available in stream, when listening / recording.
@@ -194,13 +200,6 @@ The default playlist is stored in /home/pi/Documents/ALLTracks.m3u with the foll
 /media/pi/JUKEBOX/Roxy Music/For Your Pleasure/02 Beauty Queen.mp3
 
 in this case JUKEBOX is the name of the USB stick. 
-
-On the USB sticks the format must be /Artist Name/Album Name/Track Name 
-so in File Manager you will see the Tracks...
-
-## File structure Screenshot
-
-![screenshot](tree.jpg)
 
 If you don't have a /home/pi/Documents/ALLTracks.m3u file when you start the script it will generate one from the tracks it finds on the USB stick(s).
 
