@@ -60,6 +60,8 @@ so in File Manager you will see the Tracks...
 
 Note that my USB stick was called JUKEBOX but maybe called something like 0845-A56E or 31 GB Volume, there is no need to name / rename it.
 
+You can add images of the album covers in the album directories for displaying, name ending in .jpg MAX size 218 x 218 pixels.
+
 ## File structure Screenshot
 
 ![screenshot](tree.jpg)
