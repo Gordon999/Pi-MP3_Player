@@ -3715,7 +3715,7 @@ class MP3Player(Frame):
                  self.artist_name,self.album_name = self.album_name3.split(" - ")
                  self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.artist_name3 + "*^" + self.drive_name2 + "^" + self.drive_name)
          self.counter5 +=1
-         if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 4 and self.cutdown != 6:
+         if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 4 and self.cutdown != 6 and self.model != 0:
              self.s.configure("LabeledProgressbar", text="{0} %      ".format(int((self.counter5/len(self.Tracks)*100))), background='red')
              self.progress['value']=(self.counter5/len(self.Tracks)* 100)
          self.Disp_Total_tunes.config(text =str(self.counter5))
@@ -3731,7 +3731,7 @@ class MP3Player(Frame):
         self.Button_Reload.config(fg = "black", bg = "#c5c")
         if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2:
             self.L9.config(text= " ")
-        if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 6  and self.cutdown != 4:
+        if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 6  and self.cutdown != 4 and self.model != 0:
             self.s.configure("LabeledProgressbar", text="0 %      ", background='red')
             self.progress['value']= 0
         self.track_no = 0
