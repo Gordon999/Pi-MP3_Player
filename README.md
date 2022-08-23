@@ -71,7 +71,7 @@ You can add images of the album covers in the album directories for displaying, 
 
 - .wav playing added
 
-- Additional Audio file formats added, DSD (.dsf) and ALAC (.M4A). Note some features not available with these.
+- Additional Audio file formats added, DSD (.dsf) and ALAC (.m4a). Note some features not available with these.
 
 - Skip Fwd button added. With skip forward 10% of track length, useful for long tracks.
 
