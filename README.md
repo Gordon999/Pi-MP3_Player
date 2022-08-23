@@ -68,6 +68,8 @@ You can add images of the album covers in the album directories for displaying, 
 
 # New features
 
+To exit without shutting down click on SHUFFLE then SLEEP then SHUTDOWN.
+
 
 - .wav playing added
 
