@@ -1,10 +1,9 @@
 # Pi-MP3 and Radio Stream Player
 Pi-MP3_Player
 
-Designed to be used with a Pi and the Pi 7" Touchscreen LCD, but will work on other monitors. Playing .mp3, .flac, .wav, .dsf, .m4a tracks from USB sticks (or HDD) under /media/pi/usb_stick_name/artist name/album_name/tracks, or SD card under /media/pi/Music etc.
+Designed to be used with a Pi and the Pi 7" Touchscreen LCD, but will work on other monitors. Playing .mp3, .flac, .wav, .dsf, .m4a tracks from USB sticks (or HDD) under /media/pi/usb_stick_name/artist name/album_name/tracks.
 
-You could put track files on the SD card under /media/pi/Music, and put the tracks in an appropriate directory eg. /media/pi/Music/Rolling Stones/Exile on Mainstreet/
-or on a EXTERNAL HARD DISK.
+You could put MP3 track files on the SD card under /home/pi/Music, and put the tracks in an appropriate directory eg. /home/pi/Music/Rolling Stones/Exile on Mainstreet/. NOTE MP3 ONLY (and your username may not be pi).
 
 Default playlist name etc are definable in the script.
 Avoid any directory/track names with [ ] (square brackets) in.
