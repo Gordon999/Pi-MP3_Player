@@ -1,7 +1,7 @@
 # Pi-MP3 and Radio Stream Player
 Pi-MP3_Player
 
-Note this will work under BUSTER, BULLSEYE or BOOKWORM, but with BOOKWORM you need to use venv when installing mplayer.py
+Note this will work under BUSTER, BULLSEYE or BOOKWORM
 
 Designed to be used with a Pi and the Pi 7" Touchscreen LCD, but will work on other monitors. Playing .mp3, .flac, .wav, .dsf, .m4a tracks from USB sticks (or HDD) under /media/pi/usb_stick_name/artist name/album_name/tracks.
 
