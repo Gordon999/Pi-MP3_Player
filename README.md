@@ -27,6 +27,8 @@ Download the Zip, Extract, and copy MP3_Player.py, mp3c.py and mp3.jpg to /home/
 
 and then run...
 
+NOTE: If using BOOKWORM then add  --break-system-packages to any pip commands
+
 sudo apt-get install python3-alsaaudio
 
 sudo apt-get install mplayer
