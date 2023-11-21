@@ -33,7 +33,7 @@ global cutdown
 import wave
 import contextlib
 
-# Pi_MP3_Player v17.00
+# Pi_MP3_Player v17.01
 
 #set display format
 cutdown = 7 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks,7:800x480 with scrollbars
@@ -1826,6 +1826,7 @@ class MP3Player(Frame):
               self.Disp_artist_name.set(self.artist_name)
               self.Disp_album_name.set(self.album_name)
               self.Disp_track_name.set(self.track_name)
+          #print("SP", self.track)
           if os.path.exists(self.track):  
             if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 3:
                 self.Disp_Drive.config(fg = 'black')
@@ -1846,6 +1847,7 @@ class MP3Player(Frame):
                 if self.track[-4:] == ".mp3":
                     audio = MP3(self.track)
                     self.track_len = audio.info.length
+                    #print("SP", self.track,self.track_len)
                 elif self.track[-4:] == "flac":
                     audio = FLAC(self.track)
                     self.track_len = audio.info.length
@@ -1935,19 +1937,25 @@ class MP3Player(Frame):
                     self.track = os.path.join("/" + self.drive_name11,self.drive_name21,self.drive_name10, self.artist_name1, self.album_name1, self.track_name1)
                 else:
                     self.track = os.path.join("/" + self.drive_name11,self.drive_name21,self.drive_name10,self.genre_name,self.artist_name1, self.album_name1, self.track_name1)
+                #print("SP2" , self.track, self.track_len)
                 if os.path.exists(self.track):
                     if self.track[-4:] == ".mp3":       
                         audio = MP3(self.track)
                         self.total += audio.info.length
+                        self.track_len = audio.info.length
+                        #print("SP2" , self.track, self.track_len)
                     if self.track[-4:] == "flac":       
                         audio = FLAC(self.track)
                         self.total += audio.info.length
+                        self.track_len = audio.info.length
                     if self.track[-4:] == ".dsf":
                         audio = DSF(self.track)
                         self.total += audio.info.length
+                        self.track_len = audio.info.length
                     if self.track[-4:] == ".m4a":
                         audio = MP4(self.track)
                         self.total += audio.info.length
+                        self.track_len = audio.info.length
                     if self.track[-4:] == ".wav":
                         with contextlib.closing(wave.open(self.track,'r')) as f:
                             frames = f.getnframes()
@@ -2042,6 +2050,24 @@ class MP3Player(Frame):
             self.track = os.path.join("/" + self.drive_name11,self.drive_name21,self.drive_name10, self.artist_name1, self.album_name1, self.track_name1)
         else:
             self.track = os.path.join("/" + self.drive_name11,self.drive_name21,self.drive_name10,self.genre_name, self.artist_name1, self.album_name1, self.track_name1)
+        if os.path.exists(self.track):
+            if self.track[-4:] == ".mp3":       
+                audio = MP3(self.track)
+                self.track_len = audio.info.length
+            if self.track[-4:] == "flac":       
+                audio = FLAC(self.track)
+                self.track_len = audio.info.length
+            if self.track[-4:] == ".dsf":
+                audio = DSF(self.track)
+                self.track_len = audio.info.length
+            if self.track[-4:] == ".m4a":
+                audio = MP4(self.track)
+                self.track_len = audio.info.length
+            if self.track[-4:] == ".wav":
+                with contextlib.closing(wave.open(self.track,'r')) as f:
+                    frames = f.getnframes()
+                    rate = f.getframerate()
+                    self.track_len = frames / float(rate)
         self.playing()
 
     def playing(self):
