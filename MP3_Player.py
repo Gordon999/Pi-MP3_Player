@@ -33,7 +33,7 @@ global cutdown
 import wave
 import contextlib
 
-# Pi_MP3_Player v16.57
+# Pi_MP3_Player v17.00
 
 #set display format
 cutdown = 7 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks,7:800x480 with scrollbars
@@ -46,8 +46,8 @@ class MP3Player(Frame):
         
     def initUI(self):
         # find user
-        self.h_user  = glob.glob("/home/*")
-        self.m_user  = glob.glob("/media/*")
+        self.h_user = "/home/" + os.getlogin( )
+        self.m_user = "/media/" + os.getlogin( )
         # Radio Stations List, add to them by adding a 'name','URL','recordable (yes = 1, no = 0)'
         # or you can add more by putting them in a file called '/home/pi/radio_stns.txt'
         self.Radio_Stns = ["Radio Paradise Rock (192)","http://stream.radioparadise.com/rock-192",1,
@@ -57,18 +57,23 @@ class MP3Player(Frame):
                            ]
         self.Button_info_on = 1                     # show Info button, set = 1 to enable
         self.Button_Radi_on = 1                     # show Radio button,set = 1 to enable
-        self.m3u_dir        = self.h_user[0] + "/Documents/"    # where .m3us are stored
-        self.mp3sd_search     = self.h_user[0] + "/*/*/*/*.mp3"   # search criteria for mp3s  (/media/pi/USBDrive Name/Artist Name/Album Name/Tracks.mp3)
-        self.mp3_search     = self.m_user[0] + "/*/*/*/*.mp3"   # search criteria for mp3s  (/media/pi/USBDrive Name/Artist Name/Album Name/Tracks.mp3)
-        self.wav_search     = self.m_user[0] + "/*/*/*/*.wav"   # search criteria for wavs  (/media/pi/USBDrive Name/Artist Name/Album Name/Tracks.wav)
-        self.flac_search    = self.m_user[0] + "/*/*/*/*.flac"  # search criteria for flacs (/media/pi/USBDrive Name/Artist Name/Album Name/Tracks.flac)
-        self.dsf_search     = self.m_user[0] + "/*/*/*/*.dsf"   # search criteria for dfss  (/media/pi/USBDrive Name/Artist Name/Album Name/Tracks.dsf)
-        self.m4a_search     = self.m_user[0] + "/*/*/*/*.m4a"   # search criteria for m4as  (/media/pi/USBDrive Name/Artist Name/Album Name/Tracks.m4a)
+        self.m3u_dir        = self.h_user + "/Documents/"    # where .m3us are stored
+        self.mp3sd_search   = self.h_user + "/*/*/*/*.mp3"   # search criteria for mp3s  (/home/USER/USBDrive Name/Artist Name/Album Name/Tracks.mp3)
+        self.mp3_search     = self.m_user + "/*/*/*/*.mp3"   # search criteria for mp3s  (/media/USER/USBDrive Name/Artist Name/Album Name/Tracks.mp3)
+        self.wav_search     = self.m_user + "/*/*/*/*.wav"   # search criteria for wavs  (/media/USER/USBDrive Name/Artist Name/Album Name/Tracks.wav)
+        self.flac_search    = self.m_user + "/*/*/*/*.flac"  # search criteria for flacs (/media/USER/USBDrive Name/Artist Name/Album Name/Tracks.flac)
+        self.dsf_search     = self.m_user + "/*/*/*/*.dsf"   # search criteria for dfss  (/media/USER/USBDrive Name/Artist Name/Album Name/Tracks.dsf)
+        self.m4a_search     = self.m_user + "/*/*/*/*.m4a"   # search criteria for m4as  (/media/USER/USBDrive Name/Artist Name/Album Name/Tracks.m4a)
         self.mp32_search    = "/media/*/*/*/*.mp3"  # search criteria for mp3s  (/media/Drive/A/Artist Name - Album Name/Tracks.mp3)
         self.flac2_search   = "/media/*/*/*/*.flac" # search criteria for flacs (/media/Drive/A/Artist Name - Album Name/Tracks.flac)
         self.wav2_search    = "/media/*/*/*/*.wav"  # search criteria for wavs  (/media/Drive/A/Artist Name - Album Name/Tracks.wav)
         self.dsf2_search    = "/media/*/*/*/*.dsf"  # search criteria for dfss  (/media/Drive/A/Artist Name - Album Name/Tracks.dsf)
         self.m4a2_search    = "/media/*/*/*/*.m4a"  # search criteria for m4as  (/media/Drive/A/Artist Name - Album Name/Tracks.m4a)
+        self.mp33_search    = self.m_user + "/*/*/*/*/*.mp3"  # search criteria for mp3s  (/media/USER/USBDrive Name/Genre/Artist Name/Album Name/Tracks.mp3)
+        self.wav3_search    = self.m_user + "/*/*/*/*/*.wav"  # search criteria for wavs  (/media/USER/USBDrive Name/Genre/Artist Name/Album Name/Tracks.wav)
+        self.flac3_search   = self.m_user + "/*/*/*/*/*.flac" # search criteria for flacs (/media/USER/USBDrive Name/Genre/Artist Name/Album Name/Tracks.flac)
+        self.dsf3_search    = self.m_user + "/*/*/*/*/*.dsf"  # search criteria for dfss  (/media/USER/USBDrive Name/Genre/Artist Name/Album Name/Tracks.dsf)
+        self.m4a3_search    = self.m_user + "/*/*/*/*/*.m4a"  # search criteria for m4as  (/media/USER/USBDrive Name/Genre/Artist Name/Album Name/Tracks.m4a)
         self.m3u_def        = "ALLTracks"           # name of default .m3u. Limit to 9 characters.
         self.mp3_jpg        = "mp3.jpg"             # logo including the 'wheel', when inactive
         self.mp3c_jpg       = "mp3c.jpg"            # blue logo including the 'wheel', when active
@@ -1144,15 +1149,22 @@ class MP3Player(Frame):
             for counter in range (0,len(Tracks)):
                 counter2 = Tracks[counter].count('/')
                 if counter2 == 6:
+                    self.genre_name = "None"
                     z,self.drive_name1,self.drive_name2,self.drive_name,self.artist_name,self.album_name,self.track_name  = Tracks[counter].split('/')
-                    self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2)
+                    self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
                     if self.cutdown == 7:
                         self.Artist_options.append(self.artist_name)
-                if counter2 == 5:
+                elif counter2 == 7:
+                    z,self.drive_name1,self.drive_name2,self.drive_name,self.genre_name,self.artist_name,self.album_name,self.track_name  = Tracks[counter].split('/')
+                    self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
+                    if self.cutdown == 7:
+                        self.Artist_options.append(self.artist_name)
+                elif counter2 == 5:
+                    self.genre_name = "None"
                     self.drive_name1,self.drive_name2,self.drive_name,self.artist_name3,self.album_name3,self.track_name  = Tracks[counter].split('/')
                     if self.album_name3.count(" - ") == 1:
                         self.artist_name,self.album_name = self.album_name3.split(" - ")
-                        self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.artist_name3 + "*^" + self.drive_name2 + "^" + self.drive_name)
+                        self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.artist_name3 + "*^" + self.drive_name2 + "^" + self.drive_name + "^" + self.genre_name)
                         if self.cutdown == 7:
                             self.Artist_options.append(self.artist_name)
             self.tunes.sort()
@@ -1186,20 +1198,20 @@ class MP3Player(Frame):
 
     def plist_callback(self):
         if self.trace == 1:
-            print ("plist callback",self.track_no)
+            print ("plist callback",self.track_no,len(self.tunes))
         self.artistdata = []
         self.Disp_artist_name["values"] = self.artistdata
         if self.shuffle_on == 0 and self.Radio_ON == 0 and self.tracker == 0:
-            if self.old_artists == [] or self.old_list != self.que_dir:
-                for x in range(0,len(self.tunes)):
-                    self.artist_name_1,self.album_name_1,self.track_name_1,self.drive_name_1,self.drive_name1_1,self.drive_name2_1  = self.tunes[x].split('^')
+            
+            for x in range(0,len(self.tunes)):
+                    self.artist_name_1,self.album_name_1,self.track_name_1,self.drive_name_1,self.drive_name1_1,self.drive_name2_1,self.genre_name  = self.tunes[x].split('^')
                     self.artistdata.append(self.artist_name_1)
-                self.artistdata = list(dict.fromkeys(self.artistdata))
-                self.artistdata.sort()
-                self.old_artists = self.artistdata
-                self.old_list = self.que_dir
-            else:
-                self.artistdata = self.old_artists
+            self.artistdata = list(dict.fromkeys(self.artistdata))
+            self.artistdata.sort()
+            #self.old_artists = self.artistdata
+            #self.old_list = self.que_dir
+            
+            #self.artistdata = self.old_artists
             self.Disp_artist_name["values"] = self.artistdata
             if self.auto_albums == 1 or self.reload == 1:
                 self.Disp_artist_name.set(self.artist_name)
@@ -1219,7 +1231,7 @@ class MP3Player(Frame):
         self.Disp_album_name["values"] = self.albumdata
         if (self.shuffle_on == 0 and self.album_start == 0 and self.Radio_ON == 0) or self.auto_albums == 1:
             for x in range(0,len(self.tunes)):
-                self.artist_name_1,self.album_name_1,self.track_name_1,self.drive_name_1,self.drive_name1_1,self.drive_name2_1  = self.tunes[x].split('^')
+                self.artist_name_1,self.album_name_1,self.track_name_1,self.drive_name_1,self.drive_name1_1,self.drive_name2_1,self.genre_name  = self.tunes[x].split('^')
                 if self.artist_name_1 == self.Disp_artist_name.get():
                     self.albumdata.append(self.album_name_1)
             self.albumdata = list(dict.fromkeys(self.albumdata))
@@ -1247,7 +1259,7 @@ class MP3Player(Frame):
         self.Disp_track_name.set("Choose a Track")
         if self.shuffle_on == 0 or self.album_start == 1:
             for x in range(0,len(self.tunes)):
-                self.artist_name_1,self.album_name_1,self.track_name_1,self.drive_name_1,self.drive_name1_1,self.drive_name2_1  = self.tunes[x].split('^')
+                self.artist_name_1,self.album_name_1,self.track_name_1,self.drive_name_1,self.drive_name1_1,self.drive_name2_1,self.genre_name  = self.tunes[x].split('^')
                 if self.artist_name_1 == self.Disp_artist_name.get() and self.album_name_1[:-1] == self.Disp_album_name.get()[:-1]:
                     self.trackdata.append(self.track_name_1)
             self.trackdata = list(dict.fromkeys(self.trackdata))
@@ -1262,17 +1274,19 @@ class MP3Player(Frame):
         stop = 0
         k = 0
         while stop == 0 and k < len(self.tunes) - 1:
-            a,b,c,d,e,f = self.tunes[k].split("^")
+            a,b,c,d,e,f,g = self.tunes[k].split("^")
             if tpath == a + "^" + b + "^" + c :
                 stop = 1
                 self.track_no = k
             k +=1
         self.Disp_track_no.config(text = self.track_no)
-        self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2  = self.tunes[self.track_no].split('^')
+        self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
         if self.drive_name[-1] == "*":
             self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
-        else:
+        elif self.genre_name == "None":
             self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name, self.artist_name, self.album_name, self.track_name)
+        else:
+            self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name,self.genre_name, self.artist_name, self.album_name, self.track_name)
         if os.path.exists(self.track):
                 if self.track[-4:] == ".mp3":
                     audio = MP3(self.track)
@@ -1310,11 +1324,13 @@ class MP3Player(Frame):
               self.track_no = k
            k +=1
         self.Disp_track_no.config(text = self.track_no)
-        self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2  = self.tunes[self.track_no].split('^')
+        self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
         if self.drive_name[-1] == "*":
             self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
-        else:
+        elif self.genre_name == "None":
             self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name, self.artist_name, self.album_name, self.track_name)
+        else:
+            self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name,self.genre_name,self.artist_name, self.album_name, self.track_name)
         if os.path.exists(self.track):
             if self.track[-4:] == ".mp3":
                 audio = MP3(self.track)
@@ -1348,11 +1364,13 @@ class MP3Player(Frame):
             if self.album_start == 0:
                 self.Disp_Total_tunes.config(text =len(self.tunes))
                 self.Disp_track_no.config(text =self.track_no+1)
-            self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2  = self.tunes[self.track_no].split('^')
+            self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
             if self.drive_name[-1] == "*":
                 self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
-            else:
+            elif self.genre_name == "None":
                 self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name, self.artist_name, self.album_name, self.track_name)
+            else:
+                self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name,self.genre_name, self.artist_name, self.album_name, self.track_name)
             if self.cutdown != 7:
                 self.Disp_artist_name.config(fg = "black",text =self.artist_name)
                 self.Disp_album_name.config(fg = "black",text =self.album_name)
@@ -1371,8 +1389,10 @@ class MP3Player(Frame):
                 self.render2 = ""
                 if self.drive_name[-1] == "*":
                     path = "/" + self.drive_name1 + "/" +self.drive_name2 + "/" + self.drive_name[:-1] + "/" + self.artist_name + " - " + self.album_name + "/" +  "*.jpg"
-                else:
+                elif self.genre_name == "None":
                     path = "/" + self.drive_name1 + "/" +self.drive_name2 + "/" + self.drive_name + "/" + self.artist_name + "/" + self.album_name + "/" +  "*.jpg"
+                else:
+                    path = "/" + self.drive_name1 + "/" +self.drive_name2 + "/" + self.drive_name + "/" + self.genre_name + "/" + self.artist_name + "/" + self.album_name + "/" +  "*.jpg"
                 pictures = glob.glob(path)
                 if self.trace == 1:
                     print(path)
@@ -1384,7 +1404,7 @@ class MP3Player(Frame):
                     else:
                         self.image = pictures[0]
                     self.load = Image.open(self.image)
-                    self.load = self.load.resize((218, 218), Image.ANTIALIAS) 
+                    self.load = self.load.resize((218, 218), Image.LANCZOS) 
                     self.render2 = ImageTk.PhotoImage(self.load)
                     if self.timer4 == 0:
                         self.img.config(image = self.render2)
@@ -1717,14 +1737,14 @@ class MP3Player(Frame):
                 self.Name = self.Radio_Stns[self.Radio]
                 self.Disp_artist_name.config(text = self.Name)
                 if self.cutdown != 4 and self.cutdown !=5 and self.cutdown !=1:
-                    if os.path.exists(self.h_user[0] + "/Documents/" + self.Name + ".jpg"):
-                        self.load = Image.open(self.h_user[0] + "/Documents/" + self.Name + ".jpg")
-                        self.load = self.load.resize((218, 218), Image.ANTIALIAS) 
+                    if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
+                        self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
+                        self.load = self.load.resize((218, 218), Image.LANCZOS) 
                         self.render2 = ImageTk.PhotoImage(self.load)
                         self.img.config(image = self.render2)
                     elif os.path.exists(self.radio_jpg):
                         self.load = Image.open(self.radio_jpg)
-                        self.load = self.load.resize((218, 218), Image.ANTIALIAS) 
+                        self.load = self.load.resize((218, 218), Image.LANCZOS) 
                         self.render3 = ImageTk.PhotoImage(self.load)
                         self.img.config(image = self.render3)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
@@ -1795,11 +1815,13 @@ class MP3Player(Frame):
           self.Disp_track_no.config(text =self.track_no+1)
           if self.cutdown != 7:
               self.Show_Track()
-          self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2  = self.tunes[self.track_no].split('^')
+          self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
           if self.drive_name[-1] == "*":
               self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
-          else:
+          elif self.genre_name == "None":
               self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name, self.artist_name, self.album_name, self.track_name)
+          else:
+              self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name,self.genre_name, self.artist_name, self.album_name, self.track_name)
           if self.cutdown == 7:
               self.Disp_artist_name.set(self.artist_name)
               self.Disp_album_name.set(self.album_name)
@@ -1869,11 +1891,13 @@ class MP3Player(Frame):
                         self.play = 1
                         stop = 1
                     else:
-                        self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2  = self.tunes[self.track_no].split('^')
+                        self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
                         if self.drive_name[-1] == "*":
                             self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
-                        else:
+                        elif self.genre_name == "None":
                             self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name, self.artist_name, self.album_name, self.track_name)
+                        else:
+                            self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name,self.genre_name, self.artist_name, self.album_name, self.track_name)
                         if self.trace == 1:
                             print ("Checking Next Track...", self.track_no)
                         if os.path.exists(self.track):
@@ -1903,12 +1927,14 @@ class MP3Player(Frame):
             counter = self.track_no + 1
             self.minutes = 0
             while counter < len(self.tunes) and self.stop == 0:
-                self.artist_name1,self.album_name1,self.track_name1,self.drive_name10,self.drive_name11,self.drive_name21  = self.tunes[counter].split('^')
+                self.artist_name1,self.album_name1,self.track_name1,self.drive_name10,self.drive_name11,self.drive_name21,self.genre_name2 = self.tunes[counter].split('^')
                 counter +=1
                 if self.drive_name10[-1] == "*":
                     self.track = os.path.join("/" + self.drive_name11,self.drive_name21,self.drive_name10[:-1], self.artist_name1 + " - " + self.album_name1, self.track_name1)
-                else:
+                elif self.genre_name2 == "None":
                     self.track = os.path.join("/" + self.drive_name11,self.drive_name21,self.drive_name10, self.artist_name1, self.album_name1, self.track_name1)
+                else:
+                    self.track = os.path.join("/" + self.drive_name11,self.drive_name21,self.drive_name10,self.genre_name,self.artist_name1, self.album_name1, self.track_name1)
                 if os.path.exists(self.track):
                     if self.track[-4:] == ".mp3":       
                         audio = MP3(self.track)
@@ -1938,11 +1964,13 @@ class MP3Player(Frame):
             if counter > len(self.tunes) - 1:
                 stop = 2
             while stop == 0 and (self.tunes[counter].split('^')[1][0:-1]) == self.album_name[0:-1] and self.tunes[counter].split('^')[0] == self.artist_name:
-                self.artist_name1,self.album_name1,self.track_name1,self.drive_name10,self.drive_name11,self.drive_name21  = self.tunes[counter].split('^')
+                self.artist_name1,self.album_name1,self.track_name1,self.drive_name10,self.drive_name11,self.drive_name21,self.genre_name  = self.tunes[counter].split('^')
                 if self.drive_name[-1] == "*":
                     self.track = os.path.join("/" + self.drive_name11,self.drive_name21,self.drive_name10[:-1], self.artist_name1 + " - " + self.album_name1, self.track_name1)
-                else:
+                elif self.genre_name == "None":
                     self.track = os.path.join("/" + self.drive_name11,self.drive_name21,self.drive_name10, self.artist_name1, self.album_name1, self.track_name1)
+                else:
+                    self.track = os.path.join("/" + self.drive_name11,self.drive_name21,self.drive_name10,self.genre_name, self.artist_name1, self.album_name1, self.track_name1)
                 
                 if os.path.exists(self.track):
                     if self.track[-4:] == ".mp3":       
@@ -1979,8 +2007,11 @@ class MP3Player(Frame):
         self.render2 = ""
         if self.drive_name[-1] == "*":
             path = "/" + self.drive_name1 + "/" +self.drive_name2 + "/" + self.drive_name[:-1] + "/" + self.artist_name + " - " + self.album_name + "/" +  "*.jpg"
-        else:
+        elif self.genre_name == "None":
             path = "/" + self.drive_name1 + "/" +self.drive_name2 + "/" + self.drive_name + "/" + self.artist_name + "/" + self.album_name + "/" +  "*.jpg"
+        else:
+            path = "/" + self.drive_name1 + "/" +self.drive_name2 + "/" + self.drive_name + "/" + self.genre_name + "/" + self.artist_name + "/" + self.album_name + "/" +  "*.jpg"
+        #print(self.genre_name,path,self.track)
         if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 3 or self.cutdown == 6:
             pictures = glob.glob(path)
             self.render2 = ""
@@ -1991,7 +2022,7 @@ class MP3Player(Frame):
                 else:
                    self.image = pictures[0]
                 self.load = Image.open(self.image)
-                self.load = self.load.resize((218, 218), Image.ANTIALIAS) 
+                self.load = self.load.resize((218, 218), Image.LANCZOS) 
                 self.render2 = ImageTk.PhotoImage(self.load)
                 self.img.config(image = self.render2)
             elif self.gapless == 0:
@@ -2004,15 +2035,20 @@ class MP3Player(Frame):
         self.album_name7 = self.album_name + "  "
         self.artist_name7 = self.artist_name + "  "
         self.count7 = 0
-        self.artist_name1,self.album_name1,self.track_name1,self.drive_name10,self.drive_name11,self.drive_name21  = self.tunes[self.track_no].split('^')
+        self.artist_name1,self.album_name1,self.track_name1,self.drive_name10,self.drive_name11,self.drive_name21,self.genre_name  = self.tunes[self.track_no].split('^')
         if self.drive_name10[-1] == "*":
             self.track = os.path.join("/" + self.drive_name11,self.drive_name21,self.drive_name10[:-1], self.artist_name1 + " - " + self.album_name1, self.track_name1)
-        else:
+        elif self.genre_name == "None":
             self.track = os.path.join("/" + self.drive_name11,self.drive_name21,self.drive_name10, self.artist_name1, self.album_name1, self.track_name1)
+        else:
+            self.track = os.path.join("/" + self.drive_name11,self.drive_name21,self.drive_name10,self.genre_name, self.artist_name1, self.album_name1, self.track_name1)
         self.playing()
 
     def playing(self):
-        self.track2 = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name, self.artist_name, self.album_name, self.track_name[:-4] + ".txt")
+        if self.genre_name == "None":
+            self.track2 = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name, self.artist_name, self.album_name, self.track_name[:-4] + ".txt")
+        else:
+            self.track2 = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name,self.genre_name, self.artist_name, self.album_name, self.track_name[:-4] + ".txt")
         if os.path.exists(self.track2):
            names = []
            with open(self.track2, "r") as file:
@@ -2591,12 +2627,15 @@ class MP3Player(Frame):
                         stop = 1
                     counter +=1
                 self.track_no = counter - 1
-            artist_name3,album_name3,track_name,drive_name,drive_name1,drive_name2  = self.tunes[self.track_no].split('^')
+            artist_name3,album_name3,track_name,drive_name,drive_name1,drive_name2,genre_name  = self.tunes[self.track_no].split('^')
             if drive_name[-1] == "*":
                 track = os.path.join("/" + drive_name1,drive_name2,drive_name[:-1],artist_name3 + " - " + album_name3, track_name)
+            elif self.genre_name == "None":
+                track = os.path.join("/" + drive_name1,drive_name2,drive_name,artist_name3,album_name3,track_name)
+                album = os.path.join("/" + drive_name1,drive_name2,drive_name,artist_name3,album_name3)
             else:
-                track = os.path.join("/" + drive_name1,drive_name2,drive_name,artist_name3,album_name3,track_name)    
-            album = os.path.join("/" + drive_name1,drive_name2,drive_name,artist_name3,album_name3)
+                track = os.path.join("/" + drive_name1,drive_name2,drive_name,genre_name,artist_name3,album_name3,track_name)
+                album = os.path.join("/" + drive_name1,drive_name2,drive_name,genre_name,artist_name3,album_name3)
             stop = 0
             trk = self.track_no
             #if not os.path.exists(album + '/album.txt'):
@@ -3018,14 +3057,20 @@ class MP3Player(Frame):
             for counter in range (0,len(Tracks)):
                 counter2 = Tracks[counter].count('/')
                 if counter2 == 6:
+                    self.genre_name = "None"
                     z,self.drive_name1,self.drive_name2,self.drive_name,self.artist_name,self.album_name,self.track_name  = Tracks[counter].split('/')
-                    self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2)
+                    self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
+                    self.Artist_options.append(self.artist_name)
+                if counter2 == 7:
+                    z,self.drive_name1,self.drive_name2,self.drive_name,self.genre_name,self.artist_name,self.album_name,self.track_name  = Tracks[counter].split('/')
+                    self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
                     self.Artist_options.append(self.artist_name)
                 if counter2 == 5:
+                    self.genre_name = "None"
                     self.drive_name1,self.drive_name2,self.drive_name,self.artist_name3,self.album_name3,self.track_name  = Tracks[counter].split('/')
                     if self.album_name3.count(" - ") == 1:
                         self.artist_name,self.album_name = self.album_name3.split(" - ")
-                        self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.artist_name3 + "*^" + self.drive_name2 + "^" + self.drive_name)
+                        self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.artist_name3 + "*^" + self.drive_name2 + "^" + self.drive_name + "^" + self.genre_name)
                         self.Artist_options.append(self.artist_name)
             if self.cutdown == 7:
                 self.Artist_options.sort()
@@ -3080,14 +3125,20 @@ class MP3Player(Frame):
             for counter in range (0,len(Tracks)):
                 counter2 = Tracks[counter].count('/')
                 if counter2 == 6:
+                    self.genre_name = "None"
                     z,self.drive_name1,self.drive_name2,self.drive_name,self.artist_name,self.album_name,self.track_name  = Tracks[counter].split('/')
-                    self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2)
+                    self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
+                    self.Artist_options.append(self.artist_name)
+                if counter2 == 7:
+                    z,self.drive_name1,self.drive_name2,self.drive_name,self.genre_name,self.artist_name,self.album_name,self.track_name  = Tracks[counter].split('/')
+                    self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
                     self.Artist_options.append(self.artist_name)
                 if counter2 == 5:
+                    self.genre_name = "None"
                     self.drive_name1,self.drive_name2,self.drive_name,self.artist_name3,self.album_name3,self.track_name  = Tracks[counter].split('/')
                     if self.album_name3.count(" - ") == 1:
                         self.artist_name,self.album_name = self.album_name3.split(" - ")
-                        self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.artist_name3 + "*^" + self.drive_name2 + "^" + self.drive_name)
+                        self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.artist_name3 + "*^" + self.drive_name2 + "^" + self.drive_name + "^" + self.genre_name)
                         self.Artist_options.append(self.artist_name)
             if self.cutdown == 7:
                 self.Artist_options.sort()
@@ -3139,14 +3190,14 @@ class MP3Player(Frame):
             else:
                 self.Disp_artist_name.set(self.Name)
             if self.cutdown != 4 and self.cutdown !=5 and self.cutdown !=1:
-                if os.path.exists(self.h_user[0] + "/Documents/" + self.Name + ".jpg"):
-                    self.load = Image.open(self.h_user[0] + "/Documents/" + self.Name + ".jpg")
-                    self.load = self.load.resize((218, 218), Image.ANTIALIAS) 
+                if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
+                    self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
+                    self.load = self.load.resize((218, 218), Image.LANCZOS) 
                     self.render2 = ImageTk.PhotoImage(self.load)
                     self.img.config(image = self.render2)
                 elif os.path.exists(self.radio_jpg):
                     self.load = Image.open(self.radio_jpg)
-                    self.load = self.load.resize((218, 218), Image.ANTIALIAS) 
+                    self.load = self.load.resize((218, 218), Image.LANCZOS) 
                     self.render3 = ImageTk.PhotoImage(self.load)
                     self.img.config(image = self.render3)
             track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
@@ -3236,14 +3287,14 @@ class MP3Player(Frame):
             else:
                 self.Disp_artist_name.set(self.Name)
             if self.cutdown != 4 and self.cutdown !=5 and self.cutdown !=1:
-                if os.path.exists(self.h_user[0] + "/Documents/" + self.Name + ".jpg"):
-                    self.load = Image.open(self.h_user[0] + "/Documents/" + self.Name + ".jpg")
-                    self.load = self.load.resize((218, 218), Image.ANTIALIAS) 
+                if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
+                    self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
+                    self.load = self.load.resize((218, 218), Image.LANCZOS) 
                     self.render2 = ImageTk.PhotoImage(self.load)
                     self.img.config(image = self.render2)
                 elif os.path.exists(self.radio_jpg):
                     self.load = Image.open(self.radio_jpg)
-                    self.load = self.load.resize((218, 218), Image.ANTIALIAS) 
+                    self.load = self.load.resize((218, 218), Image.LANCZOS) 
                     self.render3 = ImageTk.PhotoImage(self.load)
                     self.img.config(image = self.render3)
             track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
@@ -3468,12 +3519,14 @@ class MP3Player(Frame):
              counter = 0
          self.minutes = 0
          while counter < len(self.tunes) and stop == 0:
-             self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2  = self.tunes[counter].split('^')
+             self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[counter].split('^')
              counter +=1
              if self.drive_name[-1] == "*":
                 self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
-             else:
+             elif self.genre_name == "None":
                 self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name, self.artist_name, self.album_name, self.track_name)
+             else:
+                self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name,self.genre_name, self.artist_name, self.album_name, self.track_name)
              if os.path.exists(self.track):
                  if self.track[-4:] == ".mp3":
                      audio = MP3(self.track)
@@ -3609,6 +3662,7 @@ class MP3Player(Frame):
             self.Tracks = []
             # search for MP3 files
             self.Tracks = glob.glob(self.mp3_search)
+            print(self.Tracks,self.mp3_search)
             # search for wav files
             self.wavs = glob.glob(self.wav_search)
             if len (self.wavs) > 0 :
@@ -3644,6 +3698,26 @@ class MP3Player(Frame):
             if len (self.MP3_2) > 0 :
                 for j in range(0,len(self.MP3_2)):
                     self.Tracks.append(self.MP3_2[j])
+            # search for even more MP3 files
+            self.MP3_3 = glob.glob(self.mp33_search)
+            if len (self.MP3_3) > 0 :
+                for j in range(0,len(self.MP3_3)):
+                    self.Tracks.append(self.MP3_3[j])
+            # search for more flac files
+            self.Flacs3 = glob.glob(self.flac3_search)
+            if len (self.Flacs3) > 0 :
+                for j in range(0,len(self.Flacs3)):
+                    self.Tracks.append(self.Flacs3[j])
+            # search for more wav files
+            self.wav3 = glob.glob(self.wav3_search)
+            if len (self.wav3) > 0 :
+                for j in range(0,len(self.wav3)):
+                    self.Tracks.append(self.wav3[j])
+            #search for more flac files
+            self.Flacs3 = glob.glob(self.flac3_search)
+            if len (self.Flacs3) > 0 :
+                for j in range(0,len(self.Flacs3)):
+                    self.Tracks.append(self.Flacs3[j])
             # search for more MP3 files under .../Music
             self.MP3sd = glob.glob(self.mp3sd_search)
             if len (self.MP3sd) > 0 :
@@ -3654,16 +3728,26 @@ class MP3Player(Frame):
             if len (self.dsf_2) > 0 :
                 for j in range(0,len(self.dsf_2)):
                     self.Tracks.append(self.dsf_2[j])
+            # search for more dsf files
+            self.dsf_3 = glob.glob(self.dsf3_search)
+            if len (self.dsf_3) > 0 :
+                for j in range(0,len(self.dsf_3)):
+                    self.Tracks.append(self.dsf_3[j])
             # search for more m4a files
             self.m4a_2 = glob.glob(self.m4a2_search)
             if len (self.m4a_2) > 0 :
                 for j in range(0,len(self.m4a_2)):
                     self.Tracks.append(self.m4a_2[j])
+            # search for more m4a files
+            self.m4a_3 = glob.glob(self.m4a3_search)
+            if len (self.m4a_3) > 0 :
+                for j in range(0,len(self.m4a_3)):
+                    self.Tracks.append(self.m4a_3[j])
             if len (self.Tracks) > 0 :
                 with open(self.m3u_dir + self.m3u_def + ".m3u", 'w') as f:
                     for item in self.Tracks:
                         f.write("%s\n" % item)
-               
+             
             if len (self.Tracks) > 0 :
                 self.counter5 = 0
                 self.tunes = []
@@ -3680,13 +3764,18 @@ class MP3Player(Frame):
     def RELOAD1_List(self):
          counter2 = self.Tracks[self.counter5].count('/')
          if counter2 == 6:
+             self.genre_name = "None"
              z,self.drive_name1,self.drive_name2,self.drive_name,self.artist_name,self.album_name,self.track_name  = self.Tracks[self.counter5].split('/')
-             self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2)
+             self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
          elif counter2 == 5:
+             self.genre_name = "None"
              self.drive_name1,self.drive_name2,self.drive_name,self.artist_name3,self.album_name3,self.track_name  = self.Tracks[self.counter5].split('/')
              if self.album_name3.count(" - ") == 1:
                  self.artist_name,self.album_name = self.album_name3.split(" - ")
-                 self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.artist_name3 + "*^" + self.drive_name2 + "^" + self.drive_name)
+                 self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.artist_name3 + "*^" + self.drive_name2 + "^" + self.drive_name + "^" + self.genre_name)
+         elif counter2 == 7:
+             z,self.drive_name1,self.drive_name2,self.drive_name,self.genre_name,self.artist_name,self.album_name,self.track_name  = self.Tracks[self.counter5].split('/')
+             self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
          self.counter5 +=1
          if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 4 and self.cutdown != 6 and self.model != 0:
              self.s.configure("LabeledProgressbar", text="{0} %      ".format(int((self.counter5/len(self.Tracks)*100))), background='red')
@@ -3696,7 +3785,9 @@ class MP3Player(Frame):
              self.Disp_Drive.config(text = "/" + self.drive_name1 + "/" +  self.drive_name2 + "/" +  self.drive_name )
          if self.counter5 < len(self.Tracks) and len(self.Tracks) > 0:
              self.after(1,self.RELOAD1_List)
-         else:    
+         else:
+             if self.trace == 1:
+                 print ("RELOAD1",len(self.tunes))
              self.RELOAD2_List()
 
     def RELOAD2_List(self):
@@ -3723,6 +3814,8 @@ class MP3Player(Frame):
         if self.play == 0:
             self.reload = 1
             if self.cutdown == 7:
+                if self.trace == 1:
+                    print ("RELOAD2",len(self.tunes))
                 self.plist_callback()
             self.Time_Left_Play()
 
@@ -3884,20 +3977,20 @@ class MP3Player(Frame):
                    self.Button_AZ_artists.config(bg = "green",fg = "white",text = "A-Z Albums ON")
                    self.tunes2 = []
                    for counter in range (0,len(self.tunes)):
-                       self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2  = self.tunes[counter].split('^')
-                       self.tunes2.append(self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.artist_name)
+                       self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[counter].split('^')
+                       self.tunes2.append(self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.artist_name + "^" + self.genre_name)
                    self.tunes2.sort()
                    self.tunes = []
                    for counter in range (0,len(self.tunes2)):
-                       self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.artist_name  = self.tunes2[counter].split('^')
-                       self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2)
+                       self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.artist_name,self.genre_name  = self.tunes2[counter].split('^')
+                       self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
                if self.sort_no == 3:
                    self.Button_AZ_artists.config(bg = "green",fg = "white",text = "A-Z Tracks ON")
                    num_list = ["0","1","2","3","4","5","6","7","8","9"]
                    self.tunes2 = []
                    L = 2
                    for counter in range (0,len(self.tunes)):
-                       self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2  = self.tunes[counter].split('^')
+                       self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[counter].split('^')
                        if self.track_name[0:1] in num_list and self.track_name[1:2] in num_list and (self.track_name[2:3] == " " or self.track_name[2:3] == "-" or self.track_name[2:3] == "_"):
                            L = 3
                            if self.track_name[3:4] == " " or self.track_name[3:4] == "-" or self.track_name[3:4] == "(":
@@ -3913,12 +4006,12 @@ class MP3Player(Frame):
                        else:
                            self.track_name2 = self.track_name
                            self.track_number = ""
-                       self.tunes2.append(self.track_name2 + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.artist_name + "^" + self.album_name + "^" + self.track_number)
+                       self.tunes2.append(self.track_name2 + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.artist_name + "^" + self.album_name + "^" + self.track_number + "^" + self.genre_name)
                    self.tunes2.sort()
                    self.tunes = []
                    for counter in range (0,len(self.tunes2)):
-                       self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.artist_name,self.album_name,self.track_number  = self.tunes2[counter].split('^')
-                       self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_number + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2)
+                       self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.artist_name,self.album_name,self.track_number,self.genre_name  = self.tunes2[counter].split('^')
+                       self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_number + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
                self.track_no = 0
             else:
                self.sort_no = 0
@@ -3934,11 +4027,14 @@ class MP3Player(Frame):
                    if counter2 == 6:
                        z,self.drive_name1,self.drive_name2,self.drive_name,self.artist_name,self.album_name,self.track_name  = Tracks[counter].split('/')
                        self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2)
+                   if counter2 == 7:
+                       z,self.drive_name1,self.drive_name2,self.drive_name,self.genre_name,self.artist_name,self.album_name,self.track_name  = Tracks[counter].split('/')
+                       self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
                    if counter2 == 5:
                        self.drive_name1,self.drive_name2,self.drive_name,self.artist_name3,self.album_name3,self.track_name  = Tracks[counter].split('/')
                        if self.album_name3.count(" - ") == 1:
                            self.artist_name,self.album_name = self.album_name3.split(" - ")
-                           self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.artist_name3 + "^" + self.drive_name2 + "^" + self.drive_name)
+                           self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.artist_name3 + "^" + self.drive_name2 + "^" + self.drive_name + "^" + self.genre_name)
                self.Disp_plist_name.config(text=" " + self.que_dir[len(self.m3u_dir):])
                self.Disp_Total_tunes.config(text =len(self.tunes))
                self.Button_AZ_artists.config(bg = "light blue",fg = "black",text = "A-Z Sort")
@@ -3959,7 +4055,10 @@ class MP3Player(Frame):
                 self.Disp_Name_m3u.delete('1.0','20.0')
                 self.Disp_Name_m3u.insert(INSERT,Name)
             with open(self.m3u_dir + Name + ".m3u", 'a') as f:
-                f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.artist_name + "/" + self.album_name + "/" + self.track_name + "\n")
+                if self.genre_name == "None":
+                    f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.artist_name + "/" + self.album_name + "/" + self.track_name + "\n")
+                else:
+                    f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.genre_name + "/" + self.artist_name + "/" + self.album_name + "/" + self.track_name + "\n")
             self.m3us = glob.glob(self.m3u_dir + "*.m3u")
             self.m3us.remove(self.m3u_dir + self.m3u_def + ".m3u")
             self.m3us.sort()
@@ -3975,7 +4074,10 @@ class MP3Player(Frame):
             self.Disp_Name_m3u.config(background="light gray", foreground="black")
             self.Disp_Name_m3u.delete('1.0','20.0')
             with open(self.m3u_dir + Name + ".m3u", 'a') as f:
-                f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.artist_name + "/" + self.album_name + "/" + self.track_name + "\n" )
+                if self.genre_name == "None":
+                    f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.artist_name + "/" + self.album_name + "/" + self.track_name + "\n" )
+                else:
+                    f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.genre_name + "/" + self.artist_name + "/" + self.album_name + "/" + self.track_name + "\n")
             self.m3us = glob.glob(self.m3u_dir + "*.m3u")
             self.m3us.remove(self.m3u_dir + self.m3u_def + ".m3u")
             self.m3us.sort()
@@ -3999,8 +4101,12 @@ class MP3Player(Frame):
                 artist.sort()
                 for counter in range(0,len(artist)):
                     self.artist_name,self.album_name2,self.track_name,self.drive_name,self.drive_name1,self.drive_name2  = artist[counter].split('^')
+                    
                     with open(self.m3u_dir + Name + ".m3u", 'a') as f:
-                        f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.artist_name + "/" + self.album_name2 + "/" + self.track_name + "\n")
+                        if self.genre == "None":
+                            f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.artist_name + "/" + self.album_name2 + "/" + self.track_name + "\n")
+                        else:
+                            f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.genre_name + "/" + self.artist_name + "/" + self.album_name2 + "/" + self.track_name + "\n")
                 self.m3us = glob.glob(self.m3u_dir + "*.m3u")
                 self.m3us.remove(self.m3u_dir + self.m3u_def + ".m3u")
                 self.m3us.sort()
@@ -4025,9 +4131,12 @@ class MP3Player(Frame):
                     album.append(self.tunes[counter])
             album.sort()
             for counter in range(0,len(album)):
-                self.artist_name,self.album_name2,self.track_name,self.drive_name,self.drive_name1,self.drive_name2  = album[counter].split('^')
+                self.artist_name,self.album_name2,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = album[counter].split('^')
                 with open(self.m3u_dir + Name + ".m3u", 'a') as f:
-                    f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.artist_name + "/" + self.album_name2 + "/" + self.track_name + "\n")
+                    if self.genre_name == "None":
+                        f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.artist_name + "/" + self.album_name2 + "/" + self.track_name + "\n")
+                    else:
+                        f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.genre_name + "/" + self.artist_name + "/" + self.album_name2 + "/" + self.track_name + "\n")
             self.m3us = glob.glob(self.m3u_dir + "*.m3u")
             self.m3us.remove(self.m3u_dir + self.m3u_def + ".m3u")
             self.m3us.sort()
@@ -4046,8 +4155,11 @@ class MP3Player(Frame):
                     self.Disp_Name_m3u.insert(INSERT,Name)
                 with open(self.m3u_dir + Name + ".m3u", 'a') as f:
                     for counter in range (0,len(self.tunes)):
-                        self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2  = self.tunes[counter].split('^')
-                        f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.artist_name + "/" + self.album_name + "/" + self.track_name + "\n")
+                        self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[counter].split('^')
+                        if self.genre_name == "None":
+                            f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.artist_name + "/" + self.album_name + "/" + self.track_name + "\n")
+                        else:
+                            f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.genre_name + "/" + self.artist_name + "/" + self.album_name + "/" + self.track_name + "\n")
                 self.m3us = glob.glob(self.m3u_dir + "*.m3u")
                 self.m3us.remove(self.m3u_dir + self.m3u_def + ".m3u")
                 self.m3us.sort()
@@ -4176,13 +4288,18 @@ class MP3Player(Frame):
                     for counter in range (0,len(Tracks)):
                         counter2 = Tracks[counter].count('/')
                         if counter2 == 6:
+                            self.genre_name = "None"
                             z,self.drive_name1,self.drive_name2,self.drive_name,self.artist_name,self.album_name,self.track_name  = Tracks[counter].split('/')
-                            self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2)
+                            self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
+                        if counter2 == 7:
+                            z,self.drive_name1,self.drive_name2,self.drive_name,self.genre_name,self.artist_name,self.album_name,self.track_name  = Tracks[counter].split('/')
+                            self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
                         if counter2 == 5:
+                            self.genre_name = "None"
                             self.drive_name1,self.drive_name2,self.drive_name,self.artist_name3,self.album_name3,self.track_name  = Tracks[counter].split('/')
                             if self.album_name3.count(" - ") == 1:
                                 self.artist_name,self.album_name = self.album_name3.split(" - ")
-                                self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.artist_name3 + "^" + self.drive_name2 + "^" + self.drive_name)
+                                self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.artist_name3 + "^" + self.drive_name2 + "^" + self.drive_name + "^" + self.genre_name)
                     self.Disp_plist_name.config(text=" " + self.que_dir[len(self.m3u_dir):])
                     self.Disp_Total_tunes.config(text =len(self.tunes))
                     self.track_no = 0
@@ -4213,15 +4330,18 @@ class MP3Player(Frame):
         if self.paused == 0 and self.album_start == 0 and len(self.Name) > 0 and self.Radio_ON == 0:
           search = []
           for counter in range (0,len(self.tunes)):
-                self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2  = self.tunes[counter].split('^')
+                self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name= self.tunes[counter].split('^')
                 if self.Name in self.track_name:
                     search.append(self.tunes[counter])
           if len(search) > 0:
             search.sort()
             for counter in range(0,len(search)):
-                self.artist_name,self.album_name2,self.track_name,self.drive_name,self.drive_name1,self.drive_name2  = search[counter].split('^')
+                self.artist_name,self.album_name2,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = search[counter].split('^')
                 with open(self.m3u_dir + self.Name + ".m3u", 'a') as f:
-                    f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.artist_name + "/" + self.album_name2 + "/" + self.track_name + "\n")
+                    if self.genre_name == "None":
+                        f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.artist_name + "/" + self.album_name2 + "/" + self.track_name + "\n")
+                    else:
+                        f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.genre_name  + "/" + self.artist_name + "/" + self.album_name2 + "/" + self.track_name + "\n")
             self.m3us = glob.glob(self.m3u_dir + "*.m3u")
             self.m3us.remove(self.m3u_dir + self.m3u_def + ".m3u")
             self.m3us.sort()
@@ -4255,13 +4375,18 @@ class MP3Player(Frame):
             for counter in range (0,len(Tracks)):
                 counter2 = Tracks[counter].count('/')
                 if counter2 == 6:
+                    self.genre_name == "None"
                     z,self.drive_name1,self.drive_name2,self.drive_name,self.artist_name,self.album_name,self.track_name  = Tracks[counter].split('/')
-                    self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2)
+                    self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2+ "^" + self.genre_name)
+                if counter2 == 7:
+                    z,self.drive_name1,self.drive_name2,self.drive_name,self.genre_name,self.artist_name,self.album_name,self.track_name  = Tracks[counter].split('/')
+                    self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
                 if counter2 == 5:
+                    self.genre_name == "None"
                     self.drive_name1,self.drive_name2,self.drive_name,self.artist_name3,self.album_name3,self.track_name  = Tracks[counter].split('/')
                     if self.album_name3.count(" - ") == 1:
                         self.artist_name,self.album_name = self.album_name3.split(" - ")
-                        self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.artist_name3 + "^" + self.drive_name2 + "^" + self.drive_name)
+                        self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.artist_name3 + "^" + self.drive_name2 + "^" + self.drive_name+ "^" + self.genre_name)
             self.Disp_plist_name.config(text=" " + self.que_dir[len(self.m3u_dir):])
             self.Disp_Total_tunes.config(text =len(self.tunes))
             self.track_no = 0
@@ -4648,14 +4773,14 @@ class MP3Player(Frame):
                         self.Disp_Total_Plist.config(text = "")
                     if self.cutdown != 2 and self.cutdown != 6:
                         self.Disp_Drive.config(text = "")
-                    if os.path.exists(self.h_user[0] + "/Documents/" + self.Name + ".jpg"):
-                        self.load = Image.open(self.h_user[0] + "/Documents/" + self.Name + ".jpg")
-                        self.load = self.load.resize((218, 218), Image.ANTIALIAS) 
+                    if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
+                        self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
+                        self.load = self.load.resize((218, 218), Image.LANCZOS) 
                         self.render2 = ImageTk.PhotoImage(self.load)
                         self.img.config(image = self.render2)
                     elif os.path.exists(self.radio_jpg):
                         self.load = Image.open(self.radio_jpg)
-                        self.load = self.load.resize((218, 218), Image.ANTIALIAS) 
+                        self.load = self.load.resize((218, 218), Image.LANCZOS) 
                         self.render3 = ImageTk.PhotoImage(self.load)
                         self.img.config(image = self.render3)
                 self.Button_TAlbum.config(bg  = "light grey", fg = "white")
