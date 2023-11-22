@@ -23,7 +23,7 @@ import math
 import socket
 import shutil
 from PIL import ImageTk, Image
-import RPi.GPIO as GPIO
+from gpiozero import Button
 from mplayer import Player
 Player.introspect()
 player = Player()
@@ -33,7 +33,7 @@ global cutdown
 import wave
 import contextlib
 
-# Pi_MP3_Player v17.01
+# Pi_MP3_Player v17.02
 
 #set display format
 cutdown = 7 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks,7:800x480 with scrollbars
@@ -282,33 +282,25 @@ class MP3Player(Frame):
         # check for HyperPixel4 LCD and if so disable GPIO controls.
         if os.path.exists ('/sys/devices/platform/i2c@0'): 
             self.gpio_enable = 0
-            if self.HP4_backlight == 1:
-                os.system("sudo pigpiod")
-                import pigpio
-                self.gpio = pigpio.pi()
-                self.pwm_pin = 19
-                self.dim     = 4    # Backlight dim , 4 = dim, 3 = off
-                self.bright  = 200  # Backlight bright , 255 full brightness
-                self.gpio.set_PWM_frequency(self.pwm_pin,631)
-                self.gpio.set_PWM_dutycycle(self.pwm_pin,self.bright)
+            from gpiozero import PWMLED
+            self.pwm_pin = 19
+            self.led_led = PWMLED(self.pwm_pin)
+            self.dim     = 0.1    # Backlight dim 
+            self.bright  = 0.8  # Backlight bright , 1 full brightness
+            self.led_fan.value = self.bright
         else:
             self.gpio_enable = 1
-            import RPi.GPIO as GPIO
-            GPIO.setmode(GPIO.BCM)
-            GPIO.setwarnings(False)
-            GPIO.setup(self.voldn,GPIO.IN, pull_up_down=GPIO.PUD_UP)
-            GPIO.setup(self.mute,GPIO.IN, pull_up_down=GPIO.PUD_UP)
-            GPIO.setup(self.volup,GPIO.IN, pull_up_down=GPIO.PUD_UP)
-            GPIO.setup(self.key_stop,GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            self.button_voldn = Button(self.voldn)
+            self.button_mute = Button(self.mute)
+            self.button_volup = Button(self.volup)
+            self.button_key_stop = Button(self.key_stop)
             if self.WS28_backlight == 1:
-                os.system("sudo pigpiod")
-                import pigpio
-                self.gpio = pigpio.pi()
+                from gpiozero import PWMLED
                 self.pwm_pin = 18
-                self.dim     = 0    # Backlight dim 
-                self.bright  = 200  # Backlight bright , 255 full brightness
-                self.gpio.set_PWM_frequency(self.pwm_pin,1000)
-                self.gpio.set_PWM_dutycycle(self.pwm_pin,self.bright)
+                self.led_led = PWMLED(self.pwm_pin)
+                self.dim     = 0.1  # Backlight dim 
+                self.bright  = 0.8  # Backlight bright , 1 full brightness
+                self.led_fan.value = self.bright
 
         # setup GUI
         self.Frame10 = tk.Frame(width=800, height=800)
@@ -1188,7 +1180,6 @@ class MP3Player(Frame):
             
         if self.auto_album == 1:
             self.Play_Album()
-            #self.Show_Track()
         elif self.auto_radio == 1:
             self.RadioX()
         elif self.auto_radio == 0 and self.auto_play == 1:
@@ -1208,10 +1199,6 @@ class MP3Player(Frame):
                     self.artistdata.append(self.artist_name_1)
             self.artistdata = list(dict.fromkeys(self.artistdata))
             self.artistdata.sort()
-            #self.old_artists = self.artistdata
-            #self.old_list = self.que_dir
-            
-            #self.artistdata = self.old_artists
             self.Disp_artist_name["values"] = self.artistdata
             if self.auto_albums == 1 or self.reload == 1:
                 self.Disp_artist_name.set(self.artist_name)
@@ -1826,7 +1813,6 @@ class MP3Player(Frame):
               self.Disp_artist_name.set(self.artist_name)
               self.Disp_album_name.set(self.album_name)
               self.Disp_track_name.set(self.track_name)
-          #print("SP", self.track)
           if os.path.exists(self.track):  
             if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 3:
                 self.Disp_Drive.config(fg = 'black')
@@ -1847,7 +1833,6 @@ class MP3Player(Frame):
                 if self.track[-4:] == ".mp3":
                     audio = MP3(self.track)
                     self.track_len = audio.info.length
-                    #print("SP", self.track,self.track_len)
                 elif self.track[-4:] == "flac":
                     audio = FLAC(self.track)
                     self.track_len = audio.info.length
@@ -1937,25 +1922,19 @@ class MP3Player(Frame):
                     self.track = os.path.join("/" + self.drive_name11,self.drive_name21,self.drive_name10, self.artist_name1, self.album_name1, self.track_name1)
                 else:
                     self.track = os.path.join("/" + self.drive_name11,self.drive_name21,self.drive_name10,self.genre_name,self.artist_name1, self.album_name1, self.track_name1)
-                #print("SP2" , self.track, self.track_len)
                 if os.path.exists(self.track):
                     if self.track[-4:] == ".mp3":       
                         audio = MP3(self.track)
                         self.total += audio.info.length
-                        self.track_len = audio.info.length
-                        #print("SP2" , self.track, self.track_len)
                     if self.track[-4:] == "flac":       
                         audio = FLAC(self.track)
                         self.total += audio.info.length
-                        self.track_len = audio.info.length
                     if self.track[-4:] == ".dsf":
                         audio = DSF(self.track)
                         self.total += audio.info.length
-                        self.track_len = audio.info.length
                     if self.track[-4:] == ".m4a":
                         audio = MP4(self.track)
                         self.total += audio.info.length
-                        self.track_len = audio.info.length
                     if self.track[-4:] == ".wav":
                         with contextlib.closing(wave.open(self.track,'r')) as f:
                             frames = f.getnframes()
@@ -2050,24 +2029,6 @@ class MP3Player(Frame):
             self.track = os.path.join("/" + self.drive_name11,self.drive_name21,self.drive_name10, self.artist_name1, self.album_name1, self.track_name1)
         else:
             self.track = os.path.join("/" + self.drive_name11,self.drive_name21,self.drive_name10,self.genre_name, self.artist_name1, self.album_name1, self.track_name1)
-        if os.path.exists(self.track):
-            if self.track[-4:] == ".mp3":       
-                audio = MP3(self.track)
-                self.track_len = audio.info.length
-            if self.track[-4:] == "flac":       
-                audio = FLAC(self.track)
-                self.track_len = audio.info.length
-            if self.track[-4:] == ".dsf":
-                audio = DSF(self.track)
-                self.track_len = audio.info.length
-            if self.track[-4:] == ".m4a":
-                audio = MP4(self.track)
-                self.track_len = audio.info.length
-            if self.track[-4:] == ".wav":
-                with contextlib.closing(wave.open(self.track,'r')) as f:
-                    frames = f.getnframes()
-                    rate = f.getframerate()
-                    self.track_len = frames / float(rate)
         self.playing()
 
     def playing(self):
@@ -2098,7 +2059,7 @@ class MP3Player(Frame):
                     
         # backlight off
         if time.time() - self.light_on > self.light and (self.HP4_backlight == 1 or self.WS28_backlight == 1):
-            self.gpio.set_PWM_dutycycle(self.pwm_pin,self.dim)
+            self.led_fan.value = self.dim
         
         if self.model != 0:
             self.count7 += 1
@@ -2132,13 +2093,13 @@ class MP3Player(Frame):
             
         # if GPIO enabled (not using the HyperPixel4 display) then check the external switches
         if self.gpio_enable == 1:
-            if GPIO.input(self.volup)      == 0:
+            if self.button_volup.is_pressed:
                 self.Button_Vol_UP()
-            elif GPIO.input(self.voldn)    == 0:
+            elif self.button_voldn.is_pressed:
                 self.volume_DN()
-            elif GPIO.input(self.mute)     == 0:
+            elif self.button_mute.is_pressed:
                 self.Mute()
-            elif GPIO.input(self.key_stop) == 0:
+            elif self.button_key_stop.is_pressed:
                 self.Stop_Play()
                     
         # end of album (no repeat)
@@ -2864,7 +2825,7 @@ class MP3Player(Frame):
         
         # switch backlight on (if enabled)
         if (self.WS28_backlight == 1 or self.HP4_backlight == 1) and (self.old_abs_x != abs_x or self.old_abs_y != abs_y) :
-            self.gpio.set_PWM_dutycycle(self.pwm_pin,self.bright)
+            self.led_fan.value = self.bright
             self.light_on = time.time()
         self.old_abs_x = abs_x
         self.old_abs_y = abs_y
@@ -2902,7 +2863,7 @@ class MP3Player(Frame):
             # if cursor on the wheel position
             if math.sqrt((x2*x2)+ (y2*y2)) > 40 and math.sqrt((x2*x2)+ (y2*y2)) < 100 :
                 if self.gpio_enable == 0:
-                    self.gpio.set_PWM_dutycycle(self.pwm_pin,self.bright)
+                    self.led_fan.value = self.bright
                     self.light_on = time.time()
                 # show the wheel (instead of album cover)
                 if self.cutdown != 1 and self.cutdown != 4 and self.cutdown != 5:
@@ -5098,7 +5059,7 @@ class MP3Player(Frame):
                     
     def Shutdown(self):
         if (self.WS28_backlight == 1 or self.HP4_backlight == 1):
-            self.gpio.set_PWM_dutycycle(self.pwm_pin,self.bright)
+            self.led_fan.value = self.bright
         if self.shuffle_on == 1 and self.sleep_time > 0 and self.play == 0:
             self.exit()
         else:
