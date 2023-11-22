@@ -3,6 +3,8 @@ Pi-MP3_Player
 
 Note this will work under BUSTER, BULLSEYE or BOOKWORM
 
+Note tested on a Pi5 with bookworm but not a PI 7" screen.
+
 Designed to be used with a Pi and the Pi 7" Touchscreen LCD, but will work on other monitors. Playing .mp3, .flac, .wav, .dsf, .m4a tracks from USB sticks (or HDD) under /media/pi/usb_stick_name/artist name/album_name/tracks.
 
 You could put MP3 track files on the SD card under /home/pi/Music, and put the tracks in an appropriate directory eg. /home/pi/Music/Rolling Stones/Exile on Mainstreet/. NOTE MP3 ONLY (and your username may not be pi).
