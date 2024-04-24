@@ -1,7 +1,7 @@
 # Pi-MP3 and Radio Stream Player
 Pi-MP3_Player
 
-Note this will work under BUSTER, BULLSEYE or BOOKWORM (if using venv)
+Note this will work under BUSTER, BULLSEYE , NOT BOOKWORM 
 
 Note tested on a Pi5 with bookworm but not a PI 7" screen.
 
@@ -13,7 +13,7 @@ Default playlist name etc are definable in the script.
 Avoid any directory/track names with [ ] (square brackets) in.
 
 Tested on Pi 2 v1.1, 3A, 3B, 4B, Zero W, v1.2 & v1.3 , Pi400 and Pi4 with  32 and 64bit Pi OS, all using Buster.
-Also tested on a Pi4 4GB using FULL 32bit and 64bit BULLSEYE & BOOKWORM
+Also tested on a Pi4 4GB using FULL 32bit and 64bit BULLSEYE 
 
 For Radio Stream use Pi3, Pi4 or Pi400 recommended as it requires RAM space.
 
