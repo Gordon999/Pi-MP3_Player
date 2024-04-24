@@ -1,7 +1,7 @@
 # Pi-MP3 and Radio Stream Player
 Pi-MP3_Player
 
-Note this will work under BUSTER, BULLSEYE , NOT BOOKWORM 
+Note this will work under BUSTER, BULLSEYE , OR BOOKWORM 
 
 Note tested on a Pi5 with bookworm but not a PI 7" screen.
 
@@ -33,9 +33,9 @@ sudo apt-get install python3-alsaaudio
 
 sudo apt-get install mplayer
 
-sudo pip3 install mutagen
+sudo pip3 install mutagen (with BOOKWORM add --break-system-packages)
 
-sudo pip3 install mplayer.py
+sudo pip3 install mplayer.py (with BOOKWORM add --break-system-packages)
 
 sudo apt-get install streamripper
 
