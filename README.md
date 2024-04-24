@@ -1,7 +1,7 @@
 # Pi-MP3 and Radio Stream Player
 Pi-MP3_Player
 
-Note this will work under BUSTER, BULLSEYE or BOOKWORM
+Note this will work under BUSTER, BULLSEYE or BOOKWORM (if using venv)
 
 Note tested on a Pi5 with bookworm but not a PI 7" screen.
 
@@ -28,8 +28,6 @@ See installation_instructions.txt for how to install and run.
 Download the Zip, Extract, and copy MP3_Player.py, mp3c.py and mp3.jpg to /home/pi/
 
 and then run...
-
-NOTE: If using BOOKWORM then add  --break-system-packages to the end of any pip commands
 
 sudo apt-get install python3-alsaaudio
 
