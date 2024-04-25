@@ -40,7 +40,6 @@ sudo pip3 install mplayer.py (with BOOKWORM add --break-system-packages)
 sudo apt-get install streamripper
 
 (If you see ImportError: cannot import name 'ImageTk' from 'PIL' (/usr/lib/python3/dist-packages/PIL/init.py)
-
 then sudo apt-get install python3-pil.imagetk)
 
 To run python3 MP3_Player.py
