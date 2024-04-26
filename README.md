@@ -57,6 +57,8 @@ add @/usr/bin/python3 /home/pi/MP3_Player.py to the end of /etc/xdg/lxsession/LX
 - For boot to Radio        : Choose Radio Station then press SHUTDOWN.
 - For boot to Radio RECORD : Choose Radio Station, press RECORD to set time, then press  SHUTDOWN.
 
+  to EXIT script without shutting down, click SHUFFLE, click SLEEP, click SHUTDOWN.
+  
 # File structure
 
 On the USB sticks the format must be /Artist Name/Album Name/Track Name 
