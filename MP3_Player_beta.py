@@ -33,7 +33,7 @@ global cutdown
 import wave
 import contextlib
 
-# Pi_MP3_Player v17.04beta
+# Pi_MP3_Player v17.05beta
 
 #set display format
 cutdown = 1 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks,7:800x480 with scrollbars
@@ -731,6 +731,13 @@ class MP3Player(Frame):
 
         if self.cutdown == 4: # 480 x 320
             self.length = 36
+            if os.path.exists ("mp3.jpg"):
+                self.imgxon = 1
+                self.load = Image.open("mp3.jpg")
+                self.load = self.load.resize((150,150), Image.LANCZOS) 
+                self.renderc = ImageTk.PhotoImage(self.load)
+                self.imgx = tk.Label(self.Frame10, image = self.renderc)
+                self.imgx.grid(row = 0, column = 0, columnspan = 5, rowspan = 8, pady = 0)
             self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", bg = "green",fg = "white",width = 6, height = 3, command = self.Play, wraplength=50, justify=CENTER)
             self.Button_Start.grid(row = 0, column = 0)
             self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", bg = "blue",fg = "white", width = 6, height = 3,command=self.Play_Album, wraplength=50, justify=CENTER)
@@ -811,6 +818,13 @@ class MP3Player(Frame):
 
         if self.cutdown == 5: # Pi 7" Display 800 x 480 (Simple layout)
             self.length = 60
+            if os.path.exists ("mp3.jpg"):
+                self.imgxon = 1
+                self.load = Image.open("mp3.jpg")
+                self.load = self.load.resize((150,150), Image.LANCZOS) 
+                self.renderc = ImageTk.PhotoImage(self.load)
+                self.imgx = tk.Label(self.Frame10, image = self.renderc)
+                self.imgx.grid(row = 0, column = 0, columnspan = 5, rowspan = 8, padx = 0)
             self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", font = 50,bg = "green",fg = "white",width = 12, height = 4, command = self.Play, wraplength=60, justify=CENTER)
             self.Button_Start.grid(row = 0, column = 0)
             self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", font = 50, bg = "blue",fg = "white", width = 12, height = 4,command=self.Play_Album, wraplength=60, justify=CENTER)
@@ -1359,6 +1373,7 @@ class MP3Player(Frame):
             if self.album_start == 0:
                 self.Disp_Total_tunes.config(text =len(self.tunes))
                 self.Disp_track_no.config(text =self.track_no+1)
+            print(self.tunes[self.track_no])
             self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
             if self.drive_name[-1] == "*":
                 self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
@@ -2026,7 +2041,7 @@ class MP3Player(Frame):
             else:
                 if os.path.exists(self.mp3_jpg):
                     self.img.config(image = self.render)
-        if self.cutdown == 1:
+        if self.cutdown == 1 or self.cutdown == 5 or self.cutdown == 4:
             pictures = glob.glob(path)
             self.render2 = ""
             if len(pictures) > 0:
@@ -2393,7 +2408,7 @@ class MP3Player(Frame):
             self.Disp_track_len.config(text ="010:00")
             if self.cutdown == 6 or self.cutdown == 4 or self.cutdown == 2:
                 self.Button_Next_AZ.config(text = "Info", bg = "light blue", fg = "black")
-            self.L4.config(text="of")
+            self.L4.config(text="/")
             self.Button_Pause.config(fg = "white", bg = "red", text = str(self.record_time) + " mins")
             if self.cutdown != 1:
                 self.Button_Radio.config(bg = "red",fg = "white", text = "STOP RECORD")
@@ -4604,7 +4619,7 @@ class MP3Player(Frame):
             self.play = 0
             self.total_record = 0
             self.L2.config(text="of")
-            self.L4.config(text="of")
+            self.L4.config(text="/")
             if self.Button_info_on == 1 and self.cutdown == 0:
                 self.Button_Info.config(fg="black",bg="light blue")
             if self.cutdown != 5 and self.cutdown != 6 :
@@ -4957,7 +4972,7 @@ class MP3Player(Frame):
             os.remove(rems[x])
         if self.trace == 1:
             print ("Copy Record - add to Tunes")
-        tpath = self.Radio_Stns[self.Radio] + "^Radio_Recordings^" + self.Name + ".mp3^music^run^shm"
+        tpath = self.Radio_Stns[self.Radio] + "^Radio_Recordings^" + self.Name + ".mp3^music^run^shm^None"
         self.tunes.append(tpath)
         self.tunes.sort()
         if self.trace == 1:
