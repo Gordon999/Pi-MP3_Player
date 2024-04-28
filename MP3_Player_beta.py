@@ -33,7 +33,7 @@ global cutdown
 import wave
 import contextlib
 
-# Pi_MP3_Player v17.03beta
+# Pi_MP3_Player v17.04beta
 
 #set display format
 cutdown = 1 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks,7:800x480 with scrollbars
@@ -176,6 +176,7 @@ class MP3Player(Frame):
         self.old_list       = []
         self.tracker        = 0
         self.reload         = 0
+        self.imgxon         = 0
         
         if self.cutdown != 4 and self.cutdown != 1 and self.cutdown != 5:
             self.master.bind("<Button-1>", self.Wheel_Opt_Button)
@@ -440,7 +441,8 @@ class MP3Player(Frame):
 
         if self.cutdown == 1: # 320 x 240
             self.length = 25
-            if os.path.exists ("mp3.jpg"): 
+            if os.path.exists ("mp3.jpg"):
+                self.imgxon = 1
                 self.load = Image.open("mp3.jpg")
                 self.load = self.load.resize((150,150), Image.LANCZOS) 
                 self.renderc = ImageTk.PhotoImage(self.load)
@@ -505,8 +507,8 @@ class MP3Player(Frame):
             self.Disp_track_len.grid(row = 5, column = 3, sticky = E)
             self.L2 = tk.Label(self.Frame10, text="of")
             self.L2.grid(row = 5, column = 0, sticky = E)
-            self.L4 = tk.Label(self.Frame10,text="of")
-            self.L4.grid(row = 5, column = 3, sticky = W)
+            self.L4 = tk.Label(self.Frame10,text="/")
+            self.L4.grid(row = 5, column = 3, sticky = W,padx = 5)
             
         if self.cutdown == 2: # 640 x 480
             self.length = 60
@@ -2027,7 +2029,7 @@ class MP3Player(Frame):
         if self.cutdown == 1:
             pictures = glob.glob(path)
             self.render2 = ""
-            if len(pictures) > 0 and os.path.exists(self.mp3_jpg):
+            if len(pictures) > 0:
                 if len(pictures) > 1:
                    r = random.randrange(len(pictures))
                    self.image = pictures[r]
@@ -2036,8 +2038,10 @@ class MP3Player(Frame):
                 self.load = Image.open(self.image)
                 self.load = self.load.resize((120,120), Image.LANCZOS) 
                 self.renderc = ImageTk.PhotoImage(self.load)
-                self.imgx = tk.Label(self.Frame10, image = self.renderc)#
-                self.imgx.grid(row = 0, column = 0, columnspan = 5, rowspan = 8, pady = 0)#
+                if self.imgxon == 0:
+                    self.imgx = tk.Label(self.Frame10, image = self.renderc)
+                    self.imgx.grid(row = 0, column = 0, columnspan = 5, rowspan = 8, pady = 0)
+                    self.imgxon = 1
                 self.imgx.config(image = self.renderc)
         self.track_name7 = self.track_name[:-4] + "  "
         self.album_name7 = self.album_name + "  "
@@ -2128,6 +2132,9 @@ class MP3Player(Frame):
             if self.minutes == 0 and ((self.gapless == 0 and self.seconds <= 1 and self.BT == 0) or (self.gapless == 1 and self.seconds == (2 * self.BT) and self.BT == 1) or (self.gapless == self.gapless_time and self.seconds <= self.gapless_time)) and self.album_start == 1 and self.repeat_album == 0:
                 if self.trace == 1:
                     print ("End of Album (no repeat)")
+                if self.imgxon == 1:
+                    self.imgx.after(100, self.imgx.destroy())
+                    self.imgxon = 0
                 self.play = 2
                 self.stopstart  = 0
                 self.plist_trig = 0
@@ -2192,6 +2199,9 @@ class MP3Player(Frame):
                 self.Fade()
             # stop track early if using Bluetooth    
             if time.time() - self.start > (self.track_len - self.gapless) - (self.BT) and self.play == 1 and self.paused == 0:
+                if self.imgxon == 1:
+                    self.imgx.after(100, self.imgx.destroy())
+                    self.imgxon = 0
                 if self.trace == 1:
                     print ("End of track",self.track_no)
                 self.play = 0
@@ -2717,8 +2727,9 @@ class MP3Player(Frame):
     def Stop_Play(self):
         if self.trace == 1:
             print("Stop")
-        if os.path.exists(self.mp3_jpg):
+        if self.imgxon == 1:
             self.imgx.after(100, self.imgx.destroy())
+            self.imgxon = 0
         if self.cutdown == 7:
             self.shuffle_on = 0
             self.Disp_artist_name.set(self.artist_name)
@@ -3028,8 +3039,9 @@ class MP3Player(Frame):
 
     def Prev_m3u(self):
         if self.paused == 0 and self.album_start == 0 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
-            if os.path.exists(self.mp3_jpg):
+            if self.imgxon == 1:
                 self.imgx.after(100, self.imgx.destroy())
+                self.imgxon = 0
             self.wheel_opt = 3
             if self.cutdown != 5 and self.cutdown != 6:
                 self.Button_Prev_PList.config(fg = "red")
@@ -3101,8 +3113,9 @@ class MP3Player(Frame):
 
     def Next_m3u(self):
         if self.paused == 0 and self.album_start == 0 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
-            if os.path.exists(self.mp3_jpg):
+            if self.imgxon == 1:
                 self.imgx.after(100, self.imgx.destroy())
+                self.imgxon = 0
             self.wheel_opt = 3
             if self.cutdown != 5 and self.cutdown != 6:
                 self.Button_Prev_PList.config(fg = "red")
@@ -3222,8 +3235,9 @@ class MP3Player(Frame):
                 messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
         # Previous Artist
         if self.paused == 0 and self.album_start == 0 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
-            if os.path.exists(self.mp3_jpg):
+            if self.imgxon == 1:
                 self.imgx.after(100, self.imgx.destroy())
+                self.imgxon = 0
             self.wheel_opt = 0
             self.Button_Prev_Artist.config(fg = "red")
             if self.cutdown != 5 and self.cutdown != 6:
@@ -3321,8 +3335,9 @@ class MP3Player(Frame):
                 messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
         # Next Artist
         if self.paused == 0 and self.album_start == 0 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
-            if os.path.exists(self.mp3_jpg):
+            if self.imgxon == 1:
                 self.imgx.after(100, self.imgx.destroy())
+                self.imgxon = 0
             self.wheel_opt = 0
             self.Button_Prev_Artist.config(fg = "red")
             if self.cutdown != 5 and self.cutdown != 6:
@@ -3355,8 +3370,9 @@ class MP3Player(Frame):
 
     def Prev_Album(self):
         if self.paused == 0 and self.album_start == 0 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
-            if os.path.exists(self.mp3_jpg):
+            if self.imgxon == 1:
                 self.imgx.after(100, self.imgx.destroy())
+                self.imgxon = 0
             self.wheel_opt = 1
             self.Button_Prev_Album.config(fg = "red")
             self.Button_Prev_Artist.config(fg = "black")
@@ -3404,8 +3420,9 @@ class MP3Player(Frame):
         if self.trace == 1:
             print ("Next Album", self.track_no)
         if self.paused == 0 and self.album_start == 0 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
-            if os.path.exists(self.mp3_jpg):
+            if self.imgxon == 1:
                 self.imgx.after(100, self.imgx.destroy())
+                self.imgxon = 0
             self.wheel_opt = 1
             self.Button_Prev_Album.config(fg = "red")
             self.Button_Prev_Artist.config(fg = "black")
@@ -3442,8 +3459,9 @@ class MP3Player(Frame):
 
     def Prev_Track(self):
         if self.album_track != 1 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
-            if os.path.exists(self.mp3_jpg):
+            if self.imgxon == 1:
                 self.imgx.after(100, self.imgx.destroy())
+                self.imgxon = 0
             if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 3:
                 self.Disp_Name_m3u.config(background="light gray", foreground="black")
             if self.paused == 0:
@@ -3493,8 +3511,9 @@ class MP3Player(Frame):
         if self.trace == 1:
              print ("Next_Track")
         if (self.album_start == 0 and os.path.exists(self.que_dir)) or (self.album_start == 1 and self.track_no != self.tcount and os.path.exists(self.que_dir)):
-            if os.path.exists(self.mp3_jpg):
+            if self.imgxon == 1:
                 self.imgx.after(100, self.imgx.destroy())
+                self.imgxon = 0
             if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 3:
                 self.Disp_Name_m3u.config(background="light gray", foreground="black")
             if self.paused == 0 and self.Radio_ON == 0:
