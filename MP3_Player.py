@@ -441,13 +441,13 @@ class MP3Player(Frame):
 
         if self.cutdown == 1: # 320 x 240
             self.length = 25
-            if os.path.exists ("mp3.jpg"):
-                self.imgxon = 1
-                self.load = Image.open("mp3.jpg")
-                self.load = self.load.resize((150,150), Image.LANCZOS) 
-                self.renderc = ImageTk.PhotoImage(self.load)
-                self.imgx = tk.Label(self.Frame10, image = self.renderc)
-                self.imgx.grid(row = 0, column = 0, columnspan = 5, rowspan = 8, pady = 0)
+            #if os.path.exists ("mp3.jpg"):
+            #    self.imgxon = 1
+            #    self.load = Image.open("mp3.jpg")
+            #    self.load = self.load.resize((150,150), Image.LANCZOS) 
+            #    self.renderc = ImageTk.PhotoImage(self.load)
+            #    self.imgx = tk.Label(self.Frame10, image = self.renderc)
+            #    self.imgx.grid(row = 0, column = 0, columnspan = 5, rowspan = 8, pady = 0)
             self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", bg =  'green',fg = "white",width = 4, height = 2, command = self.Play, wraplength=50, justify=CENTER)
             self.Button_Start.grid(row = 0, column = 0)
             self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", bg = "blue",fg = "white", width = 4, height = 2,command=self.Play_Album, wraplength=50, justify=CENTER)
