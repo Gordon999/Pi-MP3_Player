@@ -33,7 +33,7 @@ global cutdown
 import wave
 import contextlib
 
-# Pi_MP3_Player v17.05
+# Pi_MP3_Player v17.06
 
 #set display format
 cutdown = 1 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks,7:800x480 with scrollbars
@@ -4714,7 +4714,7 @@ class MP3Player(Frame):
                         self.L8.config(text = ".mp3")
                         self.L6.config(text="")
                 else:
-                    if self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 6 :
+                    if self.cutdown != 1 and self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 6 :
                         self.L8.config(text = "")
                     self.Button_Pause.config(fg = "black", bg = "light blue", text = "Pause")
                     
@@ -5018,6 +5018,16 @@ class MP3Player(Frame):
                 if self.tname != self.old_tname and self.Radio_RON == 1:
                     with open("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt", "a") as f:
                         f.write("%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " " + self.tname + "\n")
+                    self.old_tname = self.tname
+            elif self.track_nameX[self.counter][0:3] == " - " and self.track_nameX[self.counter] != " - .mp3":
+                self.tname = self.track_nameX[self.counter][:-4]
+                if self.cutdown == 7:
+                    self.Disp_track_name.set(self.tname[3:])
+                else:
+                    self.Disp_track_name.config(text = self.tname[3:])
+                if self.tname != self.old_tname and self.Radio_RON == 1:
+                    with open("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt", "a") as f:
+                        f.write("%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " " + self.tname[3:] + "\n")
                     self.old_tname = self.tname
             else:
                 self.tname = "Unknown"
