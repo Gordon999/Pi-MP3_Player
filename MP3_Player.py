@@ -33,7 +33,7 @@ global fullscreen
 fullscreen = 1
 global cutdown
 
-# Pi_MP3_Player v17.08
+# Pi_MP3_Player v17.09
 
 #set display format
 cutdown = 1 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks,7:800x480 with scrollbars
@@ -442,13 +442,6 @@ class MP3Player(Frame):
 
         if self.cutdown == 1: # 320 x 240
             self.length = 25
-            #if os.path.exists ("mp3.jpg"):
-            #    self.imgxon = 1
-            #    self.load = Image.open("mp3.jpg")
-            #    self.load = self.load.resize((150,150), Image.LANCZOS) 
-            #    self.renderc = ImageTk.PhotoImage(self.load)
-            #    self.imgx = tk.Label(self.Frame10, image = self.renderc)
-            #    self.imgx.grid(row = 0, column = 0, columnspan = 5, rowspan = 8, pady = 0)
             self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", bg =  'green',fg = "white",width = 4, height = 2, command = self.Play, wraplength=50, justify=CENTER)
             self.Button_Start.grid(row = 0, column = 0)
             self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", bg = "blue",fg = "white", width = 4, height = 2,command=self.Play_Album, wraplength=50, justify=CENTER)
@@ -457,7 +450,7 @@ class MP3Player(Frame):
             self.Button_Sleep.grid(row = 0, column = 4)
             self.Button_Vol_DN =  tk.Button(self.Frame10, text = " < Vol " + "...", wraplength=40,    bg = "yellow",width = 4, height = 2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_DN.grid(row = 0, column = 2)
-            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol > " + str(self.volume), wraplength=55,bg = "yellow",width = 4, height = 2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
+            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol >   " + str(self.volume), wraplength=55,bg = "yellow",width = 4, height = 2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_UP.grid(row = 0, column = 3)
             self.Button_Prev_PList =  tk.Button(self.Frame10, text = "<P-list",   bg = "light blue",width = 4, height = 1,command = self.Prev_m3u,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_PList.grid(row = 1, column = 0)
@@ -2254,7 +2247,7 @@ class MP3Player(Frame):
                 if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2:
                     self.Button_volume.config(text =self.volume)
                 else:
-                    self.Button_Vol_UP.config(text = "Vol > " + str(self.volume))
+                    self.Button_Vol_UP.config(text = "Vol >   " + str(self.volume))
                 # stop if playlist last track and repeat OFF
                 if self.track_no > len(self.tunes) - 1 and self.repeat == 0 and self.repeat_album == 0:
                     if self.trace == 1:
@@ -3008,7 +3001,7 @@ class MP3Player(Frame):
             if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2:
                 self.Button_volume.config(text = self.volume)
             else:
-                self.Button_Vol_UP.config(text = "Vol > " + str(self.volume))
+                self.Button_Vol_UP.config(text = "Vol >   " + str(self.volume))
 
  
     def volume_DN(self):
@@ -3024,7 +3017,7 @@ class MP3Player(Frame):
             if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2:
                 self.Button_volume.config(text =self.volume)
             else:
-                self.Button_Vol_UP.config(text = "Vol > " + str(self.volume))
+                self.Button_Vol_UP.config(text = "Vol >   " + str(self.volume))
             with open('Lasttrack3.txt', 'w') as f:
                 f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
             time.sleep(.2)
@@ -3042,7 +3035,7 @@ class MP3Player(Frame):
             if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2:
                 self.Button_volume.config(text =self.volume)
             else:
-                self.Button_Vol_UP.config(text = "Vol > " + str(self.volume))
+                self.Button_Vol_UP.config(text = "Vol >   " + str(self.volume))
             with open('Lasttrack3.txt', 'w') as f:
                 f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
             time.sleep(.2)
@@ -4038,7 +4031,7 @@ class MP3Player(Frame):
                         stop = 1
                         self.track_no = k
                     k +=1
-                if self.cutdown != 5 and self.cutdown != 6 :
+                if self.cutdown != 5 and self.cutdown != 6 and self.imgxon == 0 :
                     self.Disp_plist_name.config(text=" " + self.que_dir[len(self.m3u_dir):])
                 self.Disp_Total_tunes.config(text =len(self.tunes))
                 self.Button_Shuffle.config(bg = "light blue",fg = "black",text = "Shuffle")
