@@ -33,7 +33,7 @@ global fullscreen
 fullscreen = 1
 global cutdown
 
-# Pi_MP3_Player v17.12
+# Pi_MP3_Player v17.14
 
 #set display format
 cutdown = 1 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks,7:800x480 with scrollbars
@@ -198,6 +198,18 @@ class MP3Player(Frame):
             print (model,self.model)
 
         # read radio_stns.txt
+        if os.path.exists ("radio_stns.txt"): 
+            with open("radio_stns.txt","r") as textobj:
+                line = textobj.readline()
+                while line:
+                    if line.count(",") == 2:
+                        a,b,c = line.split(",")
+                        self.Radio_Stns.append(a)
+                        self.Radio_Stns.append(b)
+                        self.Radio_Stns.append(int(c.strip()))
+                    line = textobj.readline()
+
+        # read radio_stns.csv
         if os.path.exists ("radio_stns.csv"): 
             with open("radio_stns.csv","r") as textobj:
                 line = textobj.readline()
