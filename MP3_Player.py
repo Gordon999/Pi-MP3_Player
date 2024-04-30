@@ -33,7 +33,7 @@ global fullscreen
 fullscreen = 1
 global cutdown
 
-# Pi_MP3_Player v17.11
+# Pi_MP3_Player v17.12
 
 #set display format
 cutdown = 1 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks,7:800x480 with scrollbars
@@ -2083,10 +2083,10 @@ class MP3Player(Frame):
         if time.time() - self.light_on > self.light and (self.HP4_backlight == 1 or self.WS28_backlight == 1):
             self.led_fan.value = self.dim
         
-        if self.model != 0 and self.imgxon == 0:
+        if self.model != 0:
             self.count7 += 1
             # scroll artist name
-            if len(self.artist_name7) > self.length and self.count7 == 1:
+            if len(self.artist_name7) > self.length and self.count7 == 1 and self.imgxon == 0:
                 self.artist_name7 += self.artist_name7[0]
                 self.artist_name7 = self.artist_name7[1:len(self.artist_name7)]
                 if self.cutdown != 7:
@@ -2094,7 +2094,7 @@ class MP3Player(Frame):
                 else:
                     self.Disp_artist_name.set(self.artist_name7)
             # scroll album name
-            if len(self.album_name7) > self.length and self.count7 == 1:
+            if len(self.album_name7) > self.length and self.count7 == 1 and self.imgxon == 0:
                 self.album_name7 += self.album_name7[0]
                 self.album_name7 = self.album_name7[1:len(self.album_name7)]
                 if self.cutdown != 7:
