@@ -33,7 +33,7 @@ global fullscreen
 fullscreen = 1
 global cutdown
 
-# Pi_MP3_Player v17.16
+# Pi_MP3_Player v17.20
 
 #set display format
 cutdown = 4 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks,7:800x480 with scrollbars
@@ -54,38 +54,40 @@ class MP3Player(Frame):
                            "Radio Paradise Main (320)","http://stream.radioparadise.com/mp3-320",1,
                            "Radio Paradise Mellow (192)","http://stream.radioparadise.com/mellow-192",1,
                            "Radio Caroline","http://sc6.radiocaroline.net:10558/",0
-                           
-                           ]
-        self.Button_info_on = 1                     # show Info button, set = 1 to enable
-        self.Button_Radi_on = 1                     # show Radio button,set = 1 to enable
-        self.m3u_dir        = self.h_user + "/Documents/"    # where .m3us are stored
-        self.mp3sd_search   = self.h_user + "/*/*/*/*.mp3"   # search criteria for mp3s  (/home/USER/USBDrive Name/Artist Name/Album Name/Tracks.mp3)
-        self.mp3_search     = self.m_user + "/*/*/*/*.mp3"   # search criteria for mp3s  (/media/USER/USBDrive Name/Artist Name/Album Name/Tracks.mp3)
-        self.wav_search     = self.m_user + "/*/*/*/*.wav"   # search criteria for wavs  (/media/USER/USBDrive Name/Artist Name/Album Name/Tracks.wav)
-        self.flac_search    = self.m_user + "/*/*/*/*.flac"  # search criteria for flacs (/media/USER/USBDrive Name/Artist Name/Album Name/Tracks.flac)
-        self.dsf_search     = self.m_user + "/*/*/*/*.dsf"   # search criteria for dfss  (/media/USER/USBDrive Name/Artist Name/Album Name/Tracks.dsf)
-        self.m4a_search     = self.m_user + "/*/*/*/*.m4a"   # search criteria for m4as  (/media/USER/USBDrive Name/Artist Name/Album Name/Tracks.m4a)
-        self.mp32_search    = "/media/*/*/*/*.mp3"  # search criteria for mp3s  (/media/Drive/A/Artist Name - Album Name/Tracks.mp3)
-        self.flac2_search   = "/media/*/*/*/*.flac" # search criteria for flacs (/media/Drive/A/Artist Name - Album Name/Tracks.flac)
-        self.wav2_search    = "/media/*/*/*/*.wav"  # search criteria for wavs  (/media/Drive/A/Artist Name - Album Name/Tracks.wav)
-        self.dsf2_search    = "/media/*/*/*/*.dsf"  # search criteria for dfss  (/media/Drive/A/Artist Name - Album Name/Tracks.dsf)
-        self.m4a2_search    = "/media/*/*/*/*.m4a"  # search criteria for m4as  (/media/Drive/A/Artist Name - Album Name/Tracks.m4a)
+                          ]
+        self.Button_info_on = 1                               # show Info button, set = 1 to enable
+        self.Button_Radi_on = 1                               # show Radio button,set = 1 to enable
+        self.m3u_dir        = self.h_user + "/Documents/"     # where .m3us are stored
+        self.mp3sd_search   = self.h_user + "/*/*/*/*.mp3"    # search criteria for mp3s  (/home/USER/USBDrive Name/Artist Name/Album Name/Tracks.mp3)
+        self.mp3_search     = self.m_user + "/*/*/*/*.mp3"    # search criteria for mp3s  (/media/USER/USBDrive Name/Artist Name/Album Name/Tracks.mp3)
+        self.wav_search     = self.m_user + "/*/*/*/*.wav"    # search criteria for wavs  (/media/USER/USBDrive Name/Artist Name/Album Name/Tracks.wav)
+        self.flac_search    = self.m_user + "/*/*/*/*.flac"   # search criteria for flacs (/media/USER/USBDrive Name/Artist Name/Album Name/Tracks.flac)
+        self.dsf_search     = self.m_user + "/*/*/*/*.dsf"    # search criteria for dfss  (/media/USER/USBDrive Name/Artist Name/Album Name/Tracks.dsf)
+        self.m4a_search     = self.m_user + "/*/*/*/*.m4a"    # search criteria for m4as  (/media/USER/USBDrive Name/Artist Name/Album Name/Tracks.m4a)
+        self.mp32_search    = "/media/*/*/*/*.mp3"            # search criteria for mp3s  (/media/Drive/A/Artist Name - Album Name/Tracks.mp3)
+        self.flac2_search   = "/media/*/*/*/*.flac"           # search criteria for flacs (/media/Drive/A/Artist Name - Album Name/Tracks.flac)
+        self.wav2_search    = "/media/*/*/*/*.wav"            # search criteria for wavs  (/media/Drive/A/Artist Name - Album Name/Tracks.wav)
+        self.dsf2_search    = "/media/*/*/*/*.dsf"            # search criteria for dfss  (/media/Drive/A/Artist Name - Album Name/Tracks.dsf)
+        self.m4a2_search    = "/media/*/*/*/*.m4a"            # search criteria for m4as  (/media/Drive/A/Artist Name - Album Name/Tracks.m4a)
         self.mp33_search    = self.m_user + "/*/*/*/*/*.mp3"  # search criteria for mp3s  (/media/USER/USBDrive Name/Genre/Artist Name/Album Name/Tracks.mp3)
         self.wav3_search    = self.m_user + "/*/*/*/*/*.wav"  # search criteria for wavs  (/media/USER/USBDrive Name/Genre/Artist Name/Album Name/Tracks.wav)
         self.flac3_search   = self.m_user + "/*/*/*/*/*.flac" # search criteria for flacs (/media/USER/USBDrive Name/Genre/Artist Name/Album Name/Tracks.flac)
         self.dsf3_search    = self.m_user + "/*/*/*/*/*.dsf"  # search criteria for dfss  (/media/USER/USBDrive Name/Genre/Artist Name/Album Name/Tracks.dsf)
         self.m4a3_search    = self.m_user + "/*/*/*/*/*.m4a"  # search criteria for m4as  (/media/USER/USBDrive Name/Genre/Artist Name/Album Name/Tracks.m4a)
-        self.m3u_def        = "ALLTracks"           # name of default .m3u. Limit to 9 characters.
-        self.mp3_jpg        = "mp3.jpg"             # logo including the 'wheel', when inactive
-        self.mp3c_jpg       = "mp3c.jpg"            # blue logo including the 'wheel', when active
-        self.radio_jpg      = "radio.jpg"           # radio logo, shown if no jpg in /home/pi/Documents for Radio Station
-        self.Disp_max_time  = 120                   # in minutes. Limits time taken to determine playlist length.
-        self.volume         = 80                    # range 0 - 100. Will be overridden by saved volume in saved config file
-        self.gapless_time   = 2                     # in seconds. Defines length of track overlap.
-        self.scroll_rate    = 3                     # scroll rate 1 (slow) to 10 (fast)
-        self.WS28_backlight = 0                     # waveshare 2.8" backlight control, set to 1. Uses GPIO 18. EXPERIMENTAL !!
-        self.HP4_backlight  = 0                     # Hyperpixeself.L4 backlight control, set to 1. May flicker. Uses GPIO 19. EXPERIMENTAL !!
-        self.light          = 60                    # Backlight dimming timer for above, in seconds
+        self.m3u_def        = "ALLTracks"                     # name of default .m3u. Limit to 9 characters.
+        self.mp3_jpg        = "mp3.jpg"                       # logo including the 'wheel', when inactive
+        self.mp3c_jpg       = "mp3c.jpg"                      # blue logo including the 'wheel', when active
+        self.radio_jpg      = "radio.jpg"                     # radio logo, shown if no jpg in /home/pi/Documents for Radio Station
+        self.Disp_max_time  = 120  # in minutes. Limits time taken to determine playlist length.
+        self.volume         = 80   # range 0 - 100. Will be overridden by saved volume in saved config file
+        self.gapless_time   = 2    # in seconds. Defines length of track overlap.
+        self.scroll_rate    = 3    # scroll rate 1 (slow) to 10 (fast)
+        self.LCD_backlight  = 0    # LCD backlight control, set to 1 to activate.
+        self.pwm_pin        = 18   # LCD backlight GPIO
+        self.HP4_backlight  = 0    # Hyperpixel4 backlight control, set to 1. May flicker. Uses GPIO 19. EXPERIMENTAL !!
+        self.light          = 60   # Backlight dimming timer for above, in seconds
+        self.waveshare      = 0    # set to 1 if using a Waveshare 2.8" (A) LCD display with buttons
+        #-----------------------
         self.trace          = 0
         self.repeat         = 0
         self.play           = 0
@@ -108,7 +110,7 @@ class MP3Player(Frame):
         self.muted          = 0
         self.shuffle_on     = 0
         self.sorted         = 0
-        self.begin          = time.time()
+        self.begin          = time.monotonic()
         self.m3u_no         = 0
         self.stopstart      = 0
         self.paused         = 0
@@ -148,7 +150,7 @@ class MP3Player(Frame):
         self.track_no       = 0
         self.restart        = 0
         self.piz_timer      = 360
-        self.piz_timer2     = time.time()
+        self.piz_timer2     = time.monotonic()
         self.Radio_ON       = 0
         self.Radio_RON      = 0
         self.cutdown        = cutdown
@@ -166,10 +168,6 @@ class MP3Player(Frame):
         self.p_seconds      = 0
         self.copy           = 0
         self.trackdata      = []
-        self.voldn          = 21  # external volume down gpio input
-        self.volup          = 20  # external volume up gpio input
-        self.mute           = 16  # external mute gpio input
-        self.key_stop       = 12  # external STOP gpio input
         self.ac             = 0
         self.bc             = 0
         self.cc             = 0
@@ -178,8 +176,7 @@ class MP3Player(Frame):
         self.tracker        = 0
         self.reload         = 0
         self.imgxon         = 0
-        self.waveshare      = 0
-        
+                
         if self.cutdown != 4 and self.cutdown != 1 and self.cutdown != 5:
             self.master.bind("<Button-1>", self.Wheel_Opt_Button)
 
@@ -286,36 +283,31 @@ class MP3Player(Frame):
                 os.system("amixer set 'Digital' " + str(self.volume + 107))
         self.test            = 0
         self.counter5        = 0
-    
-        # change buttons if using cutdown = 4, may interfere with Pi-DAC Pro.
-        if cutdown == 4 and self.waveshare == 1:  # setup for waveshare 2.8"(A) LCD touchscreen with buttons.
-            self.voldn     = 24 # external volume down gpio input
-            self.volup     = 23 # external volume up gpio input
-            self.mute      = 21 # external mute gpio input
-            self.key_stop  = 25 # external STOP gpio input
        
         # check for HyperPixel4 LCD and if so disable GPIO controls.
         if os.path.exists ('/sys/devices/platform/i2c@0'): 
             self.gpio_enable = 0
             from gpiozero import PWMLED
             self.pwm_pin = 19
-            self.led_led = PWMLED(self.pwm_pin)
-            self.dim     = 0.1    # Backlight dim 
+            self.LCD_pwm = PWMLED(self.pwm_pin)
+            self.dim     = 0.1  # Backlight dim 
             self.bright  = 0.8  # Backlight bright , 1 full brightness
-            self.led_fan.value = self.bright
-        else:
+            self.LCD_pwm.value = self.bright
+        elif self.waveshare == 1 and self.cutdown == 4:
             self.gpio_enable = 1
-            self.button_voldn = Button(self.voldn)
-            self.button_mute = Button(self.mute)
-            self.button_volup = Button(self.volup)
-            self.button_key_stop = Button(self.key_stop)
-            if self.WS28_backlight == 1:
-                from gpiozero import PWMLED
-                self.pwm_pin = 18
-                self.led_led = PWMLED(self.pwm_pin)
-                self.dim     = 0.1  # Backlight dim 
-                self.bright  = 0.8  # Backlight bright , 1 full brightness
-                self.led_fan.value = self.bright
+            self.voldn           = 23 # external volume down gpio input
+            self.volup           = 24 # external volume up gpio input
+            self.mute            = 25 # external mute gpio input
+            self.button_voldn    = Button(self.voldn)
+            self.button_mute     = Button(self.mute)
+            self.button_volup    = Button(self.volup)
+        if self.LCD_backlight == 1:
+            self.gpio_enable = 1
+            from gpiozero import PWMLED
+            self.LCD_pwm = PWMLED(self.pwm_pin)
+            self.dim     = 0.0  # Backlight dim 
+            self.bright  = 0.8  # Backlight bright , 1 full brightness
+            self.LCD_pwm.value = self.bright
 
         # setup GUI
         self.Frame10 = tk.Frame(width=800, height=800)
@@ -1592,7 +1584,7 @@ class MP3Player(Frame):
     def Play(self):
         if self.trace == 1:
             print ("Play")
-        self.light_on = time.time()
+        self.light_on = time.monotonic()
         self.f_volume = self.volume
         if self.cutdown != 4 and self.cutdown != 5  and self.cutdown != 6 and self.cutdown != 1 and self.Radio_ON == 0:
             self.L6.config(text= "Playlist :")
@@ -1628,9 +1620,9 @@ class MP3Player(Frame):
             
         if self.album_start == 0 and self.stopstart != 1 and len(self.tunes) > 0 and self.Radio_ON == 0:
             self.stopstart = 1
-            self.light_on = time.time()
+            self.light_on = time.monotonic()
             self.play = 0
-            self.start2 = time.time()
+            self.start2 = time.monotonic()
             self.wheel = 0
             if self.BT == 0:
                 player.time_pos
@@ -1669,7 +1661,7 @@ class MP3Player(Frame):
                 else:
                     if os.path.exists(self.mp3_jpg):
                         self.img.config(image = self.render)
-                self.timer4 = time.time()
+                self.timer4 = time.monotonic()
             x = self.master.winfo_pointerx()
             y = self.master.winfo_pointery()
             abs_x = self.master.winfo_pointerx() - self.master.winfo_rootx()
@@ -1866,7 +1858,7 @@ class MP3Player(Frame):
                 seconds = int (self.track_len - (minutes * 60))
                 self.Disp_track_len.config(text ="%03d:%02d" % (minutes, seconds % 60))
                 self.play = 1
-                self.start = time.time()
+                self.start = time.monotonic()
                 if self.album_start == 1:
                     self.Button_TAlbum.config(bg = "red",fg = "white",text = "STOP")
                     self.Button_Start.config(bg = "light gray",fg = "white",text = "PLAY Playlist")
@@ -2005,7 +1997,7 @@ class MP3Player(Frame):
                 self.Disp_Total_tunes.config(text = counter - self.track_no + stop)
                 
             self.total = self.album_time
-        self.start2 = time.time()
+        self.start2 = time.monotonic()
         self.render2 = ""
         if self.drive_name[-1] == "*":
             path = "/" + self.drive_name1 + "/" +self.drive_name2 + "/" + self.drive_name[:-1] + "/" + self.artist_name + " - " + self.album_name + "/" +  "*.jpg"
@@ -2013,7 +2005,6 @@ class MP3Player(Frame):
             path = "/" + self.drive_name1 + "/" +self.drive_name2 + "/" + self.drive_name + "/" + self.artist_name + "/" + self.album_name + "/" +  "*.jpg"
         else:
             path = "/" + self.drive_name1 + "/" +self.drive_name2 + "/" + self.drive_name + "/" + self.genre_name + "/" + self.artist_name + "/" + self.album_name + "/" +  "*.jpg"
-        #print(self.genre_name,path,self.track)
         if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 3 or self.cutdown == 6:
             pictures = glob.glob(path)
             self.render2 = ""
@@ -2113,8 +2104,8 @@ class MP3Player(Frame):
                x -=1
                     
         # backlight off
-        if time.time() - self.light_on > self.light and (self.HP4_backlight == 1 or self.WS28_backlight == 1):
-            self.led_fan.value = self.dim
+        if time.monotonic() - self.light_on > self.light and (self.HP4_backlight == 1 or self.LCD_backlight == 1):
+            self.LCD_pwm.value = self.dim
         
         if self.model != 0:
             self.count7 += 1
@@ -2146,16 +2137,14 @@ class MP3Player(Frame):
             if self.count7 > (11 - self.scroll_rate):
                 self.count7 = 0
             
-        # if GPIO enabled (not using the HyperPixel4 display) then check the external switches
-        if self.gpio_enable == 1:
+        # if GPIO enabled and using Waveshare28 LCD, then check the external switches
+        if self.gpio_enable == 1 and self.waveshare == 1 and self.cutdown == 4:
             if self.button_volup.is_pressed:
-                self.Button_Vol_UP()
+                self.volume_UP()
             elif self.button_voldn.is_pressed:
                 self.volume_DN()
             elif self.button_mute.is_pressed:
                 self.Mute()
-            elif self.button_key_stop.is_pressed:
-                self.Stop_Play()
                     
         # end of album (no repeat)
         if self.album_start == 1:
@@ -2241,10 +2230,10 @@ class MP3Player(Frame):
         # end of track
         if os.path.exists(self.track):
             # fade out track if using Bluetooth
-            if time.time() - self.start > (self.track_len - self.gapless) - 4 and self.play == 1 and self.paused == 0 and self.BT == 1:
+            if time.monotonic() - self.start > (self.track_len - self.gapless) - 4 and self.play == 1 and self.paused == 0 and self.BT == 1:
                 self.Fade()
             # stop track early if using Bluetooth    
-            if time.time() - self.start > (self.track_len - self.gapless) - (self.BT) and self.play == 1 and self.paused == 0:
+            if time.monotonic() - self.start > (self.track_len - self.gapless) - (self.BT) and self.play == 1 and self.paused == 0:
                 if self.imgxon == 1:
                     self.imgx.after(100, self.imgx.destroy())
                     self.imgxon = 0
@@ -2305,8 +2294,8 @@ class MP3Player(Frame):
                 if self.track_no > len(self.tunes) - 1 and self.repeat == 1:
                     self.track_no = 0
                 # patch for Pi Zero and CPU load.
-                if self.model == 0 and self.play != 2 and time.time() - self.piz_timer2 > self.piz_timer:
-                    self.piz_timer2 = time.time()
+                if self.model == 0 and self.play != 2 and time.monotonic() - self.piz_timer2 > self.piz_timer:
+                    self.piz_timer2 = time.monotonic()
                     if os.path.exists ('/run/shm/up.txt'): 
                         os.remove("/run/shm/up.txt")
                     os.system("uptime >> /run/shm/up.txt")
@@ -2329,7 +2318,7 @@ class MP3Player(Frame):
             # display times (and bar charts if applicable)
             if self.play == 1 : 
                 if self.paused == 0:
-                    self.played = time.time() - self.start
+                    self.played = time.monotonic() - self.start
                 self.p_minutes = int(self.played // 60)
                 self.p_seconds = int (self.played - (self.p_minutes * 60))
                 if self.album_start == 0:
@@ -2345,7 +2334,7 @@ class MP3Player(Frame):
             if self.play == 1 and self.paused == 0: 
                 self.tplaylist = self.total + self.track_len
                 if self.stop == 0:
-                    self.tplaylist = (self.total + self.track_len - (time.time() - self.start2))
+                    self.tplaylist = (self.total + self.track_len - (time.monotonic() - self.start2))
                 self.minutes = int(self.tplaylist// 60)
                 self.seconds = int (self.tplaylist - (self.minutes * 60))
                 if self.album_start == 1:
@@ -2432,7 +2421,7 @@ class MP3Player(Frame):
                 f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
             if self.cutdown != 4 and self.cutdown != 1 and self.cutdown != 3 and self.cutdown != 2:
                 self.L3.config(text = "Rec'd:")
-            self.rec_begin = time.time()
+            self.rec_begin = time.monotonic()
             if self.cutdown == 6:
                 self.Disp_track_name1.config(fg = "#777",bg = "#ddd")
                 self.Disp_track_name2.config(fg = "#777",bg = "#ddd")
@@ -2502,7 +2491,7 @@ class MP3Player(Frame):
             t_minutes = int(self.total_record // 60)
             t_seconds = int (self.total_record - (t_minutes * 60))
             self.Disp_track_len.config(text ="%03d:%02d" % (t_minutes, t_seconds % 60))
-            self.record_current = int((self.total_record - (time.time() - self.rec_begin))/60)
+            self.record_current = int((self.total_record - (time.monotonic() - self.rec_begin))/60)
             self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.record_current + 1) + " mins")
             if self.Radio_ON == 1 and self.Radio_RON == 1 and self.shutdown == 1 and self.record_sleep == 1:
                 self.sleep_time_min = (self.record_current *60) + 60
@@ -2538,7 +2527,7 @@ class MP3Player(Frame):
                     self.Button_Gapless.config(fg = "black",bg = "light blue", text ="Gapless")
                 if self.cutdown == 6 or self.cutdown == 5:
                     self.Button_Radio.config(fg = "black",bg = "light blue", text ="Gapless")
-                self.time1 = time.time()
+                self.time1 = time.monotonic()
                 self.Button_Pause.config(fg = "black",bg = "orange", text ="Unpause")
                 if os.path.exists(self.mp3_jpg) and self.cutdown !=1  and self.cutdown != 4 and self.cutdown != 5:
                     self.img.config(image = self.render)
@@ -2546,7 +2535,7 @@ class MP3Player(Frame):
             # if playing and self.paused set (paused) then unset it and Unpause
             elif self.paused == 1 and self.stopstart == 1 and self.counter5 == 0:
                 self.paused = 0
-                self.time2 = time.time()
+                self.time2 = time.monotonic()
                 self.start = self.start + (self.time2 - self.time1)
                 self.start2 = self.start2 + (self.time2 - self.time1)
                 self.Button_Pause.config(fg = "black",bg = "light blue", text ="Pause")
@@ -2619,7 +2608,7 @@ class MP3Player(Frame):
         if self.cutdown == 7:
             self.artist_name  = (self.tunes[self.track_no].split('^')[0])
             self.album_name   = (self.tunes[self.track_no].split('^')[1])
-        self.light_on = time.time()
+        self.light_on = time.monotonic()
         self.f_volume = self.volume
         if self.cutdown != 4 and self.cutdown != 5  and self.cutdown != 6 and self.cutdown != 1 and self.Radio_ON == 0:
             self.L6.config(text= "Playlist :")
@@ -2865,10 +2854,10 @@ class MP3Player(Frame):
         if self.cutdown == 0 or self.cutdown == 7:
             self.L6.config(text= "Playlist :")
         self.Button_TAlbum.config(fg = "white",bg = "blue")
-        if self.album_start == 1 and self.shuffle_on == 1:
-            self.shuffle_on = 0
-            self.tunes[self.track_no - self.album_track + 1:self.tcount]=sorted(self.tunes[self.track_no  - self.album_track + 1:self.tcount])
-            self.Button_Shuffle.config(bg = "light blue",fg = "black",text = "Shuffle")
+        #if self.album_start == 1 and self.shuffle_on == 1:
+        #    self.shuffle_on = 0
+        #    self.tunes[self.track_no - self.album_track + 1:self.tcount]=sorted(self.tunes[self.track_no  - self.album_track + 1:self.tcount])
+        #    self.Button_Shuffle.config(bg = "light blue",fg = "black",text = "Shuffle")
         if self.BT == 0:
             player.time_pos = 0
         if self.paused == 1:
@@ -2928,16 +2917,16 @@ class MP3Player(Frame):
         abs_y = self.master.winfo_pointery() - self.master.winfo_rooty()
         
         # switch backlight on (if enabled)
-        if (self.WS28_backlight == 1 or self.HP4_backlight == 1) and (self.old_abs_x != abs_x or self.old_abs_y != abs_y) :
-            self.led_fan.value = self.bright
-            self.light_on = time.time()
+        if (self.LCD_backlight == 1 or self.HP4_backlight == 1) and (self.old_abs_x != abs_x or self.old_abs_y != abs_y) :
+            self.LCD_pwm.value = self.bright
+            self.light_on = time.monotonic()
         self.old_abs_x = abs_x
         self.old_abs_y = abs_y
                    
         # Read the Wheel position
         if self.cutdown != 1 and self.cutdown != 4 and self.cutdown != 5 and self.Radio_ON == 0:
           #Reshow Album cover jpg (assuming one present) after 2 second delay
-          if time.time() - self.timer4 > 2 and self.drive_name != "":
+          if time.monotonic() - self.timer4 > 2 and self.drive_name != "":
               if self.render2 != "":
                   self.img.config(image = self.render2)
                   self.timer4 = 0
@@ -2967,8 +2956,8 @@ class MP3Player(Frame):
             # if cursor on the wheel position
             if math.sqrt((x2*x2)+ (y2*y2)) > 40 and math.sqrt((x2*x2)+ (y2*y2)) < 100 :
                 if self.gpio_enable == 0:
-                    self.led_fan.value = self.bright
-                    self.light_on = time.time()
+                    self.LCD_pwm.value = self.bright
+                    self.light_on = time.monotonic()
                 # show the wheel (instead of album cover)
                 if self.cutdown != 1 and self.cutdown != 4 and self.cutdown != 5:
                     if os.path.exists(self.mp3_jpg):
@@ -2978,7 +2967,7 @@ class MP3Player(Frame):
                         else:
                             if os.path.exists(self.mp3_jpg):
                                 self.img.config(image = self.render)
-                        self.timer4 = time.time()
+                        self.timer4 = time.monotonic()
                 self.wheel = 1
                 if self.old_t > 19 and self.t < 5:
                     self.old_t = 0
@@ -3408,7 +3397,7 @@ class MP3Player(Frame):
             if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 3 or self.cutdown == 2:
                 self.Button_Next_AZ.config(fg = "black")
                 self.Disp_Name_m3u.config(background="light gray", foreground="black")
-            if self.play == 2:
+            if self.play == 2 and self.album_start == 1:
                 self.play = 0
             stop = 0
             if len(self.tunes) > 0:
@@ -3839,7 +3828,7 @@ class MP3Player(Frame):
     def Time_Left_Play(self):
          if self.trace == 1:
              print ("Time Left Play")
-         self.start2 = time.time()
+         self.start2 = time.monotonic()
          self.total = 0
          stop = 0
          counter = self.track_no 
@@ -4182,7 +4171,6 @@ class MP3Player(Frame):
             self.Button_repeat.config(bg = "light blue",fg = "black",text = "Repeat Album")
 
     def Shuffle_Tracks(self):
-        # CLEAR RAM
         if self.Radio_ON == 1 and self.Radio_RON == 0:
             rems = glob.glob("/run/shm/music/*/*/*/*/*.mp3")
             for x in range(0,len(rems)):
@@ -4221,7 +4209,7 @@ class MP3Player(Frame):
                 if self.cutdown == 7:
                     self.Disp_artist_name.set(self.artist_name)
                     self.ac = 1
-                    self.plist_callback() ####
+                    self.plist_callback()
                     self.Disp_album_name.set(self.album_name)
                     self.Disp_track_name.set(self.track_name)
             else:
@@ -4241,11 +4229,10 @@ class MP3Player(Frame):
                     self.Disp_plist_name.config(text=" " + self.que_dir[len(self.m3u_dir):])
                 self.Disp_Total_tunes.config(text =len(self.tunes))
                 self.Button_Shuffle.config(bg = "light blue",fg = "black",text = "Shuffle")
-                #self.track_no = 0
                 if self.cutdown == 7:
                     self.Disp_artist_name.set(self.artist_name)
                     self.ac = 0
-                    self.plist_callback() ####
+                    self.plist_callback()
                     self.Disp_album_name.set(self.album_name)
                     self.Disp_track_name.set(self.track_name)
             if self.play == 1:
@@ -4503,7 +4490,7 @@ class MP3Player(Frame):
             self.shutdown = 1
             if self.sleep_time == 0:
                 self.Check_Sleep()
-            self.begin = time.time()
+            self.begin = time.monotonic()
             self.sleep_time = int(self.sleep_time + 15.99)
             if self.sleep_time > self.max_sleep:
                 self.sleep_time = 0
@@ -4514,7 +4501,7 @@ class MP3Player(Frame):
             self.record_sleep = 0
             if self.sleep_time == 0:
                 self.Check_Sleep()
-            self.begin = time.time()
+            self.begin = time.monotonic()
             self.sleep_time_min = self.tplaylist + 60 
             self.sleep_time = int(self.sleep_time_min / 60)
         else:
@@ -4556,14 +4543,14 @@ class MP3Player(Frame):
             if self.album_start == 1 and self.album_sleep == 0:
                 self.sleep_current = int(self.tplaylist/60)  + 1
             else:            
-                self.sleep_current = int((self.sleep_time_min - (time.time() - self.begin))/60)
+                self.sleep_current = int((self.sleep_time_min - (time.monotonic() - self.begin))/60)
             if self.sleep_current > 0:
                 self.Button_Sleep.config(fg = "black", bg = "orange", text = str(self.sleep_current + 1)  + " mins")
             else:
-                self.Button_Sleep.config(fg = "yellow", bg = "red", text = str(int((self.sleep_time_min - (time.time() - self.begin)))) + " secs")
+                self.Button_Sleep.config(fg = "yellow", bg = "red", text = str(int((self.sleep_time_min - (time.monotonic() - self.begin)))) + " secs")
             if self.sleep_current < 1:
                 self.Button_Sleep.config(bg = "red")
-        if (time.time() - self.begin > self.sleep_time_min) and self.sleep_time > 0 and self.shutdown == 1 and self.Radio_RON == 0:
+        if (time.monotonic() - self.begin > self.sleep_time_min) and self.sleep_time > 0 and self.shutdown == 1 and self.Radio_RON == 0:
             if self.R_Stopped == 0:
                 os.system("sudo shutdown -h now")
             else:
@@ -5023,7 +5010,7 @@ class MP3Player(Frame):
                 self.play      = 1
                 self.version   = 1
                 self.R_Stopped = 0
-                self.rec_begin = time.time()
+                self.rec_begin = time.monotonic()
                 self.Name = self.Radio_Stns[self.Radio]
                 if self.Radio_Stns[self.Radio + 2] == 1 and self.record == 1:
                     self.Disp_played.config(text ="000:00")
@@ -5235,7 +5222,7 @@ class MP3Player(Frame):
         st = os.statvfs("/run/shm/")
         freeram = (st.f_bavail * st.f_frsize)/1100000
         if self.Radio_RON == 1 and self.record == 1:
-            self.rplayed = time.time() - self.rec_begin
+            self.rplayed = time.monotonic() - self.rec_begin
             self.r_minutes = int(self.rplayed // 60)
             self.r_seconds = int (self.rplayed - (self.r_minutes * 60))
             if self.r_seconds != self.roldsecs:
@@ -5243,11 +5230,11 @@ class MP3Player(Frame):
                 self.roldsecs = self.r_seconds
             rec_stat = 0
             rec_stat = (os.stat("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".mp3").st_size)/1000000
-            self.record_current = int((self.record_time_min - (time.time() - self.rec_begin))/60)
+            self.record_current = int((self.record_time_min - (time.monotonic() - self.rec_begin))/60)
             if self.record_current > 0:
                 self.Button_Pause.config(fg = "white", bg = "red", text = str(self.record_current + 1)  + " mins")
             else:
-                self.Button_Pause.config(fg = "yellow", bg = "red", text = str(int((self.record_time_min - (time.time() - self.rec_begin)))) + " secs")
+                self.Button_Pause.config(fg = "yellow", bg = "red", text = str(int((self.record_time_min - (time.monotonic() - self.rec_begin)))) + " secs")
             if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 6 and self.model != 0:
                 if self.cutdown != 3:
                     self.L9.config(text= " R :")
@@ -5255,8 +5242,8 @@ class MP3Player(Frame):
                 self.progress['value'] = (self.rplayed/self.record_time_min)*100
         self.Get_track(1)
         # Clear RAM if RAM space less than limit, or time exceeds 9900 seconds
-        if self.Radio_ON == 1 and self.Radio_RON == 0 and (time.time() - self.rec_begin > 9900 or freeram < self.ram_min):
-            self.rec_begin = time.time()
+        if self.Radio_ON == 1 and self.Radio_RON == 0 and (time.monotonic() - self.rec_begin > 9900 or freeram < self.ram_min):
+            self.rec_begin = time.monotonic()
             if self.Radio_Stns[self.Radio + 2] == 0:
                 self.q.kill()
             else:
@@ -5282,7 +5269,7 @@ class MP3Player(Frame):
                 if len(track) == 0:
                    time.sleep(2)
         # stop recording if record time exceeded or RAM space less than limit (wait for end of track if track names available in stream)     
-        if (self.Radio_RON == 1 and ((time.time() - self.rec_begin > self.record_time_min)) and self.record == 1 and self.oldtrack != self.track_nameX[self.counter]) or (self.Radio_RON == 1 and freeram < self.ram_min):
+        if (self.Radio_RON == 1 and ((time.monotonic() - self.rec_begin > self.record_time_min)) and self.record == 1 and self.oldtrack != self.track_nameX[self.counter]) or (self.Radio_RON == 1 and freeram < self.ram_min):
             if self.trace == 1:
                 print ("Stopped Recording")
             self.R_Stopped    = 1
@@ -5361,6 +5348,9 @@ class MP3Player(Frame):
         #get track name, if available.
         if self.trace == 1:
             print ("Get Track")
+        # backlight off
+        if time.monotonic() - self.light_on > self.light and (self.HP4_backlight == 1 or self.LCD_backlight == 1):
+            self.LCD_pwm.value = self.dim
         self.Radio_Stns2 = self.Radio_Stns[self.Radio]
         track = sorted(glob.glob("/run/shm/music/" + self.Radio_Stns2 + "/Radio_Recordings/*/incomplete/*.mp3"),key = os.path.getmtime, reverse=True)
         self.counter = 0
@@ -5499,12 +5489,12 @@ class MP3Player(Frame):
                         STxtBox.insert(END, line)
                 if self.Radio_RON == 1:
                     popup.after(10000, popup.destroy)
-                #popup.mainloop()
                     
     def Shutdown(self):
-        if (self.WS28_backlight == 1 or self.HP4_backlight == 1):
-            self.led_fan.value = self.bright
+        if (self.LCD_backlight == 1 or self.HP4_backlight == 1):
+            self.LCD_pwm.value = self.bright
         if self.shuffle_on == 1 and self.sleep_time > 0 and self.play == 0:
+            self.LCD_pwm.value = self.bright
             self.exit()
         else:
             print ("Shutdown")
