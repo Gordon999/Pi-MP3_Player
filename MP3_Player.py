@@ -176,6 +176,7 @@ class MP3Player(Frame):
         self.tracker        = 0
         self.reload         = 0
         self.imgxon         = 0
+        self.gpio_enable    = 0
                 
         if self.cutdown != 4 and self.cutdown != 1 and self.cutdown != 5:
             self.master.bind("<Button-1>", self.Wheel_Opt_Button)
