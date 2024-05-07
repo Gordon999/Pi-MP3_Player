@@ -33,7 +33,7 @@ global fullscreen
 fullscreen = 1
 global cutdown
 
-# Pi_MP3_Player v17.20
+# Pi_MP3_Player v17.22
 
 #set display format
 cutdown = 4 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks,7:800x480 with scrollbars
@@ -2233,7 +2233,7 @@ class MP3Player(Frame):
             # fade out track if using Bluetooth
             if time.monotonic() - self.start > (self.track_len - self.gapless) - 4 and self.play == 1 and self.paused == 0 and self.BT == 1:
                 self.Fade()
-            # stop track early if using Bluetooth    
+            # stop track (early if using Bluetooth)    
             if time.monotonic() - self.start > (self.track_len - self.gapless) - (self.BT) and self.play == 1 and self.paused == 0:
                 if self.imgxon == 1:
                     self.imgx.after(100, self.imgx.destroy())
@@ -2828,7 +2828,8 @@ class MP3Player(Frame):
         self.Button_Prev_Album.config(bg = "light blue", fg = "black")
         self.Button_Next_Album.config(bg = "light blue", fg = "black")
         self.Button_Prev_Track.config(bg = "light blue", fg = "black")
-        self.Button_Shuffle.config(bg = "light blue",fg = "black")
+        if self.shuffle_on == 0:
+            self.Button_Shuffle.config(bg = "light blue",fg = "black")
         self.gapless = 0
         self.Button_Radio.config(bg = "light blue", fg = "black", text = "Radio")
         self.Button_Start.config(bg = "green",fg = "white",text = "PLAY Playlist")
@@ -2855,10 +2856,10 @@ class MP3Player(Frame):
         if self.cutdown == 0 or self.cutdown == 7:
             self.L6.config(text= "Playlist :")
         self.Button_TAlbum.config(fg = "white",bg = "blue")
-        #if self.album_start == 1 and self.shuffle_on == 1:
-        #    self.shuffle_on = 0
-        #    self.tunes[self.track_no - self.album_track + 1:self.tcount]=sorted(self.tunes[self.track_no  - self.album_track + 1:self.tcount])
-        #    self.Button_Shuffle.config(bg = "light blue",fg = "black",text = "Shuffle")
+        if self.album_start == 1 and self.shuffle_on == 1:
+            self.shuffle_on = 0
+            self.tunes[self.track_no - self.album_track + 1:self.tcount]=sorted(self.tunes[self.track_no  - self.album_track + 1:self.tcount])
+            self.Button_Shuffle.config(bg = "light blue",fg = "black",text = "Shuffle")
         if self.BT == 0:
             player.time_pos = 0
         if self.paused == 1:
@@ -3897,25 +3898,25 @@ class MP3Player(Frame):
                 while (self.tunes[self.track_no].split('^')[0][0]) == self.artist_name[0] and stop == 0:
                     self.track_no +=1
                     if self.track_no > len(self.tunes) - 1:
-                        self.track_no = len(self.tunes) - 1
+                        self.track_no = 0 #len(self.tunes) - 1
                         stop = 1
             elif self.wheel_opt == 1:
                 while (self.tunes[self.track_no].split('^')[1][0]) == self.album_name[0] and stop == 0:
                     self.track_no +=1
                     if self.track_no > len(self.tunes) - 1:
-                        self.track_no = len(self.tunes) - 1
+                        self.track_no = 0 #len(self.tunes) - 1
                         stop = 1
             elif self.wheel_opt == 2:
                 while (self.tunes[self.track_no].split('^')[2][3]) == self.track_name[3] and stop == 0:
                     self.track_no +=1
                     if self.track_no > len(self.tunes) - 1:
-                        self.track_no = len(self.tunes) - 1
+                        self.track_no = 0 #len(self.tunes) - 1
                         stop = 1
             elif self.wheel_opt == 4:
                 while (self.tunes[self.track_no].split('^')[0][0][0:1]) == self.artist_name[0][0:1] and stop == 0:
                     self.track_no +=1
                     if self.track_no > len(self.tunes) - 1:
-                        self.track_no = len(self.tunes) - 1
+                        self.track_no = 0 #len(self.tunes) - 1
                         stop = 1
             self.Time_Left_Play()
 
@@ -4172,6 +4173,7 @@ class MP3Player(Frame):
             self.Button_repeat.config(bg = "light blue",fg = "black",text = "Repeat Album")
 
     def Shuffle_Tracks(self):
+        # clear ram
         if self.Radio_ON == 1 and self.Radio_RON == 0:
             rems = glob.glob("/run/shm/music/*/*/*/*/*.mp3")
             for x in range(0,len(rems)):
@@ -4194,6 +4196,7 @@ class MP3Player(Frame):
             rems = glob.glob("/run/shm/music/*/*/*.txt")
             for x in range(0,len(rems)):
                 os.remove(rems[x])
+        # shuffle
         if self.paused == 0 and self.album_start == 0 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
             if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 3:
                 self.Disp_Name_m3u.config(background="light gray", foreground="black")
