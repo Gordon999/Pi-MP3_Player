@@ -33,7 +33,7 @@ global fullscreen
 fullscreen = 1
 global cutdown
 
-# Pi_MP3_Player v17.22
+# Pi_MP3_Player v17.23
 
 #set display format
 cutdown = 4 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks,7:800x480 with scrollbars
@@ -55,6 +55,7 @@ class MP3Player(Frame):
                            "Radio Paradise Mellow (192)","http://stream.radioparadise.com/mellow-192",1,
                            "Radio Caroline","http://sc6.radiocaroline.net:10558/",0
                           ]
+        # settings
         self.Button_info_on = 1                               # show Info button, set = 1 to enable
         self.Button_Radi_on = 1                               # show Radio button,set = 1 to enable
         self.m3u_dir        = self.h_user + "/Documents/"     # where .m3us are stored
@@ -87,7 +88,8 @@ class MP3Player(Frame):
         self.HP4_backlight  = 0    # Hyperpixel4 backlight control, set to 1. May flicker. Uses GPIO 19. EXPERIMENTAL !!
         self.light          = 60   # Backlight dimming timer for above, in seconds
         self.waveshare      = 0    # set to 1 if using a Waveshare 2.8" (A) LCD display with buttons
-        #-----------------------
+        
+        # initial parameters
         self.trace          = 0
         self.repeat         = 0
         self.play           = 0
@@ -177,6 +179,7 @@ class MP3Player(Frame):
         self.reload         = 0
         self.imgxon         = 0
         self.gpio_enable    = 0
+        self.xxx            = 0
                 
         if self.cutdown != 4 and self.cutdown != 1 and self.cutdown != 5:
             self.master.bind("<Button-1>", self.Wheel_Opt_Button)
@@ -196,7 +199,7 @@ class MP3Player(Frame):
         if self.trace == 1:
             print (model,self.model)
 
-        # read radio_stns.txt
+        # read radio_stns.txt (Station Name,URL,X)
         if os.path.exists ("radio_stns.txt"): 
             with open("radio_stns.txt","r") as textobj:
                 line = textobj.readline()
@@ -208,7 +211,7 @@ class MP3Player(Frame):
                         self.Radio_Stns.append(int(c.strip()))
                     line = textobj.readline()
 
-        # read radio_stns.csv
+        # read radio_stns.csv (Station Name,URL,X,)
         if os.path.exists ("radio_stns.csv"): 
             with open("radio_stns.csv","r") as textobj:
                 line = textobj.readline()
@@ -1638,10 +1641,10 @@ class MP3Player(Frame):
                     self.Button_Radio.config(bg = "green", fg = "white", text = "Repeat Album")
             else:
                 self.Button_Radio.config(bg = "light grey", fg = "white") 
-            if self.version == 2:
-                self.Button_Reload.config(bg = "light blue", fg = "black", text = "Skip Fwd")
-            else:
-                self.Button_Reload.config(bg = "light grey", fg = "white")
+            #if self.version == 2:
+            #    self.Button_Reload.config(bg = "light blue", fg = "black", text = "Skip Fwd")
+            #else:
+            #    self.Button_Reload.config(bg = "light grey", fg = "white")
             self.auto_play = 1
             with open('Lasttrack3.txt', 'w') as f:
                 f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
@@ -1833,6 +1836,10 @@ class MP3Player(Frame):
             if os.path.exists(self.track):
                 if self.trace == 1:
                     print ("Start_Play - Track exists", self.track)
+                if self.version == 2: ###
+                    self.Button_Reload.config(bg = "light blue", fg = "black", text = "Skip Fwd")
+                else:
+                    self.Button_Reload.config(bg = "light grey", fg = "white")
                 if self.version == 2:
                     player.loadfile(self.track)
                     player.time_pos = 0
@@ -1906,6 +1913,8 @@ class MP3Player(Frame):
                     self.Stop_Play()
           else:
               print("No track")
+              self.album_start = 0
+              self.stopstart = 0
               self.Show_Track()
                     
         elif self.album_start == 1 and self.Radio_ON == 0:
@@ -2234,7 +2243,8 @@ class MP3Player(Frame):
             if time.monotonic() - self.start > (self.track_len - self.gapless) - 4 and self.play == 1 and self.paused == 0 and self.BT == 1:
                 self.Fade()
             # stop track (early if using Bluetooth)    
-            if time.monotonic() - self.start > (self.track_len - self.gapless) - (self.BT) and self.play == 1 and self.paused == 0:
+            if ((time.monotonic() - self.start > (self.track_len - self.gapless) - self.BT) or self.xxx == 1) and self.play == 1 and self.paused == 0:
+                self.xxx = 0
                 if self.imgxon == 1:
                     self.imgx.after(100, self.imgx.destroy())
                     self.imgxon = 0
@@ -2659,10 +2669,10 @@ class MP3Player(Frame):
                     self.Button_Radio.config(bg = "green", fg = "white", text = "Repeat Album")
             else:
                 self.Button_Radio.config(bg = "light grey", fg = "white")
-            if self.version == 2:
-                self.Button_Reload.config(bg = "light blue", fg = "black", text = "Skip Fwd")
-            else:
-                self.Button_Reload.config(bg = "light grey", fg = "white")
+            #if self.version == 2:
+            #    self.Button_Reload.config(bg = "light blue", fg = "black", text = "Skip Fwd")
+            #else:
+            #    self.Button_Reload.config(bg = "light grey", fg = "white")
             if self.cutdown == 4:
                 self.Button_Track_m3u.config(bg = "light grey", fg = "white")
                 self.Button_Artist_m3u.config(bg = "light grey", fg = "white")
@@ -3744,6 +3754,7 @@ class MP3Player(Frame):
                    else:
                        player.stop()
                    self.start = 0
+                   self.xxx = 1
                    self.track_no -=2
                    if self.track_no < -1:
                        self.track_no = len(self.tunes) - 1
@@ -3812,6 +3823,7 @@ class MP3Player(Frame):
                     else:
                         player.stop()
                     self.start = 0
+                    self.xxx = 1
                     if self.album_start == 0:
                         self.count1 = 0
                         self.count2 = 0
@@ -3871,6 +3883,8 @@ class MP3Player(Frame):
                     stop = 1
          self.minutes = int(self.total // 60)
          self.seconds = int (self.total - (self.minutes * 60))
+         if self.trace == 1:
+             print ("Time Left Play",self.minutes,self.seconds)
          if self.cutdown != 1 and self.cutdown != 4 and self.cutdown != 5  and self.cutdown != 6:
              if stop == 0:
                  self.Disp_Total_Plist.config(text ="%03d:%02d" % (self.minutes, self.seconds % 60))
@@ -3933,6 +3947,7 @@ class MP3Player(Frame):
     def RELOAD_List(self):
         if self.trace == 1:
             print ("RELOAD_List")
+        # skip forward (1/10 of track)
         if self.paused == 0 and (self.album_start == 1 or self.stopstart == 1) and self.Radio_ON == 0:
                    if self.play == 1 and self.version == 2 and self.paused == 0:
                        self.skip = int(self.track_len/10)
@@ -3944,7 +3959,7 @@ class MP3Player(Frame):
                            if self.BT == 0:
                                player.time_pos = self.played + self.skip
             
-            
+        # RELOAD tracks   
         if self.paused == 0 and self.album_start == 0 and self.stopstart == 0 and self.Radio_ON == 0:
             if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 3:
                 self.Disp_Name_m3u.config(background="light gray", foreground="black")
