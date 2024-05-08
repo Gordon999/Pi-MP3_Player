@@ -24,19 +24,20 @@ import socket
 import shutil
 from PIL import ImageTk, Image
 from gpiozero import Button
+from gpiozero import LED
 from mplayer import Player
 import wave
 import contextlib
 Player.introspect()
 player = Player()
 global fullscreen
-fullscreen = 1
 global cutdown
 
-# Pi_MP3_Player v17.23
+# Pi_MP3_Player v17.24
 
 #set display format
 cutdown = 4 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks,7:800x480 with scrollbars
+fullscreen = 1
 
 class MP3Player(Frame):
     
@@ -83,11 +84,13 @@ class MP3Player(Frame):
         self.volume         = 80   # range 0 - 100. Will be overridden by saved volume in saved config file
         self.gapless_time   = 2    # in seconds. Defines length of track overlap.
         self.scroll_rate    = 3    # scroll rate 1 (slow) to 10 (fast)
-        self.LCD_backlight  = 0    # LCD backlight control, set to 1 to activate.
+        self.LCD_backlight  = 1    # LCD backlight control, set to 1 to activate.
         self.pwm_pin        = 18   # LCD backlight GPIO
         self.HP4_backlight  = 0    # Hyperpixel4 backlight control, set to 1. May flicker. Uses GPIO 19. EXPERIMENTAL !!
         self.light          = 60   # Backlight dimming timer for above, in seconds
         self.waveshare      = 0    # set to 1 if using a Waveshare 2.8" (A) LCD display with buttons
+        self.dim            = 0.1  # Backlight dim 
+        self.bright         = 0.8  # Backlight bright , 1 full brightness
         
         # initial parameters
         self.trace          = 0
@@ -294,8 +297,6 @@ class MP3Player(Frame):
             from gpiozero import PWMLED
             self.pwm_pin = 19
             self.LCD_pwm = PWMLED(self.pwm_pin)
-            self.dim     = 0.1  # Backlight dim 
-            self.bright  = 0.8  # Backlight bright , 1 full brightness
             self.LCD_pwm.value = self.bright
         elif self.waveshare == 1 and self.cutdown == 4:
             self.gpio_enable = 1
@@ -309,8 +310,6 @@ class MP3Player(Frame):
             self.gpio_enable = 1
             from gpiozero import PWMLED
             self.LCD_pwm = PWMLED(self.pwm_pin)
-            self.dim     = 0.0  # Backlight dim 
-            self.bright  = 0.8  # Backlight bright , 1 full brightness
             self.LCD_pwm.value = self.bright
 
         # setup GUI
@@ -1802,9 +1801,7 @@ class MP3Player(Frame):
                 self.Button_Artist_m3u.config(bg = "light grey", fg = "white")
                 self.Button_Album_m3u.config(bg = "light grey", fg = "white")
                 self.Button_PList_m3u.config(bg = "light grey", fg = "white")
-        if self.cutdown == 4:
-            self.Button_Next_AZ.config(text = "NextAZ", bg = "light grey", fg = "white")
-      
+             
         if len(self.tunes) > 0 and self.play == 0 and self.paused == 0 and self.Radio_ON == 0:
           if self.trace == 1:
               print ("Start_Play",self.track_no)
@@ -1836,7 +1833,9 @@ class MP3Player(Frame):
             if os.path.exists(self.track):
                 if self.trace == 1:
                     print ("Start_Play - Track exists", self.track)
-                if self.version == 2: ###
+                if self.cutdown == 4:
+                    self.Button_Next_AZ.config(text = "NextAZ", bg = "light grey", fg = "white")
+                if self.version == 2: 
                     self.Button_Reload.config(bg = "light blue", fg = "black", text = "Skip Fwd")
                 else:
                     self.Button_Reload.config(bg = "light grey", fg = "white")
@@ -5510,17 +5509,14 @@ class MP3Player(Frame):
                     popup.after(10000, popup.destroy)
                     
     def Shutdown(self):
-        if (self.LCD_backlight == 1 or self.HP4_backlight == 1):
-            self.LCD_pwm.value = self.bright
         if self.shuffle_on == 1 and self.sleep_time > 0 and self.play == 0:
-            self.LCD_pwm.value = self.bright
             self.exit()
         else:
             print ("Shutdown")
             os.system("sudo shutdown -h now")
             
 def main():
-    global cutdown
+    global cutdown,fullscreen
     print ("Loading...")
     root = Tk()
     root.title("Pi MP3 Player")
@@ -5531,7 +5527,9 @@ def main():
     elif cutdown == 3:
         root.geometry("480x800")
     elif cutdown == 4:
-        root.geometry("520x320")
+        if fullscreen == 1:
+            root.wm_attributes('-fullscreen','true')
+        root.geometry("480x320")
     elif cutdown == 5:
         root.geometry("800x480")
     else:
