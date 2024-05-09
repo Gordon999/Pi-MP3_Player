@@ -33,10 +33,10 @@ player = Player()
 global fullscreen
 global cutdown
 
-# Pi_MP3_Player v17.24
+# Pi_MP3_Player v17.25
 
 #set display format
-cutdown = 4 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks,7:800x480 with scrollbars
+cutdown    = 4 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks,7:800x480 with scrollbars
 fullscreen = 1
 
 class MP3Player(Frame):
@@ -85,12 +85,10 @@ class MP3Player(Frame):
         self.gapless_time   = 2    # in seconds. Defines length of track overlap.
         self.scroll_rate    = 3    # scroll rate 1 (slow) to 10 (fast)
         self.LCD_backlight  = 1    # LCD backlight control, set to 1 to activate.
-        self.pwm_pin        = 18   # LCD backlight GPIO
-        self.HP4_backlight  = 0    # Hyperpixel4 backlight control, set to 1. May flicker. Uses GPIO 19. EXPERIMENTAL !!
-        self.light          = 60   # Backlight dimming timer for above, in seconds
+        self.LCD_LED_pin    = 14   # LCD backlight GPIO
+        self.HP4_backlight  = 0    # Hyperpixel4 backlight control, set to 1.
+        self.light          = 60   # Backlight OFF timer for above, in seconds
         self.waveshare      = 0    # set to 1 if using a Waveshare 2.8" (A) LCD display with buttons
-        self.dim            = 0.1  # Backlight dim 
-        self.bright         = 0.8  # Backlight bright , 1 full brightness
         
         # initial parameters
         self.trace          = 0
@@ -252,7 +250,7 @@ class MP3Player(Frame):
         if self.auto_play == 1 or self.auto_album == 1:
             self.track_no = track
         if self.Radio >= int(len(self.Radio_Stns)):
-            self.Radio    = 0
+            self.Radio = 0
         if self.auto_play == 0:
             self.start = self.auto_play
         else:
@@ -288,30 +286,32 @@ class MP3Player(Frame):
             os.system("amixer -D pulse sset Master " + str(self.volume) + "%")
             if self.mixername == "DSP Program":
                 os.system("amixer set 'Digital' " + str(self.volume + 107))
-        self.test            = 0
-        self.counter5        = 0
+        self.test     = 0
+        self.counter5 = 0
        
         # check for HyperPixel4 LCD and if so disable GPIO controls.
-        if os.path.exists ('/sys/devices/platform/i2c@0'): 
+        if os.path.exists ('/sys/devices/platform/i2c@0') and self.HP4_backlight == 1: 
             self.gpio_enable = 0
-            from gpiozero import PWMLED
-            self.pwm_pin = 19
-            self.LCD_pwm = PWMLED(self.pwm_pin)
-            self.LCD_pwm.value = self.bright
+            from gpiozero import LED
+            self.LCD_LED_pin = 19
+            self.LCD_LED = LED(self.LCD_LED_pin)
+            self.LCD_LED.on()
+        # enable buttons if using Waveshare TFT
         elif self.waveshare == 1 and self.cutdown == 4:
             self.gpio_enable = 1
-            self.voldn           = 23 # external volume down gpio input
-            self.volup           = 24 # external volume up gpio input
-            self.mute            = 25 # external mute gpio input
-            self.button_voldn    = Button(self.voldn)
-            self.button_mute     = Button(self.mute)
-            self.button_volup    = Button(self.volup)
+            self.voldn        = 23 # external volume down gpio input
+            self.volup        = 24 # external volume up gpio input
+            self.mute         = 25 # external mute gpio input
+            self.button_voldn = Button(self.voldn)
+            self.button_mute  = Button(self.mute)
+            self.button_volup = Button(self.volup)
+        # enable LCD backlight
         if self.LCD_backlight == 1:
             self.gpio_enable = 1
-            from gpiozero import PWMLED
-            self.LCD_pwm = PWMLED(self.pwm_pin)
-            self.LCD_pwm.value = self.bright
-
+            from gpiozero import LED
+            self.LCD_LED = LED(self.LCD_LED_pin)
+            self.LCD_LED.on()
+        
         # setup GUI
         self.Frame10 = tk.Frame(width=800, height=800)
         self.Frame10.grid_propagate(0)
@@ -2114,7 +2114,7 @@ class MP3Player(Frame):
                     
         # backlight off
         if time.monotonic() - self.light_on > self.light and (self.HP4_backlight == 1 or self.LCD_backlight == 1):
-            self.LCD_pwm.value = self.dim
+            self.LCD_LED.off()
         
         if self.model != 0:
             self.count7 += 1
@@ -2929,7 +2929,7 @@ class MP3Player(Frame):
         
         # switch backlight on (if enabled)
         if (self.LCD_backlight == 1 or self.HP4_backlight == 1) and (self.old_abs_x != abs_x or self.old_abs_y != abs_y) :
-            self.LCD_pwm.value = self.bright
+            self.LCD_LED.on()
             self.light_on = time.monotonic()
         self.old_abs_x = abs_x
         self.old_abs_y = abs_y
@@ -2967,7 +2967,7 @@ class MP3Player(Frame):
             # if cursor on the wheel position
             if math.sqrt((x2*x2)+ (y2*y2)) > 40 and math.sqrt((x2*x2)+ (y2*y2)) < 100 :
                 if self.gpio_enable == 0:
-                    self.LCD_pwm.value = self.bright
+                    self.LCD_LED.on()
                     self.light_on = time.monotonic()
                 # show the wheel (instead of album cover)
                 if self.cutdown != 1 and self.cutdown != 4 and self.cutdown != 5:
@@ -5368,7 +5368,7 @@ class MP3Player(Frame):
             print ("Get Track")
         # backlight off
         if time.monotonic() - self.light_on > self.light and (self.HP4_backlight == 1 or self.LCD_backlight == 1):
-            self.LCD_pwm.value = self.dim
+            self.LCD_LED.off()
         self.Radio_Stns2 = self.Radio_Stns[self.Radio]
         track = sorted(glob.glob("/run/shm/music/" + self.Radio_Stns2 + "/Radio_Recordings/*/incomplete/*.mp3"),key = os.path.getmtime, reverse=True)
         self.counter = 0
@@ -5527,8 +5527,6 @@ def main():
     elif cutdown == 3:
         root.geometry("480x800")
     elif cutdown == 4:
-        if fullscreen == 1:
-            root.wm_attributes('-fullscreen','true')
         root.geometry("480x320")
     elif cutdown == 5:
         root.geometry("800x480")
@@ -5547,6 +5545,10 @@ def main():
     elif root.winfo_screenwidth() == 480 and root.winfo_screenheight() == 320 and fullscreen == 1:
         root.wm_attributes('-fullscreen','true')
         root.geometry("480x320")
+        cutdown = 4
+    elif root.winfo_screenwidth() == 656 and root.winfo_screenheight() == 416 and fullscreen == 1:
+        root.wm_attributes('-fullscreen','true')
+        root.geometry("656x416")
         cutdown = 4
     ex = MP3Player()
     root.mainloop() 
