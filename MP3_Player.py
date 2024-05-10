@@ -91,7 +91,7 @@ class MP3Player(Frame):
         self.waveshare      = 0    # set to 1 if using a Waveshare 2.8" (A) LCD display with buttons
         
         # initial parameters
-        self.trace          = 1
+        self.trace          = 0
         self.repeat         = 0
         self.play           = 0
         self.sleep_time     = 0
