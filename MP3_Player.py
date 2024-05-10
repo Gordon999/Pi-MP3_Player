@@ -91,7 +91,7 @@ class MP3Player(Frame):
         self.waveshare      = 0    # set to 1 if using a Waveshare 2.8" (A) LCD display with buttons
         
         # initial parameters
-        self.trace          = 0
+        self.trace          = 1
         self.repeat         = 0
         self.play           = 0
         self.sleep_time     = 0
@@ -1572,7 +1572,7 @@ class MP3Player(Frame):
             else:
                 self.Disp_artist_name.config(fg = "red",text =self.artist_name)
                 self.Disp_album_name.config(fg = "red",text =self.album_name)
-                if self.track[-4:] == ".mp3" or self.track[-4:] == ".wav" or self.track[-4:] == ".dsf" or self.trcak[-4:] == ".m4a":
+                if self.track[-4:] == ".mp3" or self.track[-4:] == ".wav" or self.track[-4:] == ".dsf" or self.track[-4:] == ".m4a":
                     if self.cutdown != 7:
                         self.Disp_track_name.config(fg = "black",text =self.track_name[:-4])
                     else:
@@ -3840,7 +3840,7 @@ class MP3Player(Frame):
 
     def Time_Left_Play(self):
          if self.trace == 1:
-             print ("Time Left Play")
+             print ("Time Left Play ",self.tunes[self.track_no])
          self.start2 = time.monotonic()
          self.total = 0
          stop = 0
@@ -4360,7 +4360,7 @@ class MP3Player(Frame):
                    counter2 = Tracks[counter].count('/')
                    if counter2 == 6:
                        z,self.drive_name1,self.drive_name2,self.drive_name,self.artist_name,self.album_name,self.track_name  = Tracks[counter].split('/')
-                       self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2)
+                       self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)###
                    if counter2 == 7:
                        z,self.drive_name1,self.drive_name2,self.drive_name,self.genre_name,self.artist_name,self.album_name,self.track_name  = Tracks[counter].split('/')
                        self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
