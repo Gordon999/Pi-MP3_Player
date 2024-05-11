@@ -33,10 +33,13 @@ player = Player()
 global fullscreen
 global cutdown
 
-# Pi_MP3_Player v17.27
+# Pi_MP3_Player v17.28
 
 #set display format
-cutdown    = 2 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks,7:800x480 with scrollbars
+# 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320
+# 5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks
+# 7:800x480 with scrollbars
+cutdown    = 7
 fullscreen = 1
 
 class MP3Player(Frame):
@@ -969,7 +972,13 @@ class MP3Player(Frame):
 
 
         if self.cutdown == 7: # Pi 7" Display 800 x 480 with scrollbars
-            self.length = 60
+            self.length = 62
+            if scr_width == 800 and scr_height == 600:
+                hei = 3
+                hei2 = 3
+            else:
+                hei = 1
+                hei2 = 2
             Artist_variable = ""
             self.Artist_options = [""]
             self.Artist_variable = StringVar(self.Frame10)
@@ -991,39 +1000,39 @@ class MP3Player(Frame):
             self.Disp_track_name.grid(row = 4, column = 1,columnspan = 6)
             self.Disp_track_name.bind("<<ComboboxSelected>>",self.callback)
             self.Disp_track_name.configure(width=50, font="Verdana 12")
-            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", bg = "green",fg = "white",width = 7, height = 2,font = 18, command = self.Play, wraplength=80, justify=CENTER)
+            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", bg = "green",fg = "white",width = 7, height = hei2,font = 18, command = self.Play, wraplength=80, justify=CENTER)
             self.Button_Start.grid(row = 0, column = 0, padx = 10,pady = 10)
-            self.Button_Pause = tk.Button(self.Frame10, text = "Pause",bg = "light blue", width = 7, height = 2,command=self.Pause, wraplength=80, justify=CENTER)
+            self.Button_Pause = tk.Button(self.Frame10, text = "Pause",bg = "light blue", width = 7, height = hei2,command=self.Pause, wraplength=80, justify=CENTER)
             self.Button_Pause.grid(row = 0, column = 2, padx = 0,pady = 10)
-            self.Button_Gapless = tk.Button(self.Frame10, text = "Gapless", fg = "black",bg = "light blue", width = 7, height = 2,command=self.Gapless, wraplength=80, justify=CENTER)
+            self.Button_Gapless = tk.Button(self.Frame10, text = "Gapless", fg = "black",bg = "light blue", width = 7, height = hei2,command=self.Gapless, wraplength=80, justify=CENTER)
             self.Button_Gapless.grid(row = 0, column = 3,pady = 10)
-            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", bg = "blue",fg = "white", width = 7, height = 2,font = 18,command=self.Play_Album, wraplength=80, justify=CENTER)
+            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", bg = "blue",fg = "white", width = 7, height = hei2,font = 18,command=self.Play_Album, wraplength=80, justify=CENTER)
             self.Button_TAlbum.grid(row = 0, column = 1,pady = 10)
-            Button_Volume_Dn =  tk.Button(self.Frame10, text = " < Vol ",    bg = "yellow",width = 7, height = 2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
+            Button_Volume_Dn =  tk.Button(self.Frame10, text = " < Vol ",    bg = "yellow",width = 7, height = hei2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
             Button_Volume_Dn.grid(row = 0, column = 5)
             if self.m == 0:
-                self.Button_volume = tk.Button(self.Frame10, text = self.volume, fg = "black",width = 1, height = 2,command = self.Mute)
+                self.Button_volume = tk.Button(self.Frame10, text = self.volume, fg = "black",width = 4, height = hei2,command = self.Mute)
             else:
-                self.Button_volume = tk.Button(self.Frame10, text = self.volume, fg = "green",width = 1, height = 2,command = self.Mute)
+                self.Button_volume = tk.Button(self.Frame10, text = self.volume, fg = "green",width = 4, height = hei2,command = self.Mute)
             self.Button_volume.grid(row = 0, column = 6)
-            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol >",      bg = "yellow",width = 7, height = 2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
+            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol >",      bg = "yellow",width = 7, height = hei2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_UP.grid(row = 0, column = 7)
-            self.Button_Prev_PList =  tk.Button(self.Frame10, text = "< P-list",   bg = "light blue",width = 7, height = 1,command = self.Prev_m3u,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_PList =  tk.Button(self.Frame10, text = "< P-list",   bg = "light blue",width = 7, height = hei,command = self.Prev_m3u,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_PList.grid(row = 1, column = 0)
-            self.Button_Next_PList =  tk.Button(self.Frame10, text = "P-list >",   bg = "light blue",width = 7, height = 1,command = self.Next_m3u,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_PList =  tk.Button(self.Frame10, text = "P-list >",   bg = "light blue",width = 7, height = hei,command = self.Next_m3u,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_PList.grid(row = 1, column = 7)
-            self.Button_Prev_Artist =  tk.Button(self.Frame10, text = "< Artist",   bg = "light blue",fg = "red",width = 7, height = 2,command = self.Prev_Artist,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_Artist =  tk.Button(self.Frame10, text = "< Artist",   bg = "light blue",fg = "red",width = 7, height = hei2,command = self.Prev_Artist,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Artist.grid(row = 2, column = 0)
-            self.Button_Next_Artist =  tk.Button(self.Frame10, text = "Artist >",   bg = "light blue",width = 7, height = 2,command = self.Next_Artist,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Artist =  tk.Button(self.Frame10, text = "Artist >",   bg = "light blue",width = 7, height = hei2,command = self.Next_Artist,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_Artist.grid(row = 2, column = 7)
-            self.Button_Prev_Album =  tk.Button(self.Frame10, text = "< Album",    bg = "light blue",width = 7, height = 2,command = self.Prev_Album,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_Album =  tk.Button(self.Frame10, text = "< Album",    bg = "light blue",width = 7, height = hei2,command = self.Prev_Album,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Album.grid(row = 3, column = 0)
-            self.Button_Next_Album =  tk.Button(self.Frame10, text = "Album >",     bg = "light blue",width = 7, height = 2,command = self.Next_Album,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Album =  tk.Button(self.Frame10, text = "Album >",     bg = "light blue",width = 7, height = hei2,command = self.Next_Album,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_Album.grid(row = 3, column = 7)
             if self.Button_info_on == 1:
-                self.Button_Prev_Track =  tk.Button(self.Frame10, text = "< Track",    bg = "light blue",width = 7, height = 1,command = self.Prev_Track,repeatdelay=1000, repeatinterval=500)
+                self.Button_Prev_Track =  tk.Button(self.Frame10, text = "< Track",    bg = "light blue",width = 7, height = hei,command = self.Prev_Track,repeatdelay=1000, repeatinterval=500)
                 self.Button_Prev_Track.grid(row = 4, column = 0)
-                self.Button_Next_Track = tk.Button(self.Frame10, text = "Track >",    bg = "light blue",width = 7, height = 1,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
+                self.Button_Next_Track = tk.Button(self.Frame10, text = "Track >",    bg = "light blue",width = 7, height = hei,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
                 self.Button_Next_Track.grid(row = 4, column = 7)
                 self.Button_Info = tk.Button(self.Frame10, text = "Info",    bg = "light blue",width = 7, height = 1, command=self.PopupInfo)
                 self.Button_Info.grid(row =5 , column = 7)
@@ -1061,7 +1070,7 @@ class MP3Player(Frame):
             self.Button_Shuffle.grid(row = 7, column = 5, columnspan = 2)
             self.Button_AZ_artists = tk.Button(self.Frame10, text = "A-Z Sort",bg = "light blue", fg = "black",width = 7, height = 2,command = self.AZ_Tracks, wraplength=80, justify=CENTER)
             self.Button_AZ_artists.grid(row = 7, column = 3)
-            self.Button_Sleep = tk.Button(self.Frame10, text = "SLEEP", bg = "light blue",width = 7, height = 2,command = self.sleep,repeatdelay=1000, repeatinterval=500)
+            self.Button_Sleep = tk.Button(self.Frame10, text = "SLEEP", bg = "light blue",width = 7, height = hei2,command = self.sleep,repeatdelay=1000, repeatinterval=500)
             self.Button_Sleep.grid(row = 0, column = 4, padx = 0)
             self.Button_Track_m3u = tk.Button(self.Frame10, text = "ADD track   to .m3u", bg = "light green",width = 7, height = 2,command = self.Track_m3u, wraplength=80, justify=CENTER)
             self.Button_Track_m3u.grid(row = 8, column = 2)
@@ -5537,29 +5546,21 @@ def main():
         root.geometry("800x480")
     else:
         root.geometry("800x480")
-    if root.winfo_screenwidth() == 800 and root.winfo_screenheight() == 480 and fullscreen == 1:
-        root.wm_attributes('-fullscreen','true')
-    elif root.winfo_screenwidth() == 320 and root.winfo_screenheight() == 240 and fullscreen == 1:
-        root.wm_attributes('-fullscreen','true')
+    if root.winfo_screenwidth() == 320 and root.winfo_screenheight() == 240:
         root.geometry("320x240")
         cutdown = 1
-    elif root.winfo_screenwidth() == 640 and root.winfo_screenheight() == 480 and fullscreen == 1:
-        root.wm_attributes('-fullscreen','true')
-    elif root.winfo_screenwidth() == 480 and root.winfo_screenheight() == 800 and fullscreen == 1:
-        root.wm_attributes('-fullscreen','true')
-    elif root.winfo_screenwidth() == 480 and root.winfo_screenheight() == 320 and fullscreen == 1:
-        root.wm_attributes('-fullscreen','true')
+    elif root.winfo_screenwidth() == 480 and root.winfo_screenheight() == 320:
         root.geometry("480x320")
         cutdown = 4
-    elif root.winfo_screenwidth() == 656 and root.winfo_screenheight() == 416 and fullscreen == 1:
-        root.wm_attributes('-fullscreen','true')
+    elif root.winfo_screenwidth() == 656 and root.winfo_screenheight() == 416:
         root.geometry("656x416")
         cutdown = 2
-    elif root.winfo_screenwidth() == 640 and root.winfo_screenheight() == 480 and fullscreen == 1:
-        root.wm_attributes('-fullscreen','true')
+    elif root.winfo_screenwidth() == 640 and root.winfo_screenheight() == 480:
         root.geometry("640x480")
         cutdown = 2
-    scr_width = root.winfo_screenwidth()
+    if fullscreen == 1:
+        root.wm_attributes('-fullscreen','true')
+    scr_width  = root.winfo_screenwidth()
     scr_height = root.winfo_screenheight()
     ex = MP3Player()
     root.mainloop() 
