@@ -574,7 +574,7 @@ class MP3Player(Frame):
             self.Button_Add_to_FAV.grid(row = 7, column = 4)
             self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", bg = "light blue",width = 5, height = 2,command = self.Shuffle_Tracks, wraplength=80, justify=CENTER)
             self.Button_Shuffle.grid(row = 7, column = 6)
-            self.Button_AZ_artists = tk.Button(self.Frame10, text = "A-Z Sort",bg = "light blue", fg = "black",width = 5, height = 2,command = self.AZ_Tracks, wraplength=80, justify=CENTER)
+            self.Button_AZ_artists = tk.Button(self.Frame10, text = "A-Z Sort",bg = "light blue", fg = "black",width = 5, height = 2,font=("Arial",8),command = self.AZ_Tracks, wraplength=65, justify=CENTER)
             self.Button_AZ_artists.grid(row = 7, column = 7)
             self.Button_Sleep = tk.Button(self.Frame10, text = "SLEEP", bg = "light blue",width = 5, height = 2,command = self.sleep,repeatdelay=1000, repeatinterval=500)
             self.Button_Sleep.grid(row = 9, column = 3, padx = 0)
@@ -4322,7 +4322,7 @@ class MP3Player(Frame):
                    self.Button_AZ_artists.config(bg = "green",fg = "white",text = "A-Z Artists ON")
                    self.tunes.sort()
                if self.sort_no == 2:
-                   self.Button_AZ_artists.config(bg = "green",fg = "white",text = "A-Z Albums ON")
+                   self.Button_AZ_artists.config(bg = "green",fg = "white",text = "A-Z Album ON")
                    self.tunes2 = []
                    for counter in range (0,len(self.tunes)):
                        self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[counter].split('^')
