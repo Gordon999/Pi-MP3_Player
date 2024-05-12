@@ -40,7 +40,7 @@ global cutdown
 # 5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks
 # 7:800x480 with scrollbars
 cutdown    = 2
-fullscreen = 0
+fullscreen = 1
 
 class MP3Player(Frame):
     
