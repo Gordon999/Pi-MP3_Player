@@ -33,14 +33,14 @@ player = Player()
 global fullscreen
 global cutdown
 
-# Pi_MP3_Player v17.29
+# Pi_MP3_Player v17.30
 
 #set display format
 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320
 # 5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks
 # 7:800x480 with scrollbars
 cutdown    = 2
-fullscreen = 1
+fullscreen = 0
 
 class MP3Player(Frame):
     
@@ -4448,10 +4448,10 @@ class MP3Player(Frame):
                         artist.append(self.tunes[counter])
                 artist.sort()
                 for counter in range(0,len(artist)):
-                    self.artist_name,self.album_name2,self.track_name,self.drive_name,self.drive_name1,self.drive_name2  = artist[counter].split('^')
+                    self.artist_name,self.album_name2,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = artist[counter].split('^')
                     
                     with open(self.m3u_dir + Name + ".m3u", 'a') as f:
-                        if self.genre == "None":
+                        if self.genre_name == "None":
                             f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.artist_name + "/" + self.album_name2 + "/" + self.track_name + "\n")
                         else:
                             f.write("/" + self.drive_name1 + "/" + self.drive_name2 + "/" + self.drive_name + "/" + self.genre_name + "/" + self.artist_name + "/" + self.album_name2 + "/" + self.track_name + "\n")
