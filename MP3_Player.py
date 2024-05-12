@@ -33,13 +33,13 @@ player = Player()
 global fullscreen
 global cutdown
 
-# Pi_MP3_Player v17.28
+# Pi_MP3_Player v17.29
 
 #set display format
 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320
 # 5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks
 # 7:800x480 with scrollbars
-cutdown    = 7
+cutdown    = 2
 fullscreen = 1
 
 class MP3Player(Frame):
@@ -515,7 +515,7 @@ class MP3Player(Frame):
             self.L4 = tk.Label(self.Frame10,text="/")
             self.L4.grid(row = 5, column = 3, sticky = W,padx = 5)
             
-        if self.cutdown == 2: # 640 x 480
+        if self.cutdown == 2: # 640 x 480 or 656 x 416
             self.length = 60
             if scr_width == 640 and scr_height == 480:
                 wid = 44
@@ -566,11 +566,11 @@ class MP3Player(Frame):
             else:
                 self.img = tk.Label(self.Frame10)
                 self.img.grid(row = 5, column = 0, columnspan = 2, rowspan = 5, pady = 2)
-            self.Button_Reload = tk.Button(self.Frame10, text = " RELOAD " + self.m3u_def ,width = 5, height = 2, bg = "#c5c",command = self.RELOAD_List, wraplength=80, justify=CENTER)
+            self.Button_Reload = tk.Button(self.Frame10, text = " RELOAD " + self.m3u_def ,width = 6, height = 2,font=("Arial",8), bg = "#c5c",command = self.RELOAD_List, wraplength=80, justify=CENTER)
             self.Button_Reload.grid(row = 7, column = 3,padx = 10, pady = 0)
             self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdown",   bg = "gray",width = 5, height = 2,command = self.Shutdown)
             self.Button_Shutdown.grid(row = 9, column = 7)
-            self.Button_Add_to_FAV = tk.Button(self.Frame10, text = "Add track to FAV .m3u  " ,width = 6, height = 2, bg = "light green",command = self.FAV_List, wraplength=80, justify=CENTER)
+            self.Button_Add_to_FAV = tk.Button(self.Frame10, text = "Add track to FAV .m3u  " ,width = 6, height = 2, bg = "light green",font=("Arial",9),command = self.FAV_List, wraplength=70, justify=CENTER)
             self.Button_Add_to_FAV.grid(row = 7, column = 4)
             self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", bg = "light blue",width = 5, height = 2,command = self.Shuffle_Tracks, wraplength=80, justify=CENTER)
             self.Button_Shuffle.grid(row = 7, column = 6)
@@ -578,13 +578,13 @@ class MP3Player(Frame):
             self.Button_AZ_artists.grid(row = 7, column = 7)
             self.Button_Sleep = tk.Button(self.Frame10, text = "SLEEP", bg = "light blue",width = 5, height = 2,command = self.sleep,repeatdelay=1000, repeatinterval=500)
             self.Button_Sleep.grid(row = 9, column = 3, padx = 0)
-            self.Button_Track_m3u = tk.Button(self.Frame10, text = "ADD track   to .m3u", bg = "light green",width = 5, height = 2,command = self.Track_m3u, wraplength=80, justify=CENTER)
+            self.Button_Track_m3u = tk.Button(self.Frame10, text = "ADD track   to .m3u", bg = "light green",width = 6,font=("Arial",8), height = 2,command = self.Track_m3u, wraplength=65, justify=CENTER)
             self.Button_Track_m3u.grid(row = 8, column = 3)
-            self.Button_Artist_m3u = tk.Button(self.Frame10, text = "ADD artist   to .m3u", bg = "light green",width = 5, height = 2,command = self.Artist_m3u, wraplength=80, justify=CENTER)
+            self.Button_Artist_m3u = tk.Button(self.Frame10, text = "ADD artist   to .m3u", bg = "light green",width = 6, height = 2,font=("Arial",8),command = self.Artist_m3u, wraplength=65, justify=CENTER)
             self.Button_Artist_m3u.grid(row = 8, column = 6)
-            self.Button_Album_m3u = tk.Button(self.Frame10, text = "ADD album   to .m3u", bg = "light green",width = 5, height = 2,command = self.Album_m3u, wraplength=80, justify=CENTER)
+            self.Button_Album_m3u = tk.Button(self.Frame10, text = "ADD album  to .m3u", bg = "light green",width = 6, height = 2,font=("Arial",8),command = self.Album_m3u, wraplength=65, justify=CENTER)
             self.Button_Album_m3u.grid(row = 8, column = 5)
-            self.Button_PList_m3u = tk.Button(self.Frame10, text = "ADD P-list   to .m3u", bg = "light green",width = 5, height = 2,command = self.PList_m3u, wraplength=80, justify=CENTER)
+            self.Button_PList_m3u = tk.Button(self.Frame10, text = "ADD P-list   to .m3u", bg = "light green",width = 6, height = 2,font=("Arial",8),command = self.PList_m3u, wraplength=65, justify=CENTER)
             self.Button_PList_m3u.grid(row = 8, column = 7)
             self.Button_DELETE_m3u = tk.Button(self.Frame10, text = "DEL .m3u", bg = "light grey",width = 5, height = 1,command = self.DelPL_m3u)
             self.Button_DELETE_m3u.grid(row = 9, column = 5, padx = 0)
