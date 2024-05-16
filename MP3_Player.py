@@ -33,7 +33,7 @@ player = Player()
 global fullscreen
 global cutdown
 
-# Pi_MP3_Player v17.30
+# Pi_MP3_Player v17.34
 
 #set display format
 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320
@@ -60,8 +60,9 @@ class MP3Player(Frame):
                            "Radio Caroline","http://sc6.radiocaroline.net:10558/",0
                           ]
         # settings
-        self.Button_info_on = 1                               # show Info button, set = 1 to enable
-        self.Button_Radi_on = 1                               # show Radio button,set = 1 to enable
+        self.Shutdown_exit  = 1  # set to 1 to shutdown the Pi on pressing SHUTDOWN
+        self.Button_info_on = 1  # show Info button, set = 1 to enable
+        self.Button_Radi_on = 1  # show Radio button,set = 1 to enable
         self.m3u_dir        = self.h_user + "/Documents/"     # where .m3us are stored
         self.mp3sd_search   = self.h_user + "/*/*/*/*.mp3"    # search criteria for mp3s  (/home/USER/USBDrive Name/Artist Name/Album Name/Tracks.mp3)
         self.mp3_search     = self.m_user + "/*/*/*/*.mp3"    # search criteria for mp3s  (/media/USER/USBDrive Name/Artist Name/Album Name/Tracks.mp3)
@@ -88,9 +89,11 @@ class MP3Player(Frame):
         self.gapless_time   = 2    # in seconds. Defines length of track overlap.
         self.scroll_rate    = 3    # scroll rate 1 (slow) to 10 (fast)
         self.LCD_backlight  = 1    # LCD backlight control, set to 1 to activate.
-        self.LCD_LED_pin    = 14   # LCD backlight GPIO
+        self.LCD_LED_pin    = 23   # LCD backlight GPIO
         self.HP4_backlight  = 0    # Hyperpixel4 backlight control, set to 1.
         self.light          = 60   # Backlight OFF timer for above, in seconds
+        self.dim            = 0.1  # Backlight dim 
+        self.bright         = 0.8  # Backlight bright , 1 full brightness
         self.waveshare      = 0    # set to 1 if using a Waveshare 2.8" (A) LCD display with buttons
         
         # initial parameters
@@ -293,27 +296,31 @@ class MP3Player(Frame):
         self.counter5 = 0
        
         # check for HyperPixel4 LCD and if so disable GPIO controls.
-        if os.path.exists ('/sys/devices/platform/i2c@0') and self.HP4_backlight == 1: 
+        if os.path.exists ('/sys/devices/platform/i2c@0'): 
             self.gpio_enable = 0
-            from gpiozero import LED
-            self.LCD_LED_pin = 19
-            self.LCD_LED = LED(self.LCD_LED_pin)
-            self.LCD_LED.on()
-        # enable buttons if using Waveshare TFT
+            from gpiozero import PWMLED
+            self.pwm_pin = 19
+            self.LCD_pwm = PWMLED(self.LCD_LED_pin)
+            self.dim     = 0.1  # Backlight dim 
+            self.bright  = 0.8  # Backlight bright , 1 full brightness
+            self.LCD_pwm.value = self.bright
+        # enable buttons on Waveshare LCD (A)
         elif self.waveshare == 1 and self.cutdown == 4:
             self.gpio_enable = 1
-            self.voldn        = 23 # external volume down gpio input
-            self.volup        = 24 # external volume up gpio input
-            self.mute         = 25 # external mute gpio input
-            self.button_voldn = Button(self.voldn)
-            self.button_mute  = Button(self.mute)
-            self.button_volup = Button(self.volup)
+            self.voldn           = 23 # external volume down gpio input
+            self.volup           = 24 # external volume up gpio input
+            self.mute            = 25 # external mute gpio input
+            self.button_voldn    = Button(self.voldn)
+            self.button_mute     = Button(self.mute)
+            self.button_volup    = Button(self.volup)
         # enable LCD backlight
         if self.LCD_backlight == 1:
             self.gpio_enable = 1
-            from gpiozero import LED
-            self.LCD_LED = LED(self.LCD_LED_pin)
-            self.LCD_LED.on()
+            from gpiozero import PWMLED
+            self.LCD_pwm = PWMLED(self.LCD_LED_pin)
+            self.dim     = 0.0  # Backlight dim 
+            self.bright  = 0.8  # Backlight bright , 1 full brightness
+            self.LCD_pwm.value = self.bright
         
         # setup GUI
         self.Frame10 = tk.Frame(width=800, height=800)
@@ -534,9 +541,9 @@ class MP3Player(Frame):
             self.Button_Vol_DN =  tk.Button(self.Frame10, text = " < Vol ",    bg = "yellow",width = 5, height = 2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_DN.grid(row = 0, column = 5)
             if self.m == 0:
-                self.Button_volume = tk.Button(self.Frame10, text = self.volume, bg = "white",fg = "black",width = 1, height = 2,command = self.Mute)
+                self.Button_volume = tk.Button(self.Frame10, text = self.volume, bg = "yellow",fg = "black",width = 1, height = 2,command = self.Mute)
             else:
-                self.Button_volume = tk.Button(self.Frame10, text = self.volume, bg = "white",fg = "green",width = 1, height = 2,command = self.Mute)
+                self.Button_volume = tk.Button(self.Frame10, text = self.volume, bg = "yellow",fg = "green",width = 1, height = 2,command = self.Mute)
             self.Button_volume.grid(row = 0, column = 6,pady = 0)
             self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol >",      bg = "yellow",width = 5, height = 2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_UP.grid(row = 0, column = 7)
@@ -593,7 +600,7 @@ class MP3Player(Frame):
                 self.Button_Radio.grid(row = 9, column = 6)
             self.Button_repeat = tk.Button(self.Frame10, text = "Repeat", bg = "light blue",fg = "black",width = 5, height = 2,command = self.Repeat, wraplength=80, justify=CENTER)
             self.Button_repeat.grid(row = 7, column = 5)
-            self.Disp_sleep = tk.Button(self.Frame10, text = "OFF", bg = "white",fg = "black",width = 2, height = 2,command = self.sleep_off)
+            self.Disp_sleep = tk.Button(self.Frame10, text = "OFF", bg = "light blue",fg = "black",width = 2, height = 2,command = self.sleep_off)
             self.Disp_sleep.grid(row = 9, column = 4, sticky = W)
             if self.BT == 1:
                 self.Button_Pause.config(fg = "light gray",bg = "light gray")
@@ -603,8 +610,6 @@ class MP3Player(Frame):
             self.L2.grid(row = 5, column = 4, sticky = W, padx = 16)
             self.L4 = tk.Label(self.Frame10,text="of")
             self.L4.grid(row = 6, column = 4, sticky = W, padx = 16)
-            L7 = tk.Label(self.Frame10, text="mins")
-            L7.grid(row = 9, column = 4, sticky = E, padx = 15) 
             self.L8 = tk.Label(self.Frame10, text=".m3u")
             self.L8.grid(row = 8, column = 4, sticky = S)
             self.L9 = tk.Label(self.Frame10, text=" ")
@@ -2128,7 +2133,7 @@ class MP3Player(Frame):
                     
         # backlight off
         if time.monotonic() - self.light_on > self.light and (self.HP4_backlight == 1 or self.LCD_backlight == 1):
-            self.LCD_LED.off()
+            self.LCD_pwm.value = self.dim
         
         if self.model != 0:
             self.count7 += 1
@@ -2943,7 +2948,7 @@ class MP3Player(Frame):
         
         # switch backlight on (if enabled)
         if (self.LCD_backlight == 1 or self.HP4_backlight == 1) and (self.old_abs_x != abs_x or self.old_abs_y != abs_y) :
-            self.LCD_LED.on()
+            self.LCD_pwm.value = self.bright
             self.light_on = time.monotonic()
         self.old_abs_x = abs_x
         self.old_abs_y = abs_y
@@ -2981,7 +2986,7 @@ class MP3Player(Frame):
             # if cursor on the wheel position
             if math.sqrt((x2*x2)+ (y2*y2)) > 40 and math.sqrt((x2*x2)+ (y2*y2)) < 100 :
                 if self.gpio_enable == 0:
-                    self.LCD_LED.on()
+                    self.LCD_pwm.value = self.bright
                     self.light_on = time.monotonic()
                 # show the wheel (instead of album cover)
                 if self.cutdown != 1 and self.cutdown != 4 and self.cutdown != 5:
@@ -4554,8 +4559,10 @@ class MP3Player(Frame):
             
         if self.sleep_time == 0:
             self.Button_Sleep.config(bg = "light blue", text = "SLEEP")
+            self.Disp_sleep.config(fg = "black", bg = "light blue")
         elif self.sleep_time > 0:
             self.Button_Sleep.config(fg = "black", bg = "orange", text = str(self.sleep_time)  + " mins")
+            self.Disp_sleep.config(fg = "black", bg = "orange")
             
     def sleep_off(self):
         if self.cutdown != 1  and self.cutdown != 5 and self.cutdown != 6:
@@ -4567,6 +4574,7 @@ class MP3Player(Frame):
             self.sleep_time_min = 0
             self.album_sleep = 0
             self.Button_Sleep.config(bg = "light blue", text = "SLEEP")
+            self.Disp_sleep.config(fg = "black", bg = "light blue")
  
     def Check_Sleep(self):
         if self.trace == 1:
@@ -4671,6 +4679,9 @@ class MP3Player(Frame):
             self.q.kill()
         self.play = 0
         self.master.destroy()
+        self.LCD_pwm.close()
+        os.system("raspi-gpio set " + str(self.LCD_LED_pin) + " op")
+        os.system("raspi-gpio set " + str(self.LCD_LED_pin) + " dh")
         sys.exit()
 
     def Search(self):
@@ -5382,7 +5393,7 @@ class MP3Player(Frame):
             print ("Get Track")
         # backlight off
         if time.monotonic() - self.light_on > self.light and (self.HP4_backlight == 1 or self.LCD_backlight == 1):
-            self.LCD_LED.off()
+            self.LCD_pwm.value = self.dim
         self.Radio_Stns2 = self.Radio_Stns[self.Radio]
         track = sorted(glob.glob("/run/shm/music/" + self.Radio_Stns2 + "/Radio_Recordings/*/incomplete/*.mp3"),key = os.path.getmtime, reverse=True)
         self.counter = 0
@@ -5523,9 +5534,9 @@ class MP3Player(Frame):
                     popup.after(10000, popup.destroy)
                     
     def Shutdown(self):
-        if self.shuffle_on == 1 and self.sleep_time > 0 and self.play == 0:
+        if (self.shuffle_on == 1 and self.sleep_time > 0 and self.play == 0) or self.Shutdown_exit == 0:
             self.exit()
-        else:
+        elif self.Shutdown_exit == 1:
             print ("Shutdown")
             os.system("sudo shutdown -h now")
             
