@@ -60,7 +60,7 @@ class MP3Player(Frame):
                            "Radio Caroline","http://sc6.radiocaroline.net:10558/",0
                           ]
         # settings
-        self.Shutdown_exit  = 1  # set to 1 to shutdown the Pi on pressing SHUTDOWN
+        self.Shutdown_exit  = 0  # set to 1 to shutdown the Pi on pressing SHUTDOWN
         self.Button_info_on = 1  # show Info button, set = 1 to enable
         self.Button_Radi_on = 1  # show Radio button,set = 1 to enable
         self.m3u_dir        = self.h_user + "/Documents/"     # where .m3us are stored
