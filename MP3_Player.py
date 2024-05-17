@@ -33,7 +33,7 @@ player = Player()
 global fullscreen
 global cutdown
 
-# Pi_MP3_Player v17.34
+# Pi_MP3_Player v17.35
 
 #set display format
 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320
@@ -60,7 +60,7 @@ class MP3Player(Frame):
                            "Radio Caroline","http://sc6.radiocaroline.net:10558/",0
                           ]
         # settings
-        self.Shutdown_exit  = 0  # set to 1 to shutdown the Pi on pressing SHUTDOWN
+        self.Shutdown_exit  = 0  # set to 1 to shutdown the Pi on pressing SHUTDOWN, 0 to only exit script
         self.Button_info_on = 1  # show Info button, set = 1 to enable
         self.Button_Radi_on = 1  # show Radio button,set = 1 to enable
         self.m3u_dir        = self.h_user + "/Documents/"     # where .m3us are stored
@@ -388,7 +388,10 @@ class MP3Player(Frame):
                 self.img.grid(row = 5, column = 0, columnspan = 2, rowspan = 5, pady = 2)
             self.Button_Reload = tk.Button(self.Frame10, text = " RELOAD " + self.m3u_def ,width = 7, height = 2, bg = "#c5c",command = self.RELOAD_List, wraplength=80, justify=CENTER)
             self.Button_Reload.grid(row = 7, column = 2,padx = 10, pady = 0)
-            self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdown",   bg = "gray",width = 7, height = 2,command = self.Shutdown, wraplength=80, justify=CENTER)
+            if self.Shutdown_exit == 1:
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdown",   bg = "gray",width = 7, height = 2,command = self.Shutdown, wraplength=80, justify=CENTER)
+            else:
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "EXIT",   bg = "gray",width = 7, height = 2,command = self.Shutdown, wraplength=80, justify=CENTER)
             self.Button_Shutdown.grid(row = 9, column = 7, padx = 8)
             self.Button_Add_to_FAV = tk.Button(self.Frame10, text = "Add track to FAV .m3u  " ,width = 7, height = 2, bg = "light green",command = self.FAV_List, wraplength=80, justify=CENTER)
             self.Button_Add_to_FAV.grid(row = 9, column = 2)
@@ -493,7 +496,10 @@ class MP3Player(Frame):
             if self.Button_Radi_on == 1:
                 self.Button_Radio = tk.Button(self.Frame10, text = "Radio",    bg = "light blue",width = 4, height = 1,command = self.RadioX,repeatdelay=1000, repeatinterval=500)
                 self.Button_Radio.grid(row = 6, column = 3)
-            self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdn",   bg = "gray",width = 4, height = 1,command = self.Shutdown)
+            if self.Shutdown_exit == 1:
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdn",   bg = "gray",width = 4, height = 1,command = self.Shutdown)
+            else:
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "EXIT",   bg = "gray",width = 4, height = 1,command = self.Shutdown)
             self.Button_Shutdown.grid(row = 6, column = 4)
             self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", bg = "light blue",width = 4, height = 1,command = self.Shuffle_Tracks, wraplength=80, justify=CENTER)
             self.Button_Shuffle.grid(row = 6, column = 1)
@@ -575,7 +581,10 @@ class MP3Player(Frame):
                 self.img.grid(row = 5, column = 0, columnspan = 2, rowspan = 5, pady = 2)
             self.Button_Reload = tk.Button(self.Frame10, text = " RELOAD " + self.m3u_def ,width = 6, height = 2,font=("Arial",8), bg = "#c5c",command = self.RELOAD_List, wraplength=80, justify=CENTER)
             self.Button_Reload.grid(row = 7, column = 3,padx = 10, pady = 0)
-            self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdown",   bg = "gray",width = 5, height = 2,command = self.Shutdown)
+            if self.Shutdown_exit == 1:
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdown",   bg = "gray",width = 5, height = 2,command = self.Shutdown)
+            else:
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "EXIT",   bg = "gray",width = 5, height = 2,command = self.Shutdown)
             self.Button_Shutdown.grid(row = 9, column = 7)
             self.Button_Add_to_FAV = tk.Button(self.Frame10, text = "Add track to FAV .m3u  " ,width = 6, height = 2, bg = "light green",font=("Arial",9),command = self.FAV_List, wraplength=70, justify=CENTER)
             self.Button_Add_to_FAV.grid(row = 7, column = 4)
@@ -675,7 +684,10 @@ class MP3Player(Frame):
             self.Button_Next_AZ.grid(row = 5, column = 4, pady = 0)
             self.Button_Reload = tk.Button(self.Frame10, text = "RELOAD",width = 6, height = 2, bg = "#c5c",command = self.RELOAD_List, wraplength=80, justify=CENTER)
             self.Button_Reload.grid(row = 6, column = 0)
-            self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdn",   bg = "gray",width = 5, height = 2,command = self.Shutdown)
+            if self.Shutdown_exit == 1:
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdown",   bg = "gray",width = 5, height = 2,command = self.Shutdown)
+            else:
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "EXIT",   bg = "gray",width = 5, height = 2,command = self.Shutdown)
             self.Button_Shutdown.grid(row = 15, column = 4)
             self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", bg = "light blue",width = 6, height = 2,command = self.Shuffle_Tracks, wraplength=80, justify=CENTER)
             self.Button_Shuffle.grid(row = 6, column = 3)
@@ -776,7 +788,10 @@ class MP3Player(Frame):
             self.Button_Next_AZ.grid(row = 6, column = 3, pady = 0)
             self.Button_Reload = tk.Button(self.Frame10, text = "RELOAD",width = 6, height = 2, bg = "#c5c",command = self.RELOAD_List, wraplength=80, justify=CENTER)
             self.Button_Reload.grid(row = 6, column = 0)
-            self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdn",   bg = "gray",width = 5, height = 2,command = self.Shutdown)
+            if self.Shutdown_exit == 1:
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdown",   bg = "gray",width = 5, height = 2,command = self.Shutdown)
+            else:
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "EXIT",   bg = "gray",width = 5, height = 2,command = self.Shutdown)
             self.Button_Shutdown.grid(row = 6, column = 5)
             self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", bg = "light blue",width = 6, height = 2,command = self.Shuffle_Tracks, wraplength=80, justify=CENTER)
             self.Button_Shuffle.grid(row = 6, column = 1)
@@ -855,7 +870,10 @@ class MP3Player(Frame):
             if self.Button_Radi_on == 1:
                 self.Button_Radio = tk.Button(self.Frame10, text = "Radio",    bg = "light blue", font = 50,width = 12, height = 4,command = self.RadioX, wraplength=80, justify=CENTER)
                 self.Button_Radio.grid(row = 6, column = 3)
-            self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdn", font = 50,   bg = "gray",width = 12, height = 3,command = self.Shutdown)
+            if self.Shutdown_exit == 1:
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdn",   bg = "gray",width = 12, height = 3,command = self.Shutdown)
+            else:
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "EXIT",   bg = "gray",width = 12, height = 3,command = self.Shutdown)
             self.Button_Shutdown.grid(row = 6, column = 4)
             self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", font = 50, bg = "light blue",width = 12, height = 4,command = self.Shuffle_Tracks, wraplength=80, justify=CENTER)
             self.Button_Shuffle.grid(row = 0, column = 2)
@@ -916,7 +934,10 @@ class MP3Player(Frame):
             if self.Button_Radi_on == 1:
                 self.Button_Radio = tk.Button(self.Frame10, text = "Radio", font = 50,    bg = "light blue",width = 12, height = 2,command = self.RadioX, wraplength=80, justify=CENTER)
                 self.Button_Radio.grid(row = 19, column = 3)
-            self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdn", font = 50,   bg = "gray",width = 12, height = 2,command = self.Shutdown)
+            if self.Shutdown_exit == 1:
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdn",   bg = "gray",width = 12, height = 2,command = self.Shutdown)
+            else:
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "EXIT",   bg = "gray",width = 12, height = 2,command = self.Shutdown)
             self.Button_Shutdown.grid(row = 19, column = 4)
             self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", font = 50, bg = "light blue",width = 12, height = 2,command = self.Shuffle_Tracks, wraplength=80, justify=CENTER)
             self.Button_Shuffle.grid(row = 0, column = 2)
@@ -1064,7 +1085,10 @@ class MP3Player(Frame):
                 self.img.grid(row = 5, column = 0, columnspan = 2, rowspan = 5, pady = 2)
             self.Button_Reload = tk.Button(self.Frame10, text = " RELOAD " + self.m3u_def ,width = 7, height = 2, bg = "#c5c",command = self.RELOAD_List, wraplength=80, justify=CENTER)
             self.Button_Reload.grid(row = 7, column = 2,padx = 10, pady = 0)
-            self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdown",   bg = "gray",width = 7, height = 2,command = self.Shutdown, wraplength=80, justify=CENTER)
+            if self.Shutdown_exit == 1:
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdown",   bg = "gray",width = 7, height = 2,command = self.Shutdown, wraplength=80, justify=CENTER)
+            else:
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "EXIT",   bg = "gray",width = 7, height = 2,command = self.Shutdown, wraplength=80, justify=CENTER)
             self.Button_Shutdown.grid(row = 9, column = 7, padx = 8)
             self.Button_Add_to_FAV = tk.Button(self.Frame10, text = "Add track to FAV .m3u  " ,width = 7, height = 2, bg = "light green",command = self.FAV_List, wraplength=80, justify=CENTER)
             self.Button_Add_to_FAV.grid(row = 9, column = 2)
