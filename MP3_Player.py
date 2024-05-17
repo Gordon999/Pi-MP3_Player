@@ -4583,10 +4583,12 @@ class MP3Player(Frame):
             
         if self.sleep_time == 0:
             self.Button_Sleep.config(bg = "light blue", text = "SLEEP")
-            self.Disp_sleep.config(fg = "black", bg = "light blue")
+            if self.cutdown == 2:
+                self.Disp_sleep.config(fg = "black", bg = "light blue")
         elif self.sleep_time > 0:
             self.Button_Sleep.config(fg = "black", bg = "orange", text = str(self.sleep_time)  + " mins")
-            self.Disp_sleep.config(fg = "black", bg = "orange")
+            if self.cutdown == 2:
+                self.Disp_sleep.config(fg = "black", bg = "orange")
             
     def sleep_off(self):
         if self.cutdown != 1  and self.cutdown != 5 and self.cutdown != 6:
