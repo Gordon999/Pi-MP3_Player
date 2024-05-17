@@ -33,7 +33,7 @@ player = Player()
 global fullscreen
 global cutdown
 
-# Pi_MP3_Player v17.35
+# Pi_MP3_Player v17.36
 
 #set display format
 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320
@@ -60,7 +60,7 @@ class MP3Player(Frame):
                            "Radio Caroline","http://sc6.radiocaroline.net:10558/",0
                           ]
         # settings
-        self.Shutdown_exit  = 0  # set to 1 to shutdown the Pi on pressing SHUTDOWN, 0 to only exit script
+        self.Shutdown_exit  = 1  # set to 1 to shutdown the Pi on pressing SHUTDOWN, 0 to only exit script
         self.Button_info_on = 1  # show Info button, set = 1 to enable
         self.Button_Radi_on = 1  # show Radio button,set = 1 to enable
         self.m3u_dir        = self.h_user + "/Documents/"     # where .m3us are stored
@@ -190,7 +190,7 @@ class MP3Player(Frame):
                 
         if self.cutdown != 4 and self.cutdown != 1 and self.cutdown != 5:
             self.master.bind("<Button-1>", self.Wheel_Opt_Button)
-
+        
         #check Pi model.
         if os.path.exists ('/run/shm/md.txt'): 
             os.remove("/run/shm/md.txt")
@@ -326,6 +326,16 @@ class MP3Player(Frame):
         self.Frame10 = tk.Frame(width=800, height=800)
         self.Frame10.grid_propagate(0)
         self.Frame10.grid(row=0, column=0)
+
+        # shutdown button left click
+        def left_click(event):
+            if (self.shuffle_on == 1 and self.sleep_time > 0 and self.play == 0) or self.Shutdown_exit == 0:
+                self.exit()
+            else:
+                os.system("sudo shutdown -h now")
+        # shutdown button right click
+        def right_click(event):
+            self.exit()
 
         if self.cutdown == 0: # Pi 7" Display 800 x 480
             self.length = 60
@@ -1152,7 +1162,9 @@ class MP3Player(Frame):
             self.Disp_Total_Plist = tk.Label(self.Frame10, height=1, width=7)
             self.Disp_Total_Plist.grid(row = 6, column = 4, columnspan = 2, sticky = E, padx = 50)
 
-
+        self.Button_Shutdown.bind("<Button-1>", left_click)
+        self.Button_Shutdown.bind("<Button-3>", right_click)
+        
         if self.cutdown != 1  and self.cutdown != 5 and self.cutdown != 6 and self.model != 0:                
             self.s = ttk.Style()
             self.s.theme_use('default')
@@ -5562,9 +5574,6 @@ class MP3Player(Frame):
     def Shutdown(self):
         if (self.shuffle_on == 1 and self.sleep_time > 0 and self.play == 0) or self.Shutdown_exit == 0:
             self.exit()
-        elif self.Shutdown_exit == 1:
-            print ("Shutdown")
-            os.system("sudo shutdown -h now")
             
 def main():
     global cutdown,fullscreen,scr_width,scr_height
