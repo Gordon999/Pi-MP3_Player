@@ -33,7 +33,7 @@ player = Player()
 global fullscreen
 global cutdown
 
-# Pi_MP3_Player v17.36
+# Pi_MP3_Player v17.37
 
 #set display format
 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320
@@ -60,7 +60,7 @@ class MP3Player(Frame):
                            "Radio Caroline","http://sc6.radiocaroline.net:10558/",0
                           ]
         # settings
-        self.Shutdown_exit  = 1  # set to 1 to shutdown the Pi on pressing SHUTDOWN, 0 to only exit script
+        self.Shutdown_exit  = 0  # set to 1 to shutdown the Pi on pressing SHUTDOWN, 0 to only exit script
         self.Button_info_on = 1  # show Info button, set = 1 to enable
         self.Button_Radi_on = 1  # show Radio button,set = 1 to enable
         self.m3u_dir        = self.h_user + "/Documents/"     # where .m3us are stored
@@ -554,32 +554,32 @@ class MP3Player(Frame):
             self.Button_Gapless.grid(row = 0, column = 4,pady = 0)
             self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", bg = "blue",fg = "white", width = 6, height = 2,font = 18,command=self.Play_Album, wraplength=60, justify=CENTER)
             self.Button_TAlbum.grid(row = 0, column = 1,pady = 0)
-            self.Button_Vol_DN =  tk.Button(self.Frame10, text = " < Vol ",    bg = "yellow",width = 5, height = 2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
+            self.Button_Vol_DN =  tk.Button(self.Frame10, text = " < Vol ",    bg = "yellow",width = 6, height = 2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_DN.grid(row = 0, column = 5)
             if self.m == 0:
                 self.Button_volume = tk.Button(self.Frame10, text = self.volume, bg = "yellow",fg = "black",width = 1, height = 2,command = self.Mute)
             else:
                 self.Button_volume = tk.Button(self.Frame10, text = self.volume, bg = "yellow",fg = "green",width = 1, height = 2,command = self.Mute)
             self.Button_volume.grid(row = 0, column = 6,pady = 0)
-            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol >",      bg = "yellow",width = 5, height = 2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
+            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol >",      bg = "yellow",width = 6, height = 2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_UP.grid(row = 0, column = 7)
-            self.Button_Prev_PList =  tk.Button(self.Frame10, text = "< P-list",   bg = "light blue",width = 5, height = hei,command = self.Prev_m3u,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_PList =  tk.Button(self.Frame10, text = "< P-list",   bg = "light blue",width = 6, height = hei,command = self.Prev_m3u,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_PList.grid(row = 1, column = 0)
-            self.Button_Next_PList =  tk.Button(self.Frame10, text = "P-list >",   bg = "light blue",width = 5, height = hei,command = self.Next_m3u,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_PList =  tk.Button(self.Frame10, text = "P-list >",   bg = "light blue",width = 6, height = hei,command = self.Next_m3u,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_PList.grid(row = 1, column = 7)
-            self.Button_Prev_Artist =  tk.Button(self.Frame10, text = "< Artist",   bg = "light blue",fg = "red",width = 5, height = hei,command = self.Prev_Artist,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_Artist =  tk.Button(self.Frame10, text = "< Artist",   bg = "light blue",fg = "red",width = 6, height = hei,command = self.Prev_Artist,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Artist.grid(row = 2, column = 0)
-            self.Button_Next_Artist =  tk.Button(self.Frame10, text = "Artist >",   bg = "light blue",width = 5, height = hei,command = self.Next_Artist,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Artist =  tk.Button(self.Frame10, text = "Artist >",   bg = "light blue",width = 6, height = hei,command = self.Next_Artist,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_Artist.grid(row = 2, column = 7)
-            self.Button_Prev_Album =  tk.Button(self.Frame10, text = "< Album",    bg = "light blue",width = 5, height = hei,command = self.Prev_Album,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_Album =  tk.Button(self.Frame10, text = "< Album",    bg = "light blue",width = 6, height = hei,command = self.Prev_Album,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Album.grid(row = 3, column = 0)
-            self.Button_Next_Album =  tk.Button(self.Frame10, text = "Album >",     bg = "light blue",width = 5, height = hei,command = self.Next_Album,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Album =  tk.Button(self.Frame10, text = "Album >",     bg = "light blue",width = 6, height = hei,command = self.Next_Album,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_Album.grid(row = 3, column = 7)
-            self.Button_Prev_Track =  tk.Button(self.Frame10, text = "< Track",    bg = "light blue",width = 5, height = hei,command = self.Prev_Track,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_Track =  tk.Button(self.Frame10, text = "< Track",    bg = "light blue",width = 6, height = hei,command = self.Prev_Track,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Track.grid(row = 4, column = 0)
-            self.Button_Next_Track = tk.Button(self.Frame10, text = "Track >",    bg = "light blue",width = 5, height = hei,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Track = tk.Button(self.Frame10, text = "Track >",    bg = "light blue",width = 6, height = hei,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_Track.grid(row =4, column = 7)
-            self.Button_Next_AZ = tk.Button(self.Frame10, text = "Next A-Z",   width = 5, height = 1,bg = "light blue",command=self.nextAZ,repeatdelay=250, repeatinterval=500)
+            self.Button_Next_AZ = tk.Button(self.Frame10, text = "Next A-Z",   width = 6, height = 1,bg = "light blue",command=self.nextAZ,repeatdelay=250, repeatinterval=500)
             self.Button_Next_AZ.grid(row = 5, column = 7, pady = 0)
             if os.path.exists(self.mp3c_jpg):
                 self.load = Image.open(self.mp3c_jpg)
@@ -600,7 +600,7 @@ class MP3Player(Frame):
             self.Button_Add_to_FAV.grid(row = 7, column = 4)
             self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", bg = "light blue",width = 5, height = 2,command = self.Shuffle_Tracks, wraplength=80, justify=CENTER)
             self.Button_Shuffle.grid(row = 7, column = 6)
-            self.Button_AZ_artists = tk.Button(self.Frame10, text = "A-Z Sort",bg = "light blue", fg = "black",width = 5, height = 2,font=("Arial",8),command = self.AZ_Tracks, wraplength=65, justify=CENTER)
+            self.Button_AZ_artists = tk.Button(self.Frame10, text = "A-Z Sort",bg = "light blue", fg = "black",width = 6, height = 2,font=("Arial",8),command = self.AZ_Tracks, wraplength=65, justify=CENTER)
             self.Button_AZ_artists.grid(row = 7, column = 7)
             self.Button_Sleep = tk.Button(self.Frame10, text = "SLEEP", bg = "light blue",width = 5, height = 2,command = self.sleep,repeatdelay=1000, repeatinterval=500)
             self.Button_Sleep.grid(row = 9, column = 3, padx = 0)
@@ -610,7 +610,7 @@ class MP3Player(Frame):
             self.Button_Artist_m3u.grid(row = 8, column = 6)
             self.Button_Album_m3u = tk.Button(self.Frame10, text = "ADD album  to .m3u", bg = "light green",width = 6, height = 2,font=("Arial",8),command = self.Album_m3u, wraplength=65, justify=CENTER)
             self.Button_Album_m3u.grid(row = 8, column = 5)
-            self.Button_PList_m3u = tk.Button(self.Frame10, text = "ADD P-list   to .m3u", bg = "light green",width = 6, height = 2,font=("Arial",8),command = self.PList_m3u, wraplength=65, justify=CENTER)
+            self.Button_PList_m3u = tk.Button(self.Frame10, text = "ADD P-list   to .m3u", bg = "light green",width = 6, height = 2,font=("Arial",8),command = self.PList_m3u, wraplength=63, justify=CENTER)
             self.Button_PList_m3u.grid(row = 8, column = 7)
             self.Button_DELETE_m3u = tk.Button(self.Frame10, text = "DEL .m3u", bg = "light grey",width = 5, height = 1,command = self.DelPL_m3u)
             self.Button_DELETE_m3u.grid(row = 9, column = 5, padx = 0)
@@ -632,7 +632,7 @@ class MP3Player(Frame):
             self.L8 = tk.Label(self.Frame10, text=".m3u")
             self.L8.grid(row = 8, column = 4, sticky = S)
             self.L9 = tk.Label(self.Frame10, text=" ")
-            self.L9.grid(row = 6, column = 6, sticky = E)
+            self.L9.grid(row = 6, column = 5, sticky = E)
             self.L6 = tk.Label(self.Frame10, text="Playlist :")
             self.L6.grid(row = 5, column = 5, sticky = W)
             self.Disp_plist_name = tk.Label(self.Frame10, height=hei, width=44,bg='white',   anchor="w", borderwidth=2, relief="groove")
@@ -652,7 +652,7 @@ class MP3Player(Frame):
             self.Disp_played.grid(row = 6, column = 3, sticky = E)
             self.Disp_track_len = tk.Label(self.Frame10, height=1, width=5)
             self.Disp_track_len.grid(row = 6, column = 4, sticky = E)
-            self.Disp_Name_m3u = tk.Text(self.Frame10,height = 1, width=12)
+            self.Disp_Name_m3u = tk.Text(self.Frame10,height = 1, width=13,font=("Arial",9))
             self.Disp_Name_m3u.grid(row = 8, column = 4,sticky = N,pady = 10)
             self.Disp_Total_Plist = tk.Label(self.Frame10, height=1, width=7)
             self.Disp_Total_Plist.grid(row = 5, column = 5, columnspan = 2, sticky = E)
@@ -1176,7 +1176,7 @@ class MP3Player(Frame):
                 self.progress.grid(row = 6, column = 7)
             elif self.cutdown == 2:
                 self.progress=ttk.Progressbar(self.Frame10,style="LabeledProgressbar",orient=HORIZONTAL,length=80,mode='determinate')
-                self.progress.grid(row = 6, column = 7)
+                self.progress.grid(row = 6, column = 6)
             elif self.cutdown == 3:
                 self.progress=ttk.Progressbar(self.Frame10,style="LabeledProgressbar",orient=HORIZONTAL,length=70,mode='determinate')
                 self.progress.grid(row = 7, column = 0)
