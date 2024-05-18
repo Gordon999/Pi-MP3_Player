@@ -33,7 +33,7 @@ player = Player()
 global fullscreen
 global cutdown
 
-# Pi_MP3_Player v17.37
+# Pi_MP3_Player v17.38
 
 #set display format
 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320
@@ -1530,7 +1530,7 @@ class MP3Player(Frame):
                     self.Disp_track_no.config(text = self.track_no + 1)
                 else:
                     if self.track_no < len(self.tunes) - 1:
-                        self.artist_name_1,self.album_name_1,self.track_name_1,self.drive_name_1,self.drive_name1_1,self.drive_name2_1  = self.tunes[self.track_no + 1].split('^')
+                        self.artist_name_1,self.album_name_1,self.track_name_1,self.drive_name_1,self.drive_name1_1,self.drive_name2_1,self.genre_name1 = self.tunes[self.track_no + 1].split('^')
                         if self.artist_name_1 == self.artist_name and self.album_name_1[:-1] == self.album_name[:-1]:
                             self.Disp_track_name1.config(fg = "black",bg = "white",text =self.track_name_1[:-4], borderwidth=2, relief="groove")
                         elif self.album_start == 0:
@@ -1540,7 +1540,7 @@ class MP3Player(Frame):
                     else:
                         self.Disp_track_name1.config(fg = "black",bg = "#ddd",text = " ", borderwidth=0)
                     if self.track_no < len(self.tunes) - 2:
-                        self.artist_name_2,self.album_name_2,self.track_name_2,self.drive_name_2,self.drive_name1_2,self.drive_name2_2  = self.tunes[self.track_no + 2].split('^')
+                        self.artist_name_2,self.album_name_2,self.track_name_2,self.drive_name_2,self.drive_name1_2,self.drive_name2_2,self.genre_name2  = self.tunes[self.track_no + 2].split('^')
                         if self.artist_name_2 == self.artist_name and self.album_name_2[:-1] == self.album_name[:-1]:
                             self.Disp_track_name2.config(fg = "black",bg = "white",text =self.track_name_2[:-4], borderwidth=2, relief="groove")
                         elif self.album_start == 0:
@@ -1550,7 +1550,7 @@ class MP3Player(Frame):
                     else:
                         self.Disp_track_name2.config(fg = "black",bg = "#ddd",text = " ", borderwidth=0)
                     if self.track_no < len(self.tunes) - 3:
-                        self.artist_name_3,self.album_name_3,self.track_name_3,self.drive_name_3,self.drive_name1_3,self.drive_name2_3  = self.tunes[self.track_no + 3].split('^')
+                        self.artist_name_3,self.album_name_3,self.track_name_3,self.drive_name_3,self.drive_name1_3,self.drive_name2_3,self.genre_name3  = self.tunes[self.track_no + 3].split('^')
                         if self.artist_name_3 == self.artist_name and self.album_name_3[:-1] == self.album_name[:-1]:
                             self.Disp_track_name3.config(fg = "black",bg = "white",text =self.track_name_3[:-4], borderwidth=2, relief="groove")
                         elif self.album_start == 0:
@@ -1560,7 +1560,7 @@ class MP3Player(Frame):
                     else:
                         self.Disp_track_name3.config(fg = "black",bg = "#ddd",text = " ", borderwidth=0)
                     if self.track_no < len(self.tunes) - 4:
-                        self.artist_name_4,self.album_name_4,self.track_name_4,self.drive_name_4,self.drive_name1_4,self.drive_name2_4  = self.tunes[self.track_no + 4].split('^')
+                        self.artist_name_4,self.album_name_4,self.track_name_4,self.drive_name_4,self.drive_name1_4,self.drive_name2_4,self.genre_name4  = self.tunes[self.track_no + 4].split('^')
                         if self.artist_name_4 == self.artist_name and self.album_name_4[:-1] == self.album_name[:-1]:
                             self.Disp_track_name4.config(fg = "black",bg = "white",text =self.track_name_4[:-4], borderwidth=2, relief="groove")
                         elif self.album_start == 0:
@@ -1570,7 +1570,7 @@ class MP3Player(Frame):
                     else:
                         self.Disp_track_name4.config(fg = "black",bg = "#ddd",text = " ", borderwidth=0)
                     if self.track_no < len(self.tunes) - 5:
-                        self.artist_name_5,self.album_name_5,self.track_name_5,self.drive_name_5,self.drive_name1_5,self.drive_name2_5  = self.tunes[self.track_no + 5].split('^')
+                        self.artist_name_5,self.album_name_5,self.track_name_5,self.drive_name_5,self.drive_name1_5,self.drive_name2_5,self.genre_name5  = self.tunes[self.track_no + 5].split('^')
                         if self.artist_name_5 == self.artist_name and self.album_name_5[:-1] == self.album_name[:-1]:
                             self.Disp_track_name5.config(fg = "black",bg = "white",text =self.track_name_5[:-4], borderwidth=2, relief="groove")
                         elif self.album_start == 0:
@@ -1580,7 +1580,7 @@ class MP3Player(Frame):
                     else:
                         self.Disp_track_name5.config(fg = "black",bg = "#ddd",text = " ", borderwidth=0)
                     if self.track_no < len(self.tunes) - 6:
-                        self.artist_name_6,self.album_name_6,self.track_name_6,self.drive_name_6,self.drive_name1_6,self.drive_name2_6  = self.tunes[self.track_no + 6].split('^')
+                        self.artist_name_6,self.album_name_6,self.track_name_6,self.drive_name_6,self.drive_name1_6,self.drive_name2_6,self.genre_name6  = self.tunes[self.track_no + 6].split('^')
                         if self.artist_name_6 == self.artist_name and self.album_name_6[:-1] == self.album_name[:-1]:
                             self.Disp_track_name6.config(fg = "black",bg = "white",text =self.track_name_6[:-4], borderwidth=2, relief="groove")
                         elif self.album_start == 0:
@@ -1590,7 +1590,7 @@ class MP3Player(Frame):
                     else:
                         self.Disp_track_name6.config(fg = "black",bg = "#ddd",text = " ", borderwidth=0)
                     if self.track_no < len(self.tunes) - 7:
-                        self.artist_name_7,self.album_name_7,self.track_name_7,self.drive_name_7,self.drive_name1_7,self.drive_name2_7  = self.tunes[self.track_no + 7].split('^')
+                        self.artist_name_7,self.album_name_7,self.track_name_7,self.drive_name_7,self.drive_name1_7,self.drive_name2_7,self.genre_name7  = self.tunes[self.track_no + 7].split('^')
                         if self.artist_name_7 == self.artist_name and self.album_name_7[:-1] == self.album_name[:-1]:
                             self.Disp_track_name7.config(fg = "black",bg = "white",text =self.track_name_7[:-4], borderwidth=2, relief="groove")
                         elif self.album_start == 0:
@@ -1600,7 +1600,7 @@ class MP3Player(Frame):
                     else:
                         self.Disp_track_name7.config(fg = "black",bg = "#ddd",text = " ", borderwidth=0)
                     if self.track_no < len(self.tunes) - 8:
-                        self.artist_name_8,self.album_name_8,self.track_name_8,self.drive_name_8,self.drive_name1_8,self.drive_name2_8  = self.tunes[self.track_no + 8].split('^')
+                        self.artist_name_8,self.album_name_8,self.track_name_8,self.drive_name_8,self.drive_name1_8,self.drive_name2_8,self.genre_name8  = self.tunes[self.track_no + 8].split('^')
                         if self.artist_name_8 == self.artist_name and self.album_name_8[:-1] == self.album_name[:-1]:
                             self.Disp_track_name8.config(fg = "black",bg = "white",text =self.track_name_8[:-4], borderwidth=2, relief="groove")
                         elif self.album_start == 0:
@@ -1610,7 +1610,7 @@ class MP3Player(Frame):
                     else:
                         self.Disp_track_name8.config(fg = "black",bg = "#ddd",text = " ", borderwidth=0)
                     if self.track_no < len(self.tunes) - 9:
-                        self.artist_name_9,self.album_name_9,self.track_name_9,self.drive_name_9,self.drive_name1_9,self.drive_name2_9  = self.tunes[self.track_no + 9].split('^')
+                        self.artist_name_9,self.album_name_9,self.track_name_9,self.drive_name_9,self.drive_name1_9,self.drive_name2_9,self.genre_name9  = self.tunes[self.track_no + 9].split('^')
                         if self.artist_name_9 == self.artist_name and self.album_name_9[:-1] == self.album_name[:-1]:
                             self.Disp_track_name9.config(fg = "black",bg = "white",text =self.track_name_9[:-4], borderwidth=2, relief="groove")
                         elif self.album_start == 0:
