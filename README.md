@@ -75,7 +75,7 @@ You can add images of the album covers in the album directories for displaying, 
 
 To exit without shutting down click on SHUFFLE then SLEEP then SHUTDOWN.
 
-- album cover images shown on cutdown 1
+- album cover images shown on cutdown 1 & 4
 - fix to Radio track titles
 
 
