@@ -35,7 +35,7 @@ player = Player()
 global fullscreen
 global cutdown
 
-# Pi_MP3_Player v17.39
+# Pi_MP3_Player v17.40
 
 #set display format
 # 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320
@@ -2594,7 +2594,9 @@ class MP3Player(Frame):
                 self.gapless = 0
                 if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 6:
                     self.Button_Gapless.config(fg = "black",bg = "light blue", text ="Gapless")
-                if self.cutdown == 6 or self.cutdown == 5:
+                if self.cutdown == 5:
+                    self.Button_Radio.config(fg = "black",bg = "light blue", text ="Repeat")
+                if self.cutdown == 6:
                     self.Button_Radio.config(fg = "black",bg = "light blue", text ="Gapless")
                 self.time1 = time.monotonic()
                 self.Button_Pause.config(fg = "black",bg = "orange", text ="Unpause")
