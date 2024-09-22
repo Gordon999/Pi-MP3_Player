@@ -5546,6 +5546,7 @@ class MP3Player(Frame):
             else:
                 # Look for other txt files
                 txts = glob.glob(ipath + "/*.txt")
+                txts.sort(reverse=True)
                 for txt in txts:
                     filename = os.path.split(txt)[1]
                     if "fing" in filename or "md5" in filename or "ffp" in filename or self.track_name in filename:
