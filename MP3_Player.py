@@ -889,9 +889,9 @@ class MP3Player(Frame):
             else:
                 self.Button_Shutdown = tk.Button(self.Frame10, text = "EXIT",   bg = "gray",font = self.helv02,width = 7, height = 2,command = self.Shutdown)
             self.Button_Shutdown.grid(row = 6, column = 4)
-            self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", font = self.helv01, bg = "light blue",width = 6, height = 2,command = self.Shuffle_Tracks, wraplength=160, justify=CENTER)
+            self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", font = self.helv01, bg = "light blue",width = 7, height = 2,command = self.Shuffle_Tracks, wraplength=160, justify=CENTER)
             self.Button_Shuffle.grid(row = 0, column = 2)
-            self.Button_Pause = tk.Button(self.Frame10, text = "Pause", font = self.helv01,bg = "light blue", width = 6, height = 2,command=self.Pause, wraplength=160, justify=CENTER)
+            self.Button_Pause = tk.Button(self.Frame10, text = "Pause", font = self.helv01,bg = "light blue", width = 7, height = 2,command=self.Pause, wraplength=160, justify=CENTER)
             self.Button_Pause.grid(row = 6, column = 2)
         
             self.Disp_artist_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
