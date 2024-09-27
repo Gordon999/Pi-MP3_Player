@@ -25,7 +25,7 @@ See installation_instructions.txt for how to install and run.
 
 # To install 
 
-Download the Zip, Extract, and copy MP3_Player.py, mp3c.py and mp3.jpg to /home/pi/
+Download the Zip, Extract, and copy MP3_Player.py, mp3c.py and mp3.jpg to /home/USERNAME/
 
 and then run...
 
