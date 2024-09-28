@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.45
+# Pi_MP3_Player v17.46
 
 """Copyright (c) 2024
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -195,7 +195,7 @@ class MP3Player(Frame):
         self.auto_radio     = 0
         self.auto_record    = 0
         self.auto_rec_time  = 10
-        self.usave          = 1
+        self.usave          = 0
         self.minutes        = 0
         self.seconds        = 10
         self.old_tname      = "x"
@@ -5396,8 +5396,9 @@ class MP3Player(Frame):
         if self.trace > 0:
             print ("Copy Long")
         if self.copy == 0 and self.usave == 1:
-            USB_Files = []
-            USB_Files = (os.listdir(self.m_user + ""))
+          USB_Files = []
+          USB_Files = (os.listdir(self.m_user + ""))
+          if len(USB_Files) > 0:
             st1 = os.statvfs(self.m_user + "/" + USB_Files[0])
             free1 = (st1.f_bavail * st1.f_frsize)/1100000
             free = free1
