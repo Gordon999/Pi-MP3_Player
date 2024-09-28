@@ -130,7 +130,7 @@ class MP3Player(Frame):
         self.ram_min        = 150
         self.tracking       = 0
         self.min_record     = 10
-        self.max_record     = 160 # MAXIMUM 160 !!
+        self.max_record     = 150 # MAXIMUM 150 !!
         self.rec_step       = 10
         self.total_record   = 0
         self.track_nameX    = ""
