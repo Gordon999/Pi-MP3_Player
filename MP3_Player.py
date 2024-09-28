@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.44
+# Pi_MP3_Player v17.45
 
 """Copyright (c) 2024
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -129,7 +129,9 @@ class MP3Player(Frame):
         self.record_time    = 0
         self.ram_min        = 150
         self.tracking       = 0
-        self.max_record     = 180
+        self.min_record     = 10
+        self.max_record     = 160 # MAXIMUM 160 !!
+        self.rec_step       = 10
         self.total_record   = 0
         self.track_nameX    = ""
         self.oldtrack       = ""
@@ -193,7 +195,7 @@ class MP3Player(Frame):
         self.auto_radio     = 0
         self.auto_record    = 0
         self.auto_rec_time  = 10
-        self.usave          = 0
+        self.usave          = 1
         self.minutes        = 0
         self.seconds        = 10
         self.old_tname      = "x"
@@ -227,7 +229,7 @@ class MP3Player(Frame):
                        model = line
         if "Zero" in model:
             self.model = 0
-        if self.trace == 1:
+        if self.trace > 0:
             print (model,self.model)
 
         # read radio_stns.txt (Station Name,URL,X)
@@ -1278,7 +1280,7 @@ class MP3Player(Frame):
             self.Time_Left_Play()
 
     def plist_callback(self):
-        if self.trace == 1:
+        if self.trace > 0:
             print ("plist callback",self.track_no,len(self.tunes))
         self.artistdata = []
         self.Disp_artist_name["values"] = self.artistdata
@@ -1301,7 +1303,7 @@ class MP3Player(Frame):
         self.tracker = 0
 
     def artist_callback(self,a):
-        if self.trace == 1:
+        if self.trace > 0:
             print ("artist callback",self.track_no,self.ac)
         self.albumdata = []
         self.Disp_album_name["values"] = self.albumdata
@@ -1328,7 +1330,7 @@ class MP3Player(Frame):
             self.album_callback(0)
 
     def album_callback(self,a):
-        if self.trace == 1:
+        if self.trace > 0:
             print ("album callback",self.track_no)
         self.trackdata = []
         self.Disp_track_name["values"] = self.trackdata
@@ -1345,7 +1347,7 @@ class MP3Player(Frame):
         self.ac = 0
         self.bc = 0
         tpath = self.Disp_artist_name.get() + "^" + self.Disp_album_name.get() + "^" + self.Disp_track_name.get()
-        if self.trace == 1:
+        if self.trace > 0:
             print ("album callback track",tpath)
         stop = 0
         k = 0
@@ -1381,15 +1383,15 @@ class MP3Player(Frame):
                 minutes = int(self.track_len // 60)
                 seconds = int (self.track_len - (minutes * 60))
                 self.Disp_track_len.config(text ="%03d:%02d" % (minutes, seconds % 60))        
-        if self.trace == 1:
+        if self.trace > 0:
             print ("album callback exit",self.track_no)
         self.auto_albums = 0
 
     def callback(self,a):
-        if self.trace == 1:
+        if self.trace > 0:
             print ("callback",self.track_no)
         tpath = self.Disp_artist_name.get() + "^" + self.Disp_album_name.get() + "^" + self.Disp_track_name.get()
-        if self.trace == 1:
+        if self.trace > 0:
             print ("callback exit",tpath)
         stop = 0
         k = 0
@@ -1425,7 +1427,7 @@ class MP3Player(Frame):
             minutes = int(self.track_len // 60)
             seconds = int (self.track_len - (minutes * 60))
             self.Disp_track_len.config(text ="%03d:%02d" % (minutes, seconds % 60))
-        if self.trace == 1:
+        if self.trace > 0:
             print ("callback exit",self.track_no)
         if self.play == 1:
             self.track_no -=1
@@ -1434,7 +1436,7 @@ class MP3Player(Frame):
       
    
     def Show_Track(self):
-        if self.trace == 1:
+        if self.trace > 0:
             print ("Show Track", self.track_no)
         if len(self.tunes) > 0:
             if self.album_start == 0:
@@ -1470,7 +1472,7 @@ class MP3Player(Frame):
                 else:
                     path = "/" + self.drive_name1 + "/" +self.drive_name2 + "/" + self.drive_name + "/" + self.genre_name + "/" + self.artist_name + "/" + self.album_name + "/" +  "*.jpg"
                 pictures = glob.glob(path)
-                if self.trace == 1:
+                if self.trace > 0:
                     print(path)
                     print(pictures)
                 if len(pictures) > 0: 
@@ -1664,7 +1666,7 @@ class MP3Player(Frame):
             
             
     def Play(self):
-        if self.trace == 1:
+        if self.trace > 0:
             print ("Play")
         self.light_on = time.monotonic()
         self.f_volume = self.volume
@@ -1882,7 +1884,7 @@ class MP3Player(Frame):
                 self.Button_PList_m3u.config(bg = "light grey", fg = "white")
              
         if len(self.tunes) > 0 and self.play == 0 and self.paused == 0 and self.Radio_ON == 0:
-          if self.trace == 1:
+          if self.trace > 0:
               print ("Start_Play",self.track_no)
           with open('Lasttrack3.txt', 'w') as f:
               f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
@@ -1910,7 +1912,7 @@ class MP3Player(Frame):
                 self.Disp_Name_m3u.config(background="light gray", foreground="black")
                 self.Disp_Name_m3u.delete('1.0','20.0')
             if os.path.exists(self.track):
-                if self.trace == 1:
+                if self.trace > 0:
                     print ("Start_Play - Track exists", self.track)
                 if self.cutdown == 4:
                     self.Button_Next_AZ.config(text = "NextAZ", bg = "light grey", fg = "white")
@@ -1953,7 +1955,7 @@ class MP3Player(Frame):
                     self.Button_TAlbum.config(bg = "light gray",fg = "white",text = "PLAY Album")
                 self.Start_Play2()
             else:
-                if self.trace == 1:
+                if self.trace > 0:
                     print ("Start_Play - Track NOT exists")
                 self.Disp_artist_name.config(fg = "red",text =self.artist_name)
                 self.Disp_album_name.config(fg = "red",text =self.album_name)
@@ -1966,7 +1968,7 @@ class MP3Player(Frame):
                     self.track_no +=1
                     if self.track_no > len(self.tunes) - 1:
                         self.track_no = 0
-                        if self.trace == 1:
+                        if self.trace > 0:
                             print ("Start_Play - Stopped Play (No track found)")
                         self.play = 1
                         stop = 1
@@ -1978,10 +1980,10 @@ class MP3Player(Frame):
                             self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name, self.artist_name, self.album_name, self.track_name)
                         else:
                             self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name,self.genre_name, self.artist_name, self.album_name, self.track_name)
-                        if self.trace == 1:
+                        if self.trace > 0:
                             print ("Checking Next Track...", self.track_no)
                         if os.path.exists(self.track):
-                            if self.trace == 1:
+                            if self.trace > 0:
                                 print ("Start_Play - Play Track (next Track found)")
                             self.play = 0
                             stop = 1
@@ -2001,7 +2003,7 @@ class MP3Player(Frame):
     def Start_Play2(self):
         self.stop = 0
         if self.album_start == 0:
-            if self.trace == 1:
+            if self.trace > 0:
                 print ("Start_Play2",self.track_no)
             self.total = 0
             self.count1 = 0
@@ -2237,7 +2239,7 @@ class MP3Player(Frame):
         # end of album (no repeat)
         if self.album_start == 1:
             if self.minutes == 0 and ((self.gapless == 0 and self.seconds <= 1 and self.BT == 0) or (self.gapless == 1 and self.seconds == (2 * self.BT) and self.BT == 1) or (self.gapless == self.gapless_time and self.seconds <= self.gapless_time)) and self.album_start == 1 and self.repeat_album == 0:
-                if self.trace == 1:
+                if self.trace > 0:
                     print ("End of Album (no repeat)")
                 if self.imgxon == 1:
                     self.imgx.after(100, self.imgx.destroy())
@@ -2304,7 +2306,7 @@ class MP3Player(Frame):
                 
            # end of album (repeat)
             if self.minutes == 0 and ((self.gapless == 0 and self.seconds == 0 and self.BT == 0) or (self.gapless == 1 and self.seconds == (2 * self.BT) and self.BT == 1) or (self.gapless == self.gapless_time and self.seconds <= self.gapless_time)) and self.album_start == 1 and self.repeat_album == 1:
-                if self.trace == 1:
+                if self.trace > 0:
                     print ("End of Album (repeat)")
                 self.play = 0
                 self.minutes = 1
@@ -2342,7 +2344,7 @@ class MP3Player(Frame):
                         self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
                         self.Disp_album_name = tk.Label(self.Frame10, height=2, width=30,bg='white', anchor="w", borderwidth=2, relief="groove")
                         self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
-                if self.trace == 1:
+                if self.trace > 0:
                     print ("End of track",self.track_no)
                 self.play = 0
                 if self.cutdown != 1  and self.cutdown != 5 and self.model != 0 and self.cutdown != 6:
@@ -2365,7 +2367,7 @@ class MP3Player(Frame):
                     self.Button_Vol_UP.config(text = "Vol >   " + str(self.volume))
                 # stop if playlist last track and repeat OFF
                 if self.track_no > len(self.tunes) - 1 and self.repeat == 0 and self.repeat_album == 0:
-                    if self.trace == 1:
+                    if self.trace > 0:
                        print ("End of track - Last Track in playlist",self.track_no)
                     self.play = 2
                     self.stopstart = 0
@@ -2391,7 +2393,7 @@ class MP3Player(Frame):
                     with open("/run/shm/up.txt", "r") as file:
                         line = file.readline()[0:-1]
                     a,b,c,d,e,= line.split(", ")
-                    if self.trace == 1:
+                    if self.trace > 0:
                         print (float(c[14:19]),float(d[0:4]),float(e[0:4]))
                         self.Disp_plist_name.config(text = str(a) + "," + str(c)[13:18] + "," + str(d) + "," + str(e))
                     if float(d[0:4]) > 2.0: 
@@ -2457,7 +2459,7 @@ class MP3Player(Frame):
             if self.play == 1:
                 self.after(100, self.playing)
         elif self.play == 1:
-            if self.trace == 1:
+            if self.trace > 0:
                 print ("Playing - No track")
             self.Start_Play()
 
@@ -2467,7 +2469,7 @@ class MP3Player(Frame):
             self.nextAZ()
         # RECORD Button
         if self.Radio_ON == 1 and self.Radio_RON == 0 and self.Radio_Stns[self.Radio + 2] == 1 and self.record == 1:
-            if self.trace == 1:
+            if self.trace > 0:
                 print ("Start Record")
             self.rems2 = glob.glob("/run/shm/music/*/*/*/*/*.mp3")
             for x in range(0,len(self.rems2)):
@@ -2526,7 +2528,7 @@ class MP3Player(Frame):
             if self.imgxon == 0:
                 self.Disp_album_name.config(text = "Radio")
             self.Disp_track_name.config(text = self.Name)
-            self.record_time = 10
+            self.record_time = self.min_record
             if self.auto_rec_set == 1:
                 self.record_time = self.auto_rec_time
             self.total_record = self.record_time * 60
@@ -2564,18 +2566,17 @@ class MP3Player(Frame):
                    time.sleep(2)
 
         elif self.Radio_ON == 1 and self.Radio_RON == 1 and self.Radio_Stns[self.Radio + 2] == 1 and self.record == 1:
-            self.record_time = int(self.record_time + 10)
-            self.total_record += 10 * 60
+            self.record_time = int(self.record_time + self.rec_step)
+            self.total_record += self.rec_step * 60
             if self.total_record > (self.max_record * 60):
                 self.record_time -= int((self.total_record - (self.max_record * 60))/60)
                 self.total_record = (self.max_record * 60)
             if self.record_time > self.max_record:
-                self.record_time = 10
+                self.record_time = self.rec_step
                 self.total_record = self.record_time * 60
             self.auto_rec_time = self.record_time
             with open('Lasttrack3.txt', 'w') as f:
                 f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
-
             self.record_time_min = self.record_time * 60
             t_minutes = int(self.total_record // 60)
             t_seconds = int (self.total_record - (t_minutes * 60))
@@ -2588,7 +2589,7 @@ class MP3Player(Frame):
         #=======================================================================================================================
         # PAUSE BUTTON
         if self.BT == 0 and self.Radio_ON == 0:
-            if self.trace == 1:
+            if self.trace > 0:
                 print ("Pause")
             # if playing and using self.version 1 (mplayer) then close it and switch to self.version 2 (player)
             if self.version == 1 and self.play == 1 and self.counter5 == 0:
@@ -2694,7 +2695,7 @@ class MP3Player(Frame):
                     self.img.config(image = self.render)
 
     def Play_Album(self):
-        if self.trace == 1:
+        if self.trace > 0:
             print ("Play Album",self.track_no)
         if self.cutdown == 7:
             self.artist_name  = (self.tunes[self.track_no].split('^')[0])
@@ -2767,7 +2768,7 @@ class MP3Player(Frame):
             self.repeat_count = 0
             self.repeat = 0
             self.repeat_track = 0
-            if self.trace == 1:
+            if self.trace > 0:
                 print ("Play Album1",self.track_no,self.artist_name, self.album_name)
             if len(self.tunes) > 2:
                 self.shuffle_on = 0
@@ -2841,7 +2842,7 @@ class MP3Player(Frame):
                 self.album_trig = 0
                 self.stopstart = 1
                 self.play = 0
-                if self.trace == 1:
+                if self.trace > 0:
                     print ("Play Album2",self.track_no)
                     
                 self.Start_Play()
@@ -2856,7 +2857,7 @@ class MP3Player(Frame):
             self.Stop_Play()
 
     def Stop_Play(self):
-        if self.trace == 1:
+        if self.trace > 0:
             print("Stop")
         if self.imgxon == 1:
             self.imgx.after(100, self.imgx.destroy())
@@ -3732,7 +3733,7 @@ class MP3Player(Frame):
                 self.Time_Left_Play()
 
     def Next_Album(self):
-        if self.trace == 1:
+        if self.trace > 0:
             print ("Next Album", self.track_no)
         if self.paused == 0 and self.album_start == 0 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
             if self.imgxon == 1:
@@ -3856,7 +3857,7 @@ class MP3Player(Frame):
                     
 
     def Next_Track(self):
-        if self.trace == 1:
+        if self.trace > 0:
              print ("Next_Track")
         if (self.album_start == 0 and os.path.exists(self.que_dir)) or (self.album_start == 1 and self.track_no != self.tcount and os.path.exists(self.que_dir)):
             if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 3:
@@ -3917,7 +3918,7 @@ class MP3Player(Frame):
                     self.Time_Left_Play()
 
     def Time_Left_Play(self):
-         if self.trace == 1:
+         if self.trace > 0:
              print ("Time Left Play ",self.tunes[self.track_no])
          self.start2 = time.monotonic()
          self.total = 0
@@ -3960,7 +3961,7 @@ class MP3Player(Frame):
                     stop = 1
          self.minutes = int(self.total // 60)
          self.seconds = int (self.total - (self.minutes * 60))
-         if self.trace == 1:
+         if self.trace > 0:
              print ("Time Left Play",self.minutes,self.seconds)
          if self.cutdown != 1 and self.cutdown != 4 and self.cutdown != 5  and self.cutdown != 6:
              if stop == 0:
@@ -3989,25 +3990,25 @@ class MP3Player(Frame):
                 while (self.tunes[self.track_no].split('^')[0][0]) == self.artist_name[0] and stop == 0:
                     self.track_no +=1
                     if self.track_no > len(self.tunes) - 1:
-                        self.track_no = 0 #len(self.tunes) - 1
+                        self.track_no = 0
                         stop = 1
             elif self.wheel_opt == 1:
                 while (self.tunes[self.track_no].split('^')[1][0]) == self.album_name[0] and stop == 0:
                     self.track_no +=1
                     if self.track_no > len(self.tunes) - 1:
-                        self.track_no = 0 #len(self.tunes) - 1
+                        self.track_no = 0
                         stop = 1
             elif self.wheel_opt == 2:
                 while (self.tunes[self.track_no].split('^')[2][3]) == self.track_name[3] and stop == 0:
                     self.track_no +=1
                     if self.track_no > len(self.tunes) - 1:
-                        self.track_no = 0 #len(self.tunes) - 1
+                        self.track_no = 0
                         stop = 1
             elif self.wheel_opt == 4:
                 while (self.tunes[self.track_no].split('^')[0][0][0:1]) == self.artist_name[0][0:1] and stop == 0:
                     self.track_no +=1
                     if self.track_no > len(self.tunes) - 1:
-                        self.track_no = 0 #len(self.tunes) - 1
+                        self.track_no = 0
                         stop = 1
             self.Time_Left_Play()
 
@@ -4022,7 +4023,7 @@ class MP3Player(Frame):
         self.Time_Left_Play()
       
     def RELOAD_List(self):
-        if self.trace == 1:
+        if self.trace > 0:
             print ("RELOAD_List")
         # skip forward (1/10 of track)
         if self.paused == 0 and (self.album_start == 1 or self.stopstart == 1) and self.Radio_ON == 0:
@@ -4198,7 +4199,7 @@ class MP3Player(Frame):
          if self.counter5 < len(self.Tracks) and len(self.Tracks) > 0:
              self.after(1,self.RELOAD1_List)
          else:
-             if self.trace == 1:
+             if self.trace > 0:
                  print ("RELOAD1",len(self.tunes))
              self.RELOAD2_List()
 
@@ -4226,7 +4227,7 @@ class MP3Player(Frame):
         if self.play == 0:
             self.reload = 1
             if self.cutdown == 7:
-                if self.trace == 1:
+                if self.trace > 0:
                     print ("RELOAD2",len(self.tunes))
                 self.plist_callback()
             self.Time_Left_Play()
@@ -4638,7 +4639,7 @@ class MP3Player(Frame):
             self.Disp_sleep.config(fg = "black", bg = "light blue")
  
     def Check_Sleep(self):
-        if self.trace == 1:
+        if self.trace > 0:
             print ("Check Sleep")
         if self.sleep_time > 0:
             if self.album_start == 1 and self.album_sleep == 0:
@@ -4832,7 +4833,7 @@ class MP3Player(Frame):
 
     def StillConnected(self):
         try:
-            if self.trace == 1:
+            if self.trace > 0:
                 print ("Still Connected")
             sock = socket.create_connection(("www.google.com", 80))
             if sock is not None:
@@ -4901,7 +4902,7 @@ class MP3Player(Frame):
                 self.Button_Radio.config(bg = "light blue",fg = "black",text = "Repeat Album")
         # STOP RECORD BUTTON
         elif self.Radio_ON == 1 and self.Radio_RON == 1 and self.record == 1:
-            if self.trace == 1:
+            if self.trace > 0:
                 print ("Start Record")
             self.Radio_RON    = 0
             self.auto_record  = 0
@@ -4969,7 +4970,7 @@ class MP3Player(Frame):
             self.Copy_Record()
         # STOP RADIO BUTTON
         elif self.Radio_ON == 1 and self.stopstart == 0 and self.album_start == 0:
-            if self.trace == 1:
+            if self.trace > 0:
                 print ("Stop Radio")
             self.Radio_ON    = 0
             self.auto_radio  = 0
@@ -5098,7 +5099,7 @@ class MP3Player(Frame):
             self.Show_Track()
         # START RADIO BUTTON
         elif self.paused == 0 and self.album_start == 0 and self.stopstart == 0 and self.Radio_ON == 0:
-            if self.trace == 1:
+            if self.trace > 0:
                 print ("Start Radio")
             out = self.isConnected()
             if out == True:
@@ -5320,7 +5321,7 @@ class MP3Player(Frame):
                     self.Pause()
 
     def Check_Record(self):
-        if self.trace == 1:
+        if self.trace > 2:
             print ("Check Record")
         # check RAM space
         st = os.statvfs("/run/shm/")
@@ -5346,7 +5347,7 @@ class MP3Player(Frame):
                 self.progress['value'] = (self.rplayed/self.record_time_min)*100
         self.Get_track(1)
         # Clear RAM if RAM space less than limit, or time exceeds 9900 seconds
-        if self.Radio_ON == 1 and self.Radio_RON == 0 and (time.monotonic() - self.rec_begin > 10900 or freeram < self.ram_min):
+        if self.Radio_ON == 1 and self.Radio_RON == 0 and (time.monotonic() - self.rec_begin > 9900 or freeram < self.ram_min):
             self.rec_begin = time.monotonic()
             if self.Radio_Stns[self.Radio + 2] == 0:
                 self.q.kill()
@@ -5373,8 +5374,8 @@ class MP3Player(Frame):
                 if len(track) == 0:
                    time.sleep(2)
         # stop recording if record time exceeded or RAM space less than limit (wait for end of track if track names available in stream)     
-        if (self.Radio_RON == 1 and ((time.monotonic() - self.rec_begin > self.record_time_min)) and self.record == 1 and self.oldtrack != self.track_nameX[self.counter]) or (self.Radio_RON == 1 and freeram < self.ram_min):
-            if self.trace == 1:
+        if (self.Radio_RON == 1 and ((time.monotonic() - self.rec_begin > self.record_time_min) or (time.monotonic() - self.rec_begin > 9900)) and self.record == 1 and self.oldtrack != self.track_nameX[self.counter]) or (self.Radio_RON == 1 and freeram < self.ram_min):
+            if self.trace > 0:
                 print ("Stopped Recording")
             self.R_Stopped    = 1
             self.Radio_RON    = 0
@@ -5384,7 +5385,7 @@ class MP3Player(Frame):
                 self.s.configure("LabeledProgressbar", text="0 %      ", background='red')
                 self.progress['value'] = 0
             self.Copy_Record()
-        if self.track_nameX[self.counter][0:3] != " - ": 
+        if self.track_nameX[self.counter][0:3] != " - ":
             self.oldtrack = self.track_nameX[self.counter]
         if self.Radio_ON == 1:
             self.Disp_track_no.config(text = str(int(freeram)))
@@ -5392,7 +5393,7 @@ class MP3Player(Frame):
 
     def Copy_Record(self):
         #==Copy Long Tracks to USB=====================================================================================
-        if self.trace == 1:
+        if self.trace > 0:
             print ("Copy Long")
         if self.copy == 0 and self.usave == 1:
             USB_Files = []
@@ -5435,7 +5436,7 @@ class MP3Player(Frame):
                         shutil.copy("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt", self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt")
                 time.sleep(1)
         # ==============================================================================================================
-        if self.trace == 1:
+        if self.trace > 0:
             print ("Copy Record")
         self.total_record = 0
         rems = glob.glob("/run/shm/music/*/*/*/*/*.mp3")
@@ -5444,12 +5445,12 @@ class MP3Player(Frame):
         rems = glob.glob("/run/shm/music/*/*/*.cue")
         for x in range(0,len(rems)):
             os.remove(rems[x])
-        if self.trace == 1:
+        if self.trace > 0:
             print ("Copy Record - add to Tunes")
         tpath = self.Radio_Stns[self.Radio] + "^Radio_Recordings^" + self.Name + ".mp3^music^run^shm^None"
         self.tunes.append(tpath)
         self.tunes.sort()
-        if self.trace == 1:
+        if self.trace > 0:
             print ("Copy Record - find track_no")
         stop = 0
         k = 0
@@ -5458,7 +5459,7 @@ class MP3Player(Frame):
                 stop = 1
                 self.track_no = k
             k +=1
-        if self.trace == 1:
+        if self.trace > 0:
             print ("Copy Record - clear display " + str(self.track_no))
         if self.imgxon == 1:
             self.imgx.after(100, self.imgx.destroy())
@@ -5487,22 +5488,24 @@ class MP3Player(Frame):
             self.Disp_track_name.set("")
         if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 6:
             self.Disp_Name_m3u.delete('1.0','20.0')
-        if self.trace == 1:
+        if self.trace > 0:
             print ("EXIT Copy Record - " + str(self.track_no))
         self.RadioX()
 
     def Get_track(self,x):
         #get track name, if available.
-        if self.trace == 1:
+        if self.trace > 2:
             print ("Get Track")
         # backlight off
         if time.monotonic() - self.light_on > self.light and (self.HP4_backlight == 1 or self.LCD_backlight == 1):
             self.LCD_pwm.value = self.dim
         self.Radio_Stns2 = self.Radio_Stns[self.Radio]
         track = sorted(glob.glob("/run/shm/music/" + self.Radio_Stns2 + "/Radio_Recordings/*/incomplete/*.mp3"),key = os.path.getmtime, reverse=True)
+        if self.trace > 2:
+            print ("Get Track",track[0])
         self.counter = 0
         self.track_nameX = [" - .mp3"]
-        self.tname = re.sub('[^a-zA-Z0-9- &]+', '',self.tname)
+        self.tname = re.sub('[^a-zA-Z0-9- &!()]+', '',self.tname)
         if self.Radio_ON == 1 and self.Radio_Stns[self.Radio + 2] == 1:
             if self.cutdown == 7:
                 self.Disp_track_name.set(self.tname)
@@ -5527,7 +5530,7 @@ class MP3Player(Frame):
                     print("1",self.tname)
                     self.oldtrack2 = self.tname
                     vv = 1
-                self.tname = re.sub('[^a-zA-Z0-9- &]+', '',self.tname)
+                self.tname = re.sub('[^a-zA-Z0-9- &!()]+', '',self.tname)
                 if vv == 1 and self.trace == 2:
                     print("2",self.tname)
                 if self.cutdown == 7:
@@ -5540,7 +5543,7 @@ class MP3Player(Frame):
                     self.old_tname = self.tname
             elif self.track_nameX[self.counter][0:3] == " - " and self.track_nameX[self.counter] != " - .mp3":
                 self.tname = self.track_nameX[self.counter][:-4]
-                self.tname = re.sub('[^a-zA-Z0-9- &]+', '',self.tname)
+                self.tname = re.sub('[^a-zA-Z0-9- &!()]+', '',self.tname)
                 if self.cutdown == 7:
                     self.Disp_track_name.set(self.tname[3:])
                 else:
@@ -5597,7 +5600,7 @@ class MP3Player(Frame):
         if len(rems) > 0 and len(USB_Files) > 0 and self.Radio_RON == 1 and self.usave == 1:
             USB_Files = []
             USB_Files = (os.listdir(self.m_user + ""))
-            if self.trace == 1:
+            if self.trace > 0:
                 print(USB_Files)
             st1 = os.statvfs(self.m_user + "/" + USB_Files[0])
             free = (st1.f_bavail * st1.f_frsize)/1100000
@@ -5620,7 +5623,7 @@ class MP3Player(Frame):
             if self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 6 and self.cutdown != 1:
                 self.Disp_Total_Plist.config(text = str(int(free)) + "MB")
             self.copy = 1
-            if self.trace == 1:
+            if self.trace > 0:
                 print ("Copy Indies")
             for v in range(0,len(rems)):
                 count = rems[v].count('/')
@@ -5639,8 +5642,8 @@ class MP3Player(Frame):
                         track  = names[0]
                         mp = track[-4:]
                         track = track[:-4]
-                    artist = re.sub('[^a-zA-Z0-9- &]+', '',artist)
-                    track = re.sub('[^a-zA-Z0-9- &]+', '',track)
+                    artist = re.sub('[^a-zA-Z0-9- &!()]+', '',artist)
+                    track = re.sub('[^a-zA-Z0-9- &!()]+', '',track)
                     track += mp
                     stn1 = self.m_user + "/" + USB_Files[0] + "/" + artist
                     stn2 = self.m_user + "/" + USB_Files[0] + "/" + artist + "/Radio_Recordings/"
@@ -5653,10 +5656,10 @@ class MP3Player(Frame):
                             time.sleep(1)
                         vpath = artist + "^Radio_Recordings^" + track + "^" + USB_Files[0] + "^media^" + os.getlogin( ) + "^" + self.genre_name
                         if os.path.exists(self.m_user + "/" + USB_Files[0] + "/" + artist + "/Radio_Recordings/"):
-                            if self.trace == 1:
+                            if self.trace > 0:
                                 print ("Copy Indies 1")
                             if not os.path.exists(self.m_user + "/" + USB_Files[0] + "/" + artist + "/Radio_Recordings/" + track):
-                                if self.trace == 1:
+                                if self.trace > 0:
                                     print ("Copy Indies",rems[v], self.m_user + "/" + USB_Files[0] + "/" + artist + "/Radio_Recordings/" + track)
                                 shutil.copy(rems[v], self.m_user + "/" + USB_Files[0] + "/" + artist + "/Radio_Recordings/" + track)
                                 self.tunes.append(vpath)
