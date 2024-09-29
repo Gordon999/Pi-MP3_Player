@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.46
+# Pi_MP3_Player v17.47
 
 """Copyright (c) 2024
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,6 +28,7 @@ from tkinter import font as tkFont
 import os, sys
 import time
 import datetime
+from datetime import timedelta
 import subprocess
 import signal
 import random
@@ -129,9 +130,8 @@ class MP3Player(Frame):
         self.record_time    = 0
         self.ram_min        = 150
         self.tracking       = 0
-        self.min_record     = 10
-        self.max_record     = 150 # MAXIMUM 150 !!
-        self.rec_step       = 10
+        self.max_record     = 240 
+        self.rec_step       = 1
         self.total_record   = 0
         self.track_nameX    = ""
         self.oldtrack       = ""
@@ -2513,6 +2513,8 @@ class MP3Player(Frame):
             if self.cutdown != 4 and self.cutdown != 1 and self.cutdown != 3 and self.cutdown != 2:
                 self.L3.config(text = "Rec'd:")
             self.rec_begin = time.monotonic()
+            now = datetime.datetime.now()
+            self.start_record = now
             if self.cutdown == 6:
                 self.Disp_track_name1.config(fg = "#777",bg = "#ddd")
                 self.Disp_track_name2.config(fg = "#777",bg = "#ddd")
@@ -2528,7 +2530,8 @@ class MP3Player(Frame):
             if self.imgxon == 0:
                 self.Disp_album_name.config(text = "Radio")
             self.Disp_track_name.config(text = self.Name)
-            self.record_time = self.min_record
+            self.record_time = self.rec_step
+            self.stop_record = now + timedelta(minutes=self.rec_step)
             if self.auto_rec_set == 1:
                 self.record_time = self.auto_rec_time
             self.total_record = self.record_time * 60
@@ -2537,7 +2540,8 @@ class MP3Player(Frame):
             if self.cutdown == 6 or self.cutdown == 4 or self.cutdown == 2:
                 self.Button_Next_AZ.config(text = "Info", bg = "light blue", fg = "black")
             self.L4.config(text="/")
-            self.Button_Pause.config(fg = "white", bg = "red", text = str(self.record_time) + " mins")
+            #self.Button_Pause.config(fg = "white", bg = "red", text = str(self.record_time) + " mins")
+            self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
             if self.cutdown != 1:
                 self.Button_Radio.config(bg = "red",fg = "white", text = "STOP RECORD")
             else:
@@ -2568,6 +2572,10 @@ class MP3Player(Frame):
         elif self.Radio_ON == 1 and self.Radio_RON == 1 and self.Radio_Stns[self.Radio + 2] == 1 and self.record == 1:
             self.record_time = int(self.record_time + self.rec_step)
             self.total_record += self.rec_step * 60
+            if self.record_time <= self.max_record:
+                self.stop_record += timedelta(minutes=self.rec_step)
+            if self.trace == 1:
+                print(self.stop_record)
             if self.total_record > (self.max_record * 60):
                 self.record_time -= int((self.total_record - (self.max_record * 60))/60)
                 self.total_record = (self.max_record * 60)
@@ -2582,7 +2590,8 @@ class MP3Player(Frame):
             t_seconds = int (self.total_record - (t_minutes * 60))
             self.Disp_track_len.config(text ="%03d:%02d" % (t_minutes, t_seconds % 60))
             self.record_current = int((self.total_record - (time.monotonic() - self.rec_begin))/60)
-            self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.record_current + 1) + " mins")
+            self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
+            #self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.record_current + 1) + " mins")
             if self.Radio_ON == 1 and self.Radio_RON == 1 and self.shutdown == 1 and self.record_sleep == 1:
                 self.sleep_time_min = (self.record_current *60) + 60
                 self.sleep_time = int(self.sleep_time_min / 60)
@@ -3918,7 +3927,7 @@ class MP3Player(Frame):
                     self.Time_Left_Play()
 
     def Time_Left_Play(self):
-         if self.trace > 0:
+         if self.trace > 0 and len(self.tunes) > 0:
              print ("Time Left Play ",self.tunes[self.track_no])
          self.start2 = time.monotonic()
          self.total = 0
@@ -4649,7 +4658,7 @@ class MP3Player(Frame):
             if self.sleep_current > 0:
                 self.Button_Sleep.config(fg = "black", bg = "orange", text = str(self.sleep_current + 1)  + " mins")
             else:
-                self.Button_Sleep.config(fg = "yellow", bg = "red", text = str(int((self.sleep_time_min - (time.monotonic() - self.begin)))) + " secs")
+                self.Button_Sleep.config(fg = "yellow", bg = "red", text = str(int((self.sleep_time_min - (time.monotonic() - self.begin)))) + " s")
             if self.sleep_current < 1:
                 self.Button_Sleep.config(bg = "red")
         if (time.monotonic() - self.begin > self.sleep_time_min) and self.sleep_time > 0 and self.shutdown == 1 and self.Radio_RON == 0:
@@ -5339,7 +5348,7 @@ class MP3Player(Frame):
             if self.record_current > 0:
                 self.Button_Pause.config(fg = "white", bg = "red", text = str(self.record_current + 1)  + " mins")
             else:
-                self.Button_Pause.config(fg = "yellow", bg = "red", text = str(int((self.record_time_min - (time.monotonic() - self.rec_begin)))) + " secs")
+                self.Button_Pause.config(fg = "yellow", bg = "red", text = str(int((self.record_time_min - (time.monotonic() - self.rec_begin)))) + " s")
             if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 6 and self.model != 0:
                 if self.cutdown != 3:
                     self.L9.config(text= " R :")
@@ -5373,8 +5382,9 @@ class MP3Player(Frame):
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
                 if len(track) == 0:
                    time.sleep(2)
-        # stop recording if record time exceeded or RAM space less than limit (wait for end of track if track names available in stream)     
-        if (self.Radio_RON == 1 and ((time.monotonic() - self.rec_begin > self.record_time_min) or (time.monotonic() - self.rec_begin > 9900)) and self.record == 1 and self.oldtrack != self.track_nameX[self.counter]) or (self.Radio_RON == 1 and freeram < self.ram_min):
+        # stop recording if record time exceeded or RAM space less than limit (wait for end of track if track names available in stream)
+        now = datetime.datetime.now()
+        if (self.Radio_RON == 1 and now > self.stop_record and self.record == 1 and self.oldtrack != self.track_nameX[self.counter]) or (self.Radio_RON == 1 and freeram < self.ram_min):
             if self.trace > 0:
                 print ("Stopped Recording")
             self.R_Stopped    = 1
@@ -5422,7 +5432,7 @@ class MP3Player(Frame):
             if not os.path.exists(stn2):
                 os.system ("mkdir " + "'" + stn2 + "'")
                 time.sleep(1)
-            vpath = self.Radio_Stns[self.Radio] + "^Radio_Recordings^" + self.Name + ".mp3^" + USB_Files[0] + "^media^" + os.getlogin()
+            vpath = self.Radio_Stns[self.Radio] + "^Radio_Recordings^" + self.Name + ".mp3^" + USB_Files[0] + "^media^" + os.getlogin() + "^" + self.genre_name 
             if os.path.exists(self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/"):
                 if not os.path.exists(self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".mp3"):
                     shutil.copy("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".mp3", self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".mp3")
@@ -5584,8 +5594,8 @@ class MP3Player(Frame):
                     self.Button_Radio.config(bg = "orange",fg = "black", text = "STOP Radio")
                 else:
                     self.Button_Radio.config(bg = "orange",fg = "black", text = "STOP")
-                if self.Radio_Stns[self.Radio + 2] == 1:
-                    self.Button_Shutdown.config(fg = "black", bg = "light blue", text = "RECORD")
+                #if self.Radio_Stns[self.Radio + 2] == 1:
+                #    self.Button_Shutdown.config(fg = "black", bg = "light blue", text = "RECORD")
                 if self.cutdown != 1:
                     self.Button_Radio.config(bg = "orange",fg = "black", text = "STOP Radio")
                 self.Disp_album_name.config(text = "")
