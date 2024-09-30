@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.48
+# Pi_MP3_Player v17.49
 
 """Copyright (c) 2024
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -130,7 +130,7 @@ class MP3Player(Frame):
         self.record_time    = 0
         self.ram_min        = 150
         self.tracking       = 0
-        self.max_record     = 150 
+        self.max_record     = 240 
         self.rec_step       = 10
         self.total_record   = 0
         self.track_nameX    = ""
@@ -195,7 +195,7 @@ class MP3Player(Frame):
         self.auto_radio     = 0
         self.auto_record    = 0
         self.auto_rec_time  = 10
-        self.usave          = 0
+        self.usave          = 1
         self.minutes        = 0
         self.seconds        = 10
         self.old_tname      = "x"
@@ -3414,6 +3414,7 @@ class MP3Player(Frame):
             self.Radio -= 3
             if self.Radio < 0:
                 self.Radio = len(self.Radio_Stns) - 3
+            self.imgxon = 0
             if cutdown == 1:
                 self.Disp_played.config(text = int((self.Radio)/3)+1)
             if self.Radio_Stns[self.Radio + 2] == 0:
@@ -3461,10 +3462,10 @@ class MP3Player(Frame):
                     self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
             
             elif self.imgxon == 0 and (self.cutdown == 1 or self.cutdown == 4 or self.cutdown == 5):
-                    self.Disp_track_len.config(text = int(len(self.Radio_Stns)/3))
-                    self.Disp_played.config(text = int((self.Radio)/3)+1)
-                    self.L4.config(text="of")
-                    self.Disp_Total_tunes.config(text = "         Stn:")
+                    #self.Disp_track_len.config(text = int(len(self.Radio_Stns)/3))
+                    #self.Disp_played.config(text = int((self.Radio)/3)+1)
+                    #self.L4.config(text="of")
+                    #self.Disp_Total_tunes.config(text = "        Stn:")
                     if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
                         self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
                         if self.cutdown == 1:
@@ -3487,7 +3488,7 @@ class MP3Player(Frame):
                 self.Disp_artist_name.config(text = self.Name)
             elif self.imgxon == 0:
                 self.Disp_artist_name.set(self.Name)
-            if self.cutdown != 4 and self.cutdown !=5 and self.cutdown !=1:
+            if self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 1:
                 if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
                     self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
                     self.load = self.load.resize((218, 218), Image.LANCZOS) 
@@ -3591,6 +3592,7 @@ class MP3Player(Frame):
                 self.NewRadio = -1
             if self.Radio > len(self.Radio_Stns) - 1:
                 self.Radio = 0
+            self.imgxon = 0
             if cutdown == 1:
                 self.Disp_played.config(text = int((self.Radio)/3)+1)
             if self.Radio_Stns[self.Radio + 2] == 0:
@@ -3639,10 +3641,10 @@ class MP3Player(Frame):
                     self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
                     
             elif self.imgxon == 0 and (self.cutdown == 1 or self.cutdown == 4 or self.cutdown == 5):
-                    self.Disp_track_len.config(text = int(len(self.Radio_Stns)/3))
-                    self.Disp_played.config(text = int((self.Radio)/3)+1)
-                    self.L4.config(text="of")
-                    self.Disp_Total_tunes.config(text = "         Stn:")
+                    #self.Disp_track_len.config(text = int(len(self.Radio_Stns)/3))
+                    #self.Disp_played.config(text = int((self.Radio)/3)+1)
+                    #self.L4.config(text="of")
+                    #self.Disp_Total_tunes.config(text = "        Stn:")
                     if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
                         self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
                         if self.cutdown == 1:
@@ -5371,10 +5373,10 @@ class MP3Player(Frame):
                 self.Disp_track_len.config(text = "")
                 self.Radio_ON    = 1
                 if self.cutdown == 1 or self.cutdown == 4 or self.cutdown == 5:
-                    self.Disp_track_len.config(text = int(len(self.Radio_Stns)/3))
-                    self.Disp_played.config(text = int((self.Radio)/3)+1)
-                    self.L4.config(text="of")
-                    self.Disp_Total_tunes.config(text = "         Stn:")
+                        #self.Disp_track_len.config(text = int(len(self.Radio_Stns)/3))
+                        #self.Disp_played.config(text = int((self.Radio)/3)+1)
+                        #self.L4.config(text="of")
+                        #self.Disp_Total_tunes.config(text = "         Stn:")
                     if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
                         self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
                         if self.cutdown == 1:
