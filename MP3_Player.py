@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.47
+# Pi_MP3_Player v17.48
 
 """Copyright (c) 2024
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -108,7 +108,7 @@ class MP3Player(Frame):
         self.mp3c_jpg       = "mp3c.jpg"                      # blue logo including the 'wheel', when active
         self.radio_jpg      = "radio.jpg"                     # radio logo, shown if no jpg in /home/USERNAME/Documents for Radio Station
         self.Disp_max_time  = 120  # in minutes. Limits time taken to determine playlist length.
-        self.volume         = 80   # range 0 - 100. Will be overridden by saved volume in saved config file
+        self.volume         = 60   # range 0 - 100. Will be overridden by saved volume in saved config file
         self.gapless_time   = 2    # in seconds. Defines length of track overlap.
         self.scroll_rate    = 3    # scroll rate 1 (slow) to 10 (fast)
         self.LCD_backlight  = 1    # LCD backlight control, set to 1 to activate.
@@ -259,7 +259,7 @@ class MP3Player(Frame):
         # check Lasttrack3.txt exists, if not then write default values. Used for recalling last Radio Station ,volume etc, and restarting if using a Pi Zero.
         track  = 0
         radio  = 0
-        volume = 80
+        volume = 60
         if not os.path.exists('Lasttrack3.txt'):
             with open('Lasttrack3.txt', 'w') as f:
                 f.write(str(track) + "\n" + str(self.auto_play) + "\n" + str(radio) + "\n" + str(volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
@@ -292,7 +292,7 @@ class MP3Player(Frame):
         self.f_volume     = self.volume
         self.NewRadio = -1
         
-        # wait for internet, if required for auto_radio
+        # wait for internet,if required for auto_radio
         count = 0
         if self.auto_radio == 1:
             print ("Checking for Internet")
@@ -2134,7 +2134,7 @@ class MP3Player(Frame):
                     self.Disp_artist_name.after(100, self.Disp_artist_name.destroy())
                     self.Disp_album_name.after(100, self.Disp_album_name.destroy())
                 self.imgx.config(image = self.renderc)
-        elif self.cutdown == 4:
+        elif self.cutdown == 4 or self.cutdown == 5:
             pictures = glob.glob(path)
             self.render2 = ""
             if len(pictures) > 0:
@@ -2144,13 +2144,17 @@ class MP3Player(Frame):
                 else:
                    self.image = pictures[0]
                 self.load = Image.open(self.image)
-                self.load = self.load.resize((130,130), Image.LANCZOS) 
+                if self.cutdown == 4:
+                    self.load = self.load.resize((130,130), Image.LANCZOS)
+                else:
+                    self.load = self.load.resize((170,170), Image.LANCZOS) 
                 self.renderc = ImageTk.PhotoImage(self.load)
                 if self.imgxon == 0:
                     self.imgx = tk.Label(self.Frame10, image = self.renderc)
                     self.imgx.grid(row = 1, column = 1, columnspan = 3, rowspan = 3, pady = 0)
                     self.imgxon = 1
-                    self.Disp_plist_name.after(100, self.Disp_plist_name.destroy())
+                    if self.cutdown == 4:
+                        self.Disp_plist_name.after(100, self.Disp_plist_name.destroy())
                     self.Disp_artist_name.after(100, self.Disp_artist_name.destroy())
                     self.Disp_album_name.after(100, self.Disp_album_name.destroy())
                 self.imgx.config(image = self.renderc)
@@ -2260,6 +2264,13 @@ class MP3Player(Frame):
                         self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
                         self.Disp_album_name = tk.Label(self.Frame10, height=2, width=30,bg='white', anchor="w", borderwidth=2, relief="groove")
                         self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                    elif cutdown == 5:
+                        self.Disp_artist_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                        self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
+                        self.Disp_album_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                        self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                        self.Disp_track_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                        self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
                 self.play = 2
                 self.stopstart  = 0
                 self.plist_trig = 0
@@ -2344,6 +2355,13 @@ class MP3Player(Frame):
                         self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
                         self.Disp_album_name = tk.Label(self.Frame10, height=2, width=30,bg='white', anchor="w", borderwidth=2, relief="groove")
                         self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                    elif cutdown == 5:
+                        self.Disp_artist_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                        self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
+                        self.Disp_album_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                        self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                        self.Disp_track_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                        self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
                 if self.trace > 0:
                     print ("End of track",self.track_no)
                 self.play = 0
@@ -2887,6 +2905,14 @@ class MP3Player(Frame):
                 self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
                 self.Disp_album_name = tk.Label(self.Frame10, height=2, width=30,bg='white', anchor="w", borderwidth=2, relief="groove")
                 self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+            elif cutdown == 5:
+                self.Disp_artist_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
+                self.Disp_album_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                self.Disp_track_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
+            
         if self.cutdown == 7:
             self.shuffle_on = 0
             self.Disp_artist_name.set(self.artist_name)
@@ -3306,6 +3332,7 @@ class MP3Player(Frame):
                     self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
                     self.Disp_album_name = tk.Label(self.Frame10, height=2, width=30,bg='white', anchor="w", borderwidth=2, relief="groove")
                     self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+
             self.wheel_opt = 3
             if self.cutdown != 5 and self.cutdown != 6:
                 self.Button_Next_PList.config(fg = "red")
@@ -3425,7 +3452,15 @@ class MP3Player(Frame):
                     self.Disp_artist_name = tk.Label(self.Frame10, height=2, width=30,bg='white', anchor="w", borderwidth=2, relief="groove")
                     self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
                     self.Disp_album_name = tk.Label(self.Frame10, height=2, width=30,bg='white', anchor="w", borderwidth=2, relief="groove")
-            elif self.imgxon == 0 and (self.cutdown == 1 or self.cutdown == 4):
+                elif cutdown == 5:
+                    self.Disp_artist_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
+                    self.Disp_album_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                    self.Disp_track_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
+            
+            elif self.imgxon == 0 and (self.cutdown == 1 or self.cutdown == 4 or self.cutdown == 5):
                     self.Disp_track_len.config(text = int(len(self.Radio_Stns)/3))
                     self.Disp_played.config(text = int((self.Radio)/3)+1)
                     self.L4.config(text="of")
@@ -3434,14 +3469,17 @@ class MP3Player(Frame):
                         self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
                         if self.cutdown == 1:
                             self.load = self.load.resize((100, 100), Image.LANCZOS)
+                        elif self.cutdown == 4:
+                            self.load = self.load.resize((130, 130), Image.LANCZOS)
                         else:
-                            self.load = self.load.resize((130, 130), Image.LANCZOS) 
+                            self.load = self.load.resize((170, 170), Image.LANCZOS)
                         self.render2 = ImageTk.PhotoImage(self.load)
                         if self.imgxon == 0:
                             self.imgx = tk.Label(self.Frame10, image = self.render2)
                             self.imgx.grid(row = 1, column = 1, columnspan = 3, rowspan = 3, pady = 0)
                             self.imgxon = 1
-                            self.Disp_plist_name.after(100, self.Disp_plist_name.destroy())
+                            if self.cutdown == 1 or self.cutdown == 4:
+                                self.Disp_plist_name.after(100, self.Disp_plist_name.destroy())
                             self.Disp_artist_name.after(100, self.Disp_artist_name.destroy())
                             self.Disp_album_name.after(100, self.Disp_album_name.destroy())
                         self.imgx.config(image = self.render2)
@@ -3487,6 +3525,13 @@ class MP3Player(Frame):
                     self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
                     self.Disp_album_name = tk.Label(self.Frame10, height=2, width=30,bg='white', anchor="w", borderwidth=2, relief="groove")
                     self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                elif cutdown == 5:
+                    self.Disp_artist_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
+                    self.Disp_album_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                    self.Disp_track_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
             self.wheel_opt = 0
             self.Button_Next_Artist.config(fg = "red")
             if self.cutdown != 5 and self.cutdown != 6:
@@ -3585,7 +3630,15 @@ class MP3Player(Frame):
                     self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
                     self.Disp_album_name = tk.Label(self.Frame10, height=2, width=30,bg='white', anchor="w", borderwidth=2, relief="groove")
                     self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
-            elif self.imgxon == 0 and (self.cutdown == 1 or self.cutdown == 4):
+                elif cutdown == 5:
+                    self.Disp_artist_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
+                    self.Disp_album_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                    self.Disp_track_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
+                    
+            elif self.imgxon == 0 and (self.cutdown == 1 or self.cutdown == 4 or self.cutdown == 5):
                     self.Disp_track_len.config(text = int(len(self.Radio_Stns)/3))
                     self.Disp_played.config(text = int((self.Radio)/3)+1)
                     self.L4.config(text="of")
@@ -3594,14 +3647,17 @@ class MP3Player(Frame):
                         self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
                         if self.cutdown == 1:
                             self.load = self.load.resize((100, 100), Image.LANCZOS)
-                        else:
-                            self.load = self.load.resize((130, 130), Image.LANCZOS) 
+                        elif self.cutdown == 4:
+                            self.load = self.load.resize((130, 130), Image.LANCZOS)
+                        elif self.cutdown == 5:
+                            self.load = self.load.resize((170, 170), Image.LANCZOS)
                         self.render2 = ImageTk.PhotoImage(self.load)
                         if self.imgxon == 0:
                             self.imgx = tk.Label(self.Frame10, image = self.render2)
                             self.imgx.grid(row = 1, column = 1, columnspan = 3, rowspan = 3, pady = 0)
                             self.imgxon = 1
-                            self.Disp_plist_name.after(100, self.Disp_plist_name.destroy())
+                            if self.cutdown == 1 or self.cutdown == 4:
+                                self.Disp_plist_name.after(100, self.Disp_plist_name.destroy())
                             self.Disp_artist_name.after(100, self.Disp_artist_name.destroy())
                             self.Disp_album_name.after(100, self.Disp_album_name.destroy())
                         self.imgx.config(image = self.render2)
@@ -3647,6 +3703,13 @@ class MP3Player(Frame):
                     self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
                     self.Disp_album_name = tk.Label(self.Frame10, height=2, width=30,bg='white', anchor="w", borderwidth=2, relief="groove")
                     self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                elif cutdown == 5:
+                    self.Disp_artist_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
+                    self.Disp_album_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                    self.Disp_track_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
             self.wheel_opt = 0
             self.Button_Next_Artist.config(fg = "red")
             if self.cutdown != 5 and self.cutdown != 6:
@@ -3698,6 +3761,13 @@ class MP3Player(Frame):
                     self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
                     self.Disp_album_name = tk.Label(self.Frame10, height=2, width=30,bg='white', anchor="w", borderwidth=2, relief="groove")
                     self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                elif cutdown == 5:
+                    self.Disp_artist_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
+                    self.Disp_album_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                    self.Disp_track_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
             self.wheel_opt = 1
             self.Button_Next_Album.config(fg = "red")
             self.Button_Next_Artist.config(fg = "black")
@@ -3764,6 +3834,13 @@ class MP3Player(Frame):
                     self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
                     self.Disp_album_name = tk.Label(self.Frame10, height=2, width=30,bg='white', anchor="w", borderwidth=2, relief="groove")
                     self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                elif cutdown == 5:
+                    self.Disp_artist_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
+                    self.Disp_album_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                    self.Disp_track_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
             self.wheel_opt = 1
             self.Button_Next_Album.config(fg = "red")
             self.Button_Next_Artist.config(fg = "black")
@@ -3821,6 +3898,13 @@ class MP3Player(Frame):
                     self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
                     self.Disp_album_name = tk.Label(self.Frame10, height=2, width=30,bg='white', anchor="w", borderwidth=2, relief="groove")
                     self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                elif cutdown == 5:
+                    self.Disp_artist_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
+                    self.Disp_album_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                    self.Disp_track_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
             if self.paused == 0:
                 if self.album_start == 0:
                     self.wheel_opt = 2
@@ -3891,6 +3975,13 @@ class MP3Player(Frame):
                         self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
                         self.Disp_album_name = tk.Label(self.Frame10, height=2, width=30,bg='white', anchor="w", borderwidth=2, relief="groove")
                         self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                    elif cutdown == 5:
+                        self.Disp_artist_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                        self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
+                        self.Disp_album_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                        self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                        self.Disp_track_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                        self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
                 if self.album_start == 0:
                     self.wheel_opt = 2
                     self.Button_Next_Track.config(fg = "red")
@@ -4943,6 +5034,13 @@ class MP3Player(Frame):
                     self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
                     self.Disp_album_name = tk.Label(self.Frame10, height=2, width=30,bg='white', anchor="w", borderwidth=2, relief="groove")
                     self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                elif cutdown == 5:
+                    self.Disp_artist_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
+                    self.Disp_album_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                    self.Disp_track_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
             if self.cutdown == 6:
                 self.L1.config(text = "RAM: ")
                 self.Disp_track_name1.config(fg = "black",bg = "light grey",text = " ", borderwidth=2)
@@ -5028,6 +5126,13 @@ class MP3Player(Frame):
                     self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
                     self.Disp_album_name = tk.Label(self.Frame10, height=2, width=30,bg='white', anchor="w", borderwidth=2, relief="groove")
                     self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                elif cutdown == 5:
+                    self.Disp_artist_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
+                    self.Disp_album_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                    self.Disp_track_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                    self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
             if self.Button_info_on == 1 and self.cutdown == 0:
                 self.Button_Info.config(fg="black",bg="light blue")
             if self.cutdown != 5 and self.cutdown != 6 :
@@ -5265,40 +5370,30 @@ class MP3Player(Frame):
                 self.Disp_played.config(text = "")
                 self.Disp_track_len.config(text = "")
                 self.Radio_ON    = 1
-                if self.cutdown == 1:
+                if self.cutdown == 1 or self.cutdown == 4 or self.cutdown == 5:
                     self.Disp_track_len.config(text = int(len(self.Radio_Stns)/3))
                     self.Disp_played.config(text = int((self.Radio)/3)+1)
                     self.L4.config(text="of")
                     self.Disp_Total_tunes.config(text = "         Stn:")
                     if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
                         self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
-                        self.load = self.load.resize((100, 100), Image.LANCZOS) 
+                        if self.cutdown == 1:
+                           self.load = self.load.resize((100, 100), Image.LANCZOS)
+                        elif self.cutdown == 4:
+                           self.load = self.load.resize((130, 130), Image.LANCZOS)
+                        else:
+                           self.load = self.load.resize((170, 170), Image.LANCZOS)
                         self.render2 = ImageTk.PhotoImage(self.load)
                         if self.imgxon == 0:
                             self.imgx = tk.Label(self.Frame10, image = self.render2)
                             self.imgx.grid(row = 1, column = 1, columnspan = 3, rowspan = 3, pady = 0)
                             self.imgxon = 1
-                            self.Disp_plist_name.after(100, self.Disp_plist_name.destroy())
+                            if self.cutdown == 1 or self.cutdown == 4:
+                                self.Disp_plist_name.after(100, self.Disp_plist_name.destroy())
                             self.Disp_artist_name.after(100, self.Disp_artist_name.destroy())
                             self.Disp_album_name.after(100, self.Disp_album_name.destroy())
                         self.imgx.config(image = self.render2)
-                elif self.cutdown == 4:
-                    self.Disp_track_len.config(text = int(len(self.Radio_Stns)/3))
-                    self.Disp_played.config(text = int((self.Radio)/3)+1)
-                    self.L4.config(text="of")
-                    self.Disp_Total_tunes.config(text = "         Stn:")
-                    if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
-                        self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
-                        self.load = self.load.resize((130, 130), Image.LANCZOS) 
-                        self.render2 = ImageTk.PhotoImage(self.load)
-                        if self.imgxon == 0:
-                            self.imgx = tk.Label(self.Frame10, image = self.render2)
-                            self.imgx.grid(row = 1, column = 1, columnspan = 3, rowspan = 3, pady = 0)
-                            self.imgxon = 1
-                            self.Disp_plist_name.after(100, self.Disp_plist_name.destroy())
-                            self.Disp_artist_name.after(100, self.Disp_artist_name.destroy())
-                            self.Disp_album_name.after(100, self.Disp_album_name.destroy())
-                        self.imgx.config(image = self.render2)
+
                 self.copy = 0
                 self.auto_radio  = 1
                 with open('Lasttrack3.txt', 'w') as f:
@@ -5491,6 +5586,13 @@ class MP3Player(Frame):
                 self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
                 self.Disp_album_name = tk.Label(self.Frame10, height=2, width=30,bg='white', anchor="w", borderwidth=2, relief="groove")
                 self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+            elif cutdown == 5:
+                self.Disp_artist_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 3)
+                self.Disp_album_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
+                self.Disp_track_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
+                self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
         if self.cutdown != 7:
             self.Disp_album_name.config(text ="")
             self.Disp_track_name.config(text ="")
@@ -5516,7 +5618,7 @@ class MP3Player(Frame):
             print ("Get Track",track[0])
         self.counter = 0
         self.track_nameX = [" - .mp3"]
-        self.tname = re.sub('[^a-zA-Z0-9- &!()]+', '',self.tname)
+        self.tname = re.sub("[^a-zA-Z0-9- &!()',.]+", '',self.tname)
         if self.Radio_ON == 1 and self.Radio_Stns[self.Radio + 2] == 1:
             if self.cutdown == 7:
                 self.Disp_track_name.set(self.tname)
@@ -5541,7 +5643,7 @@ class MP3Player(Frame):
                     print("1",self.tname)
                     self.oldtrack2 = self.tname
                     vv = 1
-                self.tname = re.sub('[^a-zA-Z0-9- &!()]+', '',self.tname)
+                self.tname = re.sub("[^a-zA-Z0-9- &!()',.]+", '',self.tname)
                 if vv == 1 and self.trace == 2:
                     print("2",self.tname)
                 if self.cutdown == 7:
@@ -5554,7 +5656,7 @@ class MP3Player(Frame):
                     self.old_tname = self.tname
             elif self.track_nameX[self.counter][0:3] == " - " and self.track_nameX[self.counter] != " - .mp3":
                 self.tname = self.track_nameX[self.counter][:-4]
-                self.tname = re.sub('[^a-zA-Z0-9- &!()]+', '',self.tname)
+                self.tname = re.sub("[^a-zA-Z0-9- &!()',.]+", '',self.tname)
                 if self.cutdown == 7:
                     self.Disp_track_name.set(self.tname[3:])
                 else:
@@ -5653,8 +5755,8 @@ class MP3Player(Frame):
                         track  = names[0]
                         mp = track[-4:]
                         track = track[:-4]
-                    artist = re.sub('[^a-zA-Z0-9- &!()]+', '',artist)
-                    track = re.sub('[^a-zA-Z0-9- &!()]+', '',track)
+                    artist = re.sub("[^a-zA-Z0-9- &!()',.]+", '',artist)
+                    track = re.sub("[^a-zA-Z0-9- &!()',.]+", '',track)
                     track += mp
                     stn1 = self.m_user + "/" + USB_Files[0] + "/" + artist
                     stn2 = self.m_user + "/" + USB_Files[0] + "/" + artist + "/Radio_Recordings/"
@@ -5702,7 +5804,7 @@ class MP3Player(Frame):
             os.remove(rems[x])
 
     def PopupInfo(self):
-        # show info.txt, cutdown = 0 ONLY.
+        # show info.txt
         if self.Radio_ON == 0 or self.Radio_RON == 1:
             ipath = "/" + self.drive_name1 + "/" + self.drive_name2 + "/"
             if self.drive_name[-1] == "*":
