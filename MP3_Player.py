@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.50
+# Pi_MP3_Player v17.51
 
 """Copyright (c) 2024
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -195,7 +195,7 @@ class MP3Player(Frame):
         self.auto_radio     = 0
         self.auto_record    = 0
         self.auto_rec_time  = 10
-        self.usave          = 1
+        self.usave          = 0
         self.minutes        = 0
         self.seconds        = 10
         self.old_tname      = "x"
@@ -3439,8 +3439,12 @@ class MP3Player(Frame):
                 self.L4.config(text="of")
                 if self.cutdown == 1:
                     self.Disp_Total_tunes.config(text = "        Stn:")
-                elif self.cutdown == 4 or self.cutdown == 5:
+                if self.cutdown == 1:
+                    self.Disp_Total_tunes.config(text = "        Stn:")
+                elif self.cutdown == 4:
                     self.Disp_Total_tunes.config(text = "    Stn:")
+                else:   
+                    self.L3.config(text = "Stn:")
             self.Name = self.Radio_Stns[self.Radio]
             if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
                 self.imgxon = 0
@@ -3622,8 +3626,12 @@ class MP3Player(Frame):
                 self.L4.config(text="of")
                 if self.cutdown == 1:
                     self.Disp_Total_tunes.config(text = "        Stn:")
-                elif self.cutdown == 4 or self.cutdown == 5:
+                if self.cutdown == 1:
+                    self.Disp_Total_tunes.config(text = "        Stn:")
+                elif self.cutdown == 4:
                     self.Disp_Total_tunes.config(text = "    Stn:")
+                else:   
+                    self.L3.config(text = "Stn:")
             self.Name = self.Radio_Stns[self.Radio]
             if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
                 self.imgxon = 0
@@ -5388,8 +5396,10 @@ class MP3Player(Frame):
                     self.L4.config(text="of")
                     if self.cutdown == 1:
                         self.Disp_Total_tunes.config(text = "        Stn:")
-                    elif self.cutdown == 4 or self.cutdown == 5:
+                    elif self.cutdown == 4:
                         self.Disp_Total_tunes.config(text = "    Stn:")
+                    else:   
+                        self.L3.config(text = "Stn:")
                     if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
                         self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
                         if self.cutdown == 1:
