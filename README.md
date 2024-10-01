@@ -73,7 +73,8 @@ You can add images of the album covers in the album directories for displaying, 
 
 # New features
 
-To exit without shutting down click on SHUFFLE then SLEEP then SHUTDOWN.
+- To exit without shutting down click on SHUFFLE then SLEEP then SHUTDOWN.
+- radio recording time increased, and proportional to amount of ram if self.max_record set to 0.
 
 - cutdown 5 album cover and Radio Station logo image display added
 - cutdown 5 larger font
