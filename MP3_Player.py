@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.51
+# Pi_MP3_Player v17.52
 
 """Copyright (c) 2024
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -130,7 +130,7 @@ class MP3Player(Frame):
         self.record_time    = 0
         self.ram_min        = 150
         self.tracking       = 0
-        self.max_record     = 150 
+        self.max_record     = 0 
         self.rec_step       = 10
         self.total_record   = 0
         self.track_nameX    = ""
@@ -216,6 +216,13 @@ class MP3Player(Frame):
                 
         if self.cutdown != 4 and self.cutdown != 1 and self.cutdown != 5:
             self.master.bind("<Button-1>", self.Wheel_Opt_Button)
+
+        # check RAM space and set self.max_record if set to 0
+        st = os.statvfs("/run/shm/")
+        freeram = (st.f_bavail * st.f_frsize)/1100000
+        if self.max_record == 0:
+            free2 = int((freeram - self.ram_min)/10) * 10
+            self.max_record = min(free2,999)
        
         #check Pi model.
         if os.path.exists ('/run/shm/md.txt'): 
@@ -239,9 +246,10 @@ class MP3Player(Frame):
                 while line:
                     if line.count(",") == 2:
                         a,b,c = line.split(",")
-                        self.Radio_Stns.append(a)
-                        self.Radio_Stns.append(b)
-                        self.Radio_Stns.append(int(c.strip()))
+                        if a[0:1] != "#":
+                            self.Radio_Stns.append(a)
+                            self.Radio_Stns.append(b)
+                            self.Radio_Stns.append(int(c.strip()))
                     line = textobj.readline()
 
         # read radio_stns.csv (Station Name,URL,X,)
@@ -2558,7 +2566,6 @@ class MP3Player(Frame):
             if self.cutdown == 6 or self.cutdown == 4 or self.cutdown == 2:
                 self.Button_Next_AZ.config(text = "Info", bg = "light blue", fg = "black")
             self.L4.config(text="/")
-            #self.Button_Pause.config(fg = "white", bg = "red", text = str(self.record_time) + " mins")
             self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
             if self.cutdown != 1:
                 self.Button_Radio.config(bg = "red",fg = "white", text = "STOP RECORD")
@@ -2580,7 +2587,7 @@ class MP3Player(Frame):
             if self.Radio_Stns[self.Radio + 2] == 0:
                 self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
             else:
-                self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l","9999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
+                self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
                 time.sleep(1)
                 self.q = subprocess.Popen(["mplayer","-nocache","http://localhost:8000"] , shell=False)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
@@ -2609,7 +2616,6 @@ class MP3Player(Frame):
             self.Disp_track_len.config(text ="%03d:%02d" % (t_minutes, t_seconds % 60))
             self.record_current = int((self.total_record - (time.monotonic() - self.rec_begin))/60)
             self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
-            #self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.record_current + 1) + " mins")
             if self.Radio_ON == 1 and self.Radio_RON == 1 and self.shutdown == 1 and self.record_sleep == 1:
                 self.sleep_time_min = (self.record_current *60) + 60
                 self.sleep_time = int(self.sleep_time_min / 60)
