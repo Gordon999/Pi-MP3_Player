@@ -41,6 +41,8 @@ sudo apt-get install streamripper
 
 sudo apt-get install python3-pil.imagetk
 
+sudo pip3 install rpi_backlight  (with BOOKWORM add --break-system-packages)
+
 To run python3 MP3_Player.py
 
 To run at boot (assuming booting to GUI) if using Buster, Bullseye or Bookworm using X11. ..
