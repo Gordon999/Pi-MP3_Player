@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.52
+# Pi_MP3_Player v17.58
 
 """Copyright (c) 2024
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -111,7 +111,8 @@ class MP3Player(Frame):
         self.volume         = 60   # range 0 - 100. Will be overridden by saved volume in saved config file
         self.gapless_time   = 2    # in seconds. Defines length of track overlap.
         self.scroll_rate    = 3    # scroll rate 1 (slow) to 10 (fast)
-        self.LCD_backlight  = 1    # LCD backlight control, set to 1 to activate.
+        self.Pi7_backlight  = 0    # Pi 7" inch display backlight control (pip3 install rpi_backlight)
+        self.LCD_backlight  = 0    # LCD backlight control, set to 1 to activate.
         self.LCD_LED_pin    = 23   # LCD backlight GPIO
         self.HP4_backlight  = 0    # Hyperpixel4 backlight control, set to 1.
         self.light          = 60   # Backlight OFF timer for above, in seconds
@@ -145,6 +146,7 @@ class MP3Player(Frame):
         self.shuffle_on     = 0
         self.sorted         = 0
         self.begin          = time.monotonic()
+        self.timer7         = time.monotonic()
         self.m3u_no         = 0
         self.stopstart      = 0
         self.paused         = 0
@@ -213,17 +215,16 @@ class MP3Player(Frame):
         self.imgxon         = 0
         self.gpio_enable    = 0
         self.xxx            = 0
+        self.ramtest        = 0
+
+        if "System clock synchronized: yes" in os.popen("timedatectl").read().split("\n"):
+            self.synced = 1
+        else:
+            self.synced = 0
                 
         if self.cutdown != 4 and self.cutdown != 1 and self.cutdown != 5:
             self.master.bind("<Button-1>", self.Wheel_Opt_Button)
 
-        # check RAM space and set self.max_record if set to 0
-        st = os.statvfs("/run/shm/")
-        freeram = (st.f_bavail * st.f_frsize)/1100000
-        if self.max_record == 0:
-            free2 = int((freeram - self.ram_min)/10) * 10
-            self.max_record = min(free2,999)
-       
         #check Pi model.
         if os.path.exists ('/run/shm/md.txt'): 
             os.remove("/run/shm/md.txt")
@@ -355,6 +356,8 @@ class MP3Player(Frame):
             self.dim     = 0.0  # Backlight dim 
             self.bright  = 0.8  # Backlight bright , 1 full brightness
             self.LCD_pwm.value = self.bright
+        if self.Pi7_backlight == 1:
+            os.system("rpi-backlight -b 100")
         
         # setup GUI
         self.Frame10 = tk.Frame(width=800, height=800)
@@ -1806,7 +1809,7 @@ class MP3Player(Frame):
                 if self.Radio_Stns[self.Radio + 2] == 0:
                     self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
                 else:
-                    self.r = subprocess.Popen(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l", "9999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
+                    self.r = subprocess.Popen(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
                     time.sleep(1)
                     self.q = subprocess.Popen(["mplayer", "-nocache", "http://localhost:8000"] , shell=False)
                     track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
@@ -2206,8 +2209,11 @@ class MP3Player(Frame):
                x -=1
                     
         # backlight off
-        if time.monotonic() - self.light_on > self.light and (self.HP4_backlight == 1 or self.LCD_backlight == 1):
-            self.LCD_pwm.value = self.dim
+        if time.monotonic() - self.light_on > self.light and (self.HP4_backlight == 1 or self.LCD_backlight == 1 or self.Pi7_backlight == 1):
+            if self.HP4_backlight == 1 or self.LCD_backlight == 1:
+                self.LCD_pwm.value = self.dim
+            if self.Pi7_backlight == 1:
+                os.system("rpi-backlight -b 0")
         
         if self.model != 0:
             self.count7 += 1
@@ -2497,6 +2503,10 @@ class MP3Player(Frame):
         if self.Radio_ON == 1 and self.Radio_RON == 0 and self.Radio_Stns[self.Radio + 2] == 1 and self.record == 1:
             if self.trace > 0:
                 print ("Start Record")
+            if "System clock synchronized: yes" in os.popen("timedatectl").read().split("\n"):
+                self.synced = 1
+            else:
+                self.synced = 0
             self.rems2 = glob.glob("/run/shm/music/*/*/*/*/*.mp3")
             for x in range(0,len(self.rems2)):
                 os.remove(self.rems2[x])
@@ -2567,6 +2577,8 @@ class MP3Player(Frame):
                 self.Button_Next_AZ.config(text = "Info", bg = "light blue", fg = "black")
             self.L4.config(text="/")
             self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
+            if cutdown == 7 and self.synced == 1:
+                self.L6.config(text = "(" + str(self.stop_record)[11:16] + ")")
             if self.cutdown != 1:
                 self.Button_Radio.config(bg = "red",fg = "white", text = "STOP RECORD")
             else:
@@ -2593,6 +2605,14 @@ class MP3Player(Frame):
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
                 if len(track) == 0:
                    time.sleep(2)
+            # check RAM space and set self.max_record if set to 0
+            st = os.statvfs("/run/shm/")
+            self.freeram1 = (st.f_bavail * st.f_frsize)/1100000
+            self.timer7 = time.monotonic()
+            if self.max_record == 0:
+                free2 = int((self.freeram1 - self.ram_min)/10) * 10
+                self.max_record = min(free2,991)
+                self.ramtest = 1
 
         elif self.Radio_ON == 1 and self.Radio_RON == 1 and self.Radio_Stns[self.Radio + 2] == 1 and self.record == 1:
             self.record_time = int(self.record_time + self.rec_step)
@@ -2616,6 +2636,8 @@ class MP3Player(Frame):
             self.Disp_track_len.config(text ="%03d:%02d" % (t_minutes, t_seconds % 60))
             self.record_current = int((self.total_record - (time.monotonic() - self.rec_begin))/60)
             self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
+            if cutdown == 7 and self.synced == 1:
+                self.L6.config(text = "(" + str(self.stop_record)[11:16] + ")")
             if self.Radio_ON == 1 and self.Radio_RON == 1 and self.shutdown == 1 and self.record_sleep == 1:
                 self.sleep_time_min = (self.record_current *60) + 60
                 self.sleep_time = int(self.sleep_time_min / 60)
@@ -3048,11 +3070,21 @@ class MP3Player(Frame):
         abs_y = self.master.winfo_pointery() - self.master.winfo_rooty()
         
         # switch backlight on (if enabled)
-        if (self.LCD_backlight == 1 or self.HP4_backlight == 1) and (self.old_abs_x != abs_x or self.old_abs_y != abs_y) :
-            self.LCD_pwm.value = self.bright
+        if (self.LCD_backlight == 1 or self.HP4_backlight == 1 or self.Pi7_backlight == 1) and (self.old_abs_x != abs_x or self.old_abs_y != abs_y) :
+            if self.HP4_backlight == 1 or self.LCD_backlight == 1:
+                self.LCD_pwm.value = self.bright
             self.light_on = time.monotonic()
+            if self.Pi7_backlight == 1:
+                os.system("rpi-backlight -b 100")
         self.old_abs_x = abs_x
         self.old_abs_y = abs_y
+
+        # backlight off
+        if time.monotonic() - self.light_on > self.light and (self.HP4_backlight == 1 or self.LCD_backlight == 1 or self.Pi7_backlight == 1):
+            if self.HP4_backlight == 1 or self.LCD_backlight == 1:
+                self.LCD_pwm.value = self.dim
+            if self.Pi7_backlight == 1:
+                os.system("rpi-backlight -b 0")
                    
         # Read the Wheel position
         if self.cutdown != 1 and self.cutdown != 4 and self.cutdown != 5 and self.Radio_ON == 0:
@@ -3425,7 +3457,7 @@ class MP3Player(Frame):
             if self.Radio_Stns[self.Radio + 2] == 0:
                 self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
             else:
-                self.r = subprocess.Popen(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l", "9999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
+                self.r = subprocess.Popen(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
                 time.sleep(1)
                 self.q = subprocess.Popen(["mplayer", "-nocache", "http://localhost:8000"] , shell=False)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
@@ -3612,7 +3644,7 @@ class MP3Player(Frame):
             if self.Radio_Stns[self.Radio + 2] == 0:
                 self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
             else:
-                self.r = subprocess.Popen(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l", "9999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
+                self.r = subprocess.Popen(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
                 time.sleep(1)
                 self.q = subprocess.Popen(["mplayer", "-nocache", "http://localhost:8000"] , shell=False)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
@@ -4867,9 +4899,10 @@ class MP3Player(Frame):
             self.q.kill()
         self.play = 0
         self.master.destroy()
-        self.LCD_pwm.close()
-        os.system("raspi-gpio set " + str(self.LCD_LED_pin) + " op")
-        os.system("raspi-gpio set " + str(self.LCD_LED_pin) + " dh")
+        if self.HP4_backlight == 1 or self.LCD_backlight == 1:
+            self.LCD_pwm.close()
+            os.system("raspi-gpio set " + str(self.LCD_LED_pin) + " op")
+            os.system("raspi-gpio set " + str(self.LCD_LED_pin) + " dh")
         sys.exit()
 
     def Search(self):
@@ -5441,7 +5474,7 @@ class MP3Player(Frame):
                 if self.Radio_Stns[self.Radio + 2] == 0:
                     self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
                 else:
-                    self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l","9999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
+                    self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
                     time.sleep(1)
                     self.q = subprocess.Popen(["mplayer","-nocache","http://localhost:8000"] , shell=False)
                     track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
@@ -5502,7 +5535,7 @@ class MP3Player(Frame):
             if self.Radio_Stns[self.Radio + 2] == 0:
                 self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
             else:
-                self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l","9999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
+                self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
                 time.sleep(1)
                 self.q = subprocess.Popen(["mplayer","-nocache","http://localhost:8000"] , shell=False)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
@@ -5640,9 +5673,34 @@ class MP3Player(Frame):
         #get track name, if available.
         if self.trace > 2:
             print ("Get Track")
+        # determine max recording time based on stream rate
+        if time.monotonic() - self.timer7 >= 60 and self.ramtest == 1:
+            self.ramtest = 0
+            st = os.statvfs("/run/shm/")
+            self.freeram2 = (st.f_bavail * st.f_frsize)/1100000
+            self.max_record = int(int((self.freeram1 - self.ram_min) / (self.freeram1 - self.freeram2)) * 1.9)
+            self.max_record = min(self.max_record,990)
+            if self.record_time > self.max_record and self.max_record > 0:
+                self.record_time = self.max_record
+                self.total_record = self.max_record * 60
+                self.record_time_min = self.record_time * 60
+                t_minutes = int(self.total_record // 60)
+                t_seconds = int (self.total_record - (t_minutes * 60))
+                self.Disp_track_len.config(text ="%03d:%02d" % (t_minutes, t_seconds % 60))
+                self.record_current = int((self.total_record - (time.monotonic() - self.rec_begin))/60)
+                self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
+                now = datetime.datetime.now()
+                self.stop_record = now + timedelta(minutes=self.record_time)
+                if cutdown == 7 and self.synced == 1:
+                    self.L6.config(text = "(" + str(self.stop_record)[11:16] + ")")
+            
         # backlight off
-        if time.monotonic() - self.light_on > self.light and (self.HP4_backlight == 1 or self.LCD_backlight == 1):
-            self.LCD_pwm.value = self.dim
+        if time.monotonic() - self.light_on > self.light and (self.HP4_backlight == 1 or self.LCD_backlight == 1 or self.Pi7_backlight == 1):
+            if self.HP4_backlight == 1 or self.LCD_backlight == 1:
+                self.LCD_pwm.value = self.dim
+            if self.Pi7_backlight == 1:
+                os.system("rpi-backlight -b 0")
+            
         self.Radio_Stns2 = self.Radio_Stns[self.Radio]
         track = sorted(glob.glob("/run/shm/music/" + self.Radio_Stns2 + "/Radio_Recordings/*/incomplete/*.mp3"),key = os.path.getmtime, reverse=True)
         if self.trace > 2:
@@ -5659,8 +5717,10 @@ class MP3Player(Frame):
                 self.Disp_track_name.config(text = self.tname)
                 if self.imgxon == 0:
                     self.Disp_album_name.config(text = "Radio")
+            self.copy = 1
         elif self.Radio_ON == 1:
             self.tname = "Unknown"
+            self.copy = 0
             if self.cutdown == 7:
                 self.Disp_track_name.set(self.tname)
             else:
@@ -5728,8 +5788,6 @@ class MP3Player(Frame):
                     self.Button_Radio.config(bg = "orange",fg = "black", text = "STOP Radio")
                 else:
                     self.Button_Radio.config(bg = "orange",fg = "black", text = "STOP")
-                #if self.Radio_Stns[self.Radio + 2] == 1:
-                #    self.Button_Shutdown.config(fg = "black", bg = "light blue", text = "RECORD")
                 if self.cutdown != 1:
                     self.Button_Radio.config(bg = "orange",fg = "black", text = "STOP Radio")
                 self.Disp_album_name.config(text = "")
