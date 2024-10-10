@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.58
+# Pi_MP3_Player v17.61
 
 """Copyright (c) 2024
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -83,7 +83,7 @@ class MP3Player(Frame):
                            "Radio Caroline","http://sc6.radiocaroline.net:10558/",0
                           ]
         # settings
-        self.Shutdown_exit  = 0  # set to 1 to shutdown the Pi on pressing SHUTDOWN, 0 to only exit script
+        self.Shutdown_exit  = 1  # set to 1 to shutdown the Pi on pressing SHUTDOWN (left mouse button), 0 to only exit script
         self.Button_info_on = 1  # show Info button, set = 1 to enable
         self.Button_Radi_on = 1  # show Radio button,set = 1 to enable
         self.m3u_dir        = self.h_user + "/Documents/"     # where .m3us are stored
@@ -111,7 +111,7 @@ class MP3Player(Frame):
         self.volume         = 60   # range 0 - 100. Will be overridden by saved volume in saved config file
         self.gapless_time   = 2    # in seconds. Defines length of track overlap.
         self.scroll_rate    = 3    # scroll rate 1 (slow) to 10 (fast)
-        self.Pi7_backlight  = 0    # Pi 7" inch display backlight control (pip3 install rpi_backlight)
+        self.Pi7_backlight  = 1    # Pi 7" inch display backlight control (pip3 install rpi_backlight)
         self.LCD_backlight  = 0    # LCD backlight control, set to 1 to activate.
         self.LCD_LED_pin    = 23   # LCD backlight GPIO
         self.HP4_backlight  = 0    # Hyperpixel4 backlight control, set to 1.
@@ -134,6 +134,7 @@ class MP3Player(Frame):
         self.max_record     = 0 
         self.rec_step       = 10
         self.total_record   = 0
+        self.Radio          = 0
         self.track_nameX    = ""
         self.oldtrack       = ""
         self.oldtrack2      = ""
@@ -2605,14 +2606,13 @@ class MP3Player(Frame):
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
                 if len(track) == 0:
                    time.sleep(2)
-            # check RAM space and set self.max_record if set to 0
+            # check RAM space and set self.max_record
             st = os.statvfs("/run/shm/")
             self.freeram1 = (st.f_bavail * st.f_frsize)/1100000
             self.timer7 = time.monotonic()
-            if self.max_record == 0:
-                free2 = int((self.freeram1 - self.ram_min)/10) * 10
-                self.max_record = min(free2,991)
-                self.ramtest = 1
+            free2 = int((self.freeram1 - self.ram_min)/10) * 10
+            self.max_record = min(free2,991)
+            self.ramtest = 1
 
         elif self.Radio_ON == 1 and self.Radio_RON == 1 and self.Radio_Stns[self.Radio + 2] == 1 and self.record == 1:
             self.record_time = int(self.record_time + self.rec_step)
@@ -3549,6 +3549,13 @@ class MP3Player(Frame):
             track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
             with open('Lasttrack3.txt', 'w') as f:
                 f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
+            # check RAM space and set self.max_record
+            st = os.statvfs("/run/shm/")
+            self.freeram1 = (st.f_bavail * st.f_frsize)/1100000
+            self.timer7 = time.monotonic()
+            free2 = int((self.freeram1 - self.ram_min)/10) * 10
+            self.max_record = min(free2,991)
+            self.ramtest = 1
             self.Check_Record()
             if len(track) == 0  and self.Radio_Stns[self.Radio + 2] == 1:
                 messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
@@ -3737,6 +3744,13 @@ class MP3Player(Frame):
             track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
             with open('Lasttrack3.txt', 'w') as f:
                 f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
+            # check RAM space and set self.max_record
+            st = os.statvfs("/run/shm/")
+            self.freeram1 = (st.f_bavail * st.f_frsize)/1100000
+            self.timer7 = time.monotonic()
+            free2 = int((self.freeram1 - self.ram_min)/10) * 10
+            self.max_record = min(free2,991)
+            self.ramtest = 1
             self.Check_Record()
             if len(track) == 0  and self.Radio_Stns[self.Radio + 2] == 1:
                 messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
@@ -5483,6 +5497,13 @@ class MP3Player(Frame):
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
                 if len(track) == 0  and self.Radio_Stns[self.Radio + 2] == 1:
                     messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
+                # check RAM space and set self.max_record
+                st = os.statvfs("/run/shm/")
+                self.freeram1 = (st.f_bavail * st.f_frsize)/1100000
+                self.timer7 = time.monotonic()
+                free2 = int((self.freeram1 - self.ram_min)/10) * 10
+                self.max_record = min(free2,991)
+                self.ramtest = 1
                 
                 self.Check_Record()
                 if self.auto_radio == 1 and self.auto_record == 1 and self.Radio_Stns[self.Radio + 2] == 1:
@@ -5674,12 +5695,13 @@ class MP3Player(Frame):
         if self.trace > 2:
             print ("Get Track")
         # determine max recording time based on stream rate
-        if time.monotonic() - self.timer7 >= 60 and self.ramtest == 1:
+        if time.monotonic() - self.timer7 >= 30 and self.ramtest == 1:
             self.ramtest = 0
             st = os.statvfs("/run/shm/")
             self.freeram2 = (st.f_bavail * st.f_frsize)/1100000
-            self.max_record = int(int((self.freeram1 - self.ram_min) / (self.freeram1 - self.freeram2)) * 1.9)
+            self.max_record = int(int((self.freeram1 - self.ram_min) / ((self.freeram1 - self.freeram2) * 2)) * 1.9)
             self.max_record = min(self.max_record,990)
+            print(self.freeram1,self.freeram2,self.ram_min,self.freeram1 - self.freeram2,self.max_record )
             if self.record_time > self.max_record and self.max_record > 0:
                 self.record_time = self.max_record
                 self.total_record = self.max_record * 60
@@ -5790,7 +5812,8 @@ class MP3Player(Frame):
                     self.Button_Radio.config(bg = "orange",fg = "black", text = "STOP")
                 if self.cutdown != 1:
                     self.Button_Radio.config(bg = "orange",fg = "black", text = "STOP Radio")
-                self.Disp_album_name.config(text = "")
+                if self.imgxon == 0:
+                    self.Disp_album_name.config(text = "")
                 if self.cutdown == 7:
                     self.Disp_track_name.set("")
                 else:
