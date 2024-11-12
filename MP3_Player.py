@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.61
+# Pi_MP3_Player v17.62
 
 """Copyright (c) 2024
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -888,7 +888,7 @@ class MP3Player(Frame):
             self.Button_Sleep.grid(row = 0, column = 5)
 
         if self.cutdown == 5: # Pi 7" Display 800 x 480 (Simple layout)
-            self.length = 60
+            self.length = 50
             self.helv01 = tkFont.Font(family='Helvetica', size=25, weight='bold')
             self.helv02 = tkFont.Font(family='Helvetica', size=13, weight='bold')
             self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", font = self.helv01,bg = "green",fg = "white",width = 7, height = 2, command = self.Play, wraplength=120, justify=CENTER)
