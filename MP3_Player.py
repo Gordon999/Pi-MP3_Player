@@ -888,7 +888,7 @@ class MP3Player(Frame):
             self.Button_Sleep.grid(row = 0, column = 5)
 
         if self.cutdown == 5: # Pi 7" Display 800 x 480 (Simple layout)
-            self.length = 50
+            self.length = 25
             self.helv01 = tkFont.Font(family='Helvetica', size=25, weight='bold')
             self.helv02 = tkFont.Font(family='Helvetica', size=13, weight='bold')
             self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", font = self.helv01,bg = "green",fg = "white",width = 7, height = 2, command = self.Play, wraplength=120, justify=CENTER)
