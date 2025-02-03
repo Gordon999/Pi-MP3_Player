@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.62
+# Pi_MP3_Player v17.66
 
-"""Copyright (c) 2024
+"""Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -18,6 +18,14 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE."""
+
+# set display cutdown format
+# 0:800x480, 1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist
+# 6:800x480 List 10 tracks, 7:800x480 with scrollbars
+global fullscreen
+global cutdown
+cutdown    = 5
+fullscreen = 1
 
 import tkinter as tk
 from tkinter import *
@@ -53,15 +61,6 @@ import wave
 import contextlib
 Player.introspect()
 player = Player()
-global fullscreen
-global cutdown
-
-# set display cutdown format
-# 0:800x480,1:320x240,2:640x480,3:480x800,4:480x320
-# 5:800x480 SIMPLE LAYOUT,only default Playlist,6:800x480 List 10 tracks
-# 7:800x480 with scrollbars
-cutdown    = 5
-fullscreen = 1
 
 class MP3Player(Frame):
     
@@ -111,7 +110,7 @@ class MP3Player(Frame):
         self.volume         = 60   # range 0 - 100. Will be overridden by saved volume in saved config file
         self.gapless_time   = 2    # in seconds. Defines length of track overlap.
         self.scroll_rate    = 3    # scroll rate 1 (slow) to 10 (fast)
-        self.Pi7_backlight  = 1    # Pi 7" inch display backlight control (pip3 install rpi_backlight)
+        self.Pi7_backlight  = 1    # Pi 7" inch v1 display backlight control (pip3 install rpi_backlight)
         self.LCD_backlight  = 0    # LCD backlight control, set to 1 to activate.
         self.LCD_LED_pin    = 23   # LCD backlight GPIO
         self.HP4_backlight  = 0    # Hyperpixel4 backlight control, set to 1.
@@ -198,7 +197,7 @@ class MP3Player(Frame):
         self.auto_radio     = 0
         self.auto_record    = 0
         self.auto_rec_time  = 10
-        self.usave          = 0
+        self.usave          = 1
         self.minutes        = 0
         self.seconds        = 10
         self.old_tname      = "x"
@@ -217,6 +216,10 @@ class MP3Player(Frame):
         self.gpio_enable    = 0
         self.xxx            = 0
         self.ramtest        = 0
+        self.artist_name    = ""
+        self.album_name     = ""
+        self.track_name     = ""
+        self.genre_name     = ""
 
         if "System clock synchronized: yes" in os.popen("timedatectl").read().split("\n"):
             self.synced = 1
@@ -1733,10 +1736,6 @@ class MP3Player(Frame):
                     self.Button_Radio.config(bg = "green", fg = "white", text = "Repeat Album")
             else:
                 self.Button_Radio.config(bg = "light grey", fg = "white") 
-            #if self.version == 2:
-            #    self.Button_Reload.config(bg = "light blue", fg = "black", text = "Skip Fwd")
-            #else:
-            #    self.Button_Reload.config(bg = "light grey", fg = "white")
             self.auto_play = 1
             with open('Lasttrack3.txt', 'w') as f:
                 f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
@@ -3118,7 +3117,7 @@ class MP3Player(Frame):
                 
             # if cursor on the wheel position
             if math.sqrt((x2*x2)+ (y2*y2)) > 40 and math.sqrt((x2*x2)+ (y2*y2)) < 100 :
-                if self.gpio_enable == 0:
+                if self.gpio_enable == 0 and (self.HP4_backlight == 1 or self.LCD_backlight == 1):
                     self.LCD_pwm.value = self.bright
                     self.light_on = time.monotonic()
                 # show the wheel (instead of album cover)
@@ -5277,11 +5276,12 @@ class MP3Player(Frame):
                 self.shuffle_on = 0
                 self.Disp_artist_name.set(self.artist_name)
                 self.ac = 1
-                self.plist_callback()
+                if len(self.tunes) > 0:
+                    self.plist_callback()
                 self.Disp_album_name.set(self.album_name)
                 self.Disp_track_name.set(self.track_name)
             self.reload = 1
-            if self.cutdown == 7:
+            if self.cutdown == 7 and len(self.tunes) > 0:
                 self.plist_callback()
             self.Show_Track()
         # START RADIO BUTTON
@@ -5701,7 +5701,7 @@ class MP3Player(Frame):
             self.freeram2 = (st.f_bavail * st.f_frsize)/1100000
             self.max_record = int(int((self.freeram1 - self.ram_min) / ((self.freeram1 - self.freeram2) * 2)) * 1.9)
             self.max_record = min(self.max_record,990)
-            print(self.freeram1,self.freeram2,self.ram_min,self.freeram1 - self.freeram2,self.max_record )
+            #print(self.freeram1,self.freeram2,self.ram_min,self.freeram1 - self.freeram2,self.max_record )
             if self.record_time > self.max_record and self.max_record > 0:
                 self.record_time = self.max_record
                 self.total_record = self.max_record * 60
@@ -5830,18 +5830,21 @@ class MP3Player(Frame):
                 print(USB_Files)
             st1 = os.statvfs(self.m_user + "/" + USB_Files[0])
             free = (st1.f_bavail * st1.f_frsize)/1100000
-            if len(USB_Files) > 1:
-                st2 = os.statvfs(self.m_user + "/" + USB_Files[1])
-                free2 = (st2.f_bavail * st2.f_frsize)/1100000
-                if free2 > free:
-                    free = free2
-                    del USB_Files[0]
-                    if len(USB_Files) > 1:
-                        st3 = os.statvfs(self.m_user + "/" + USB_Files[1])
-                        free3 = (st3.f_bavail * st3.f_frsize)/1100000
-                        if free3 > free:
-                            free = free3
-                            del USB_Files[0]
+            try:
+                if len(USB_Files) > 1:
+                    st2 = os.statvfs(self.m_user + "/" + USB_Files[1])
+                    free2 = (st2.f_bavail * st2.f_frsize)/1100000
+                    if free2 > free:
+                        free = free2
+                        del USB_Files[0]
+                        if len(USB_Files) > 1:
+                            st3 = os.statvfs(self.m_user + "/" + USB_Files[1])
+                            free3 = (st3.f_bavail * st3.f_frsize)/1100000
+                            if free3 > free:
+                                free = free3
+                                del USB_Files[0]
+            except:
+                pass
             if self.cutdown == 0 or self.cutdown == 3 or self.cutdown == 7:
                 self.Disp_Drive.config(text = USB_Files[0])
             if self.cutdown == 6:
@@ -5919,13 +5922,15 @@ class MP3Player(Frame):
     def PopupInfo(self):
         # show info.txt
         if self.Radio_ON == 0 or self.Radio_RON == 1:
-            ipath = "/" + self.drive_name1 + "/" + self.drive_name2 + "/"
-            if self.drive_name[-1] == "*":
-                ipath = ipath + self.drive_name[:-1] + "/" + self.artist_name + " - " + self.album_name
-            else:
-                ipath = ipath + self.drive_name + "/" + self.artist_name + "/" + self.album_name
+            ipath = ""
             if self.Radio_RON == 1:
-                ipath = "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" 
+                ipath = "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings"
+            elif len(self.tunes) > 0:
+                ipath = "/" + self.drive_name1 + "/" + self.drive_name2 + "/"
+                if self.drive_name[-1] == "*":
+                    ipath = ipath + self.drive_name[:-1] + "/" + self.artist_name + " - " + self.album_name
+                else:
+                    ipath = ipath + self.drive_name + "/" + self.artist_name + "/" + self.album_name
             ipath = ipath + "/"
             infofile = ""
             filename = "info.txt"
@@ -5939,7 +5944,7 @@ class MP3Player(Frame):
                 for txt in txts:
                     filename = os.path.split(txt)[1]
                     if "fing" in filename or "md5" in filename or "ffp" in filename or self.track_name in filename:
-                        pass
+                        infofile = txts[0]
                     elif "album" in filename:
                         infofile = "album.txt"
                     else:
@@ -5964,6 +5969,7 @@ class MP3Player(Frame):
                 with open(ipath + filename, "r", encoding="Latin-1") as f:
                     for line in f:
                         STxtBox.insert(END, line)
+                f.close()
                 if self.Radio_RON == 1:
                     popup.after(10000, popup.destroy)
                     
