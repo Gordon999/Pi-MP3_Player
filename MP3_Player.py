@@ -197,7 +197,7 @@ class MP3Player(Frame):
         self.auto_radio     = 0
         self.auto_record    = 0
         self.auto_rec_time  = 10
-        self.usave          = 1
+        self.usave          = 0
         self.minutes        = 0
         self.seconds        = 10
         self.old_tname      = "x"
