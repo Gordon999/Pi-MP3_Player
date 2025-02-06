@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.67
+# Pi_MP3_Player v17.68
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,7 +25,7 @@ SOFTWARE."""
 global fullscreen
 global cutdown
 cutdown    = 7
-fullscreen = 1
+fullscreen = 0
 
 import tkinter as tk
 from tkinter import *
@@ -197,7 +197,7 @@ class MP3Player(Frame):
         self.auto_radio     = 0
         self.auto_record    = 0
         self.auto_rec_time  = 10
-        self.usave          = 0
+        self.usave          = 1
         self.minutes        = 0
         self.seconds        = 10
         self.old_tname      = "x"
@@ -349,6 +349,15 @@ class MP3Player(Frame):
             self.voldn           = 23 # external volume down gpio input
             self.volup           = 24 # external volume up gpio input
             self.mute            = 25 # external mute gpio input
+            self.button_voldn    = Button(self.voldn)
+            self.button_mute     = Button(self.mute)
+            self.button_volup    = Button(self.volup)
+        # enable buttons on other displays and cutdowns
+        else:
+            self.gpio_enable = 2
+            self.voldn           = 16 # external volume down gpio input
+            self.volup           = 12 # external volume up gpio input
+            self.mute            = 26 # external mute gpio input
             self.button_voldn    = Button(self.voldn)
             self.button_mute     = Button(self.mute)
             self.button_volup    = Button(self.volup)
@@ -2035,6 +2044,7 @@ class MP3Player(Frame):
               print("No track")
               self.album_start = 0
               self.stopstart = 0
+              self.Button_TAlbum.config(bg = "blue",fg = "white",text = "PLAY Album")
               self.Show_Track()
                     
         elif self.album_start == 1 and self.Radio_ON == 0:
@@ -2275,7 +2285,7 @@ class MP3Player(Frame):
                 self.count7 = 0
             
         # if GPIO enabled and using Waveshare28 LCD, then check the external switches
-        if self.gpio_enable == 1 and self.waveshare == 1 and self.cutdown == 4:
+        if (self.gpio_enable == 1 and self.waveshare == 1 and self.cutdown == 4) or self.gpio_enable == 2:
             if self.button_volup.is_pressed:
                 self.volume_UP()
             elif self.button_voldn.is_pressed:
@@ -2780,7 +2790,7 @@ class MP3Player(Frame):
     def Play_Album(self):
         if self.trace > 0:
             print ("Play Album",self.track_no)
-        if self.cutdown == 7:
+        if self.cutdown == 7 and len(self.tunes) > 0:
             self.artist_name  = (self.tunes[self.track_no].split('^')[0])
             self.album_name   = (self.tunes[self.track_no].split('^')[1])
         self.light_on = time.monotonic()
@@ -3960,6 +3970,7 @@ class MP3Player(Frame):
             if len(self.tunes) > 0:
                 while (self.tunes[self.track_no].split('^')[1]) == self.album_name and stop == 0:
                     self.track_no +=1
+                    #print(self.tunes[self.track_no].split('^')[1], self.album_name,self.tunes[self.track_no].split('^')[0], self.artist_name )
                     if self.track_no > len(self.tunes) - 1:
                         self.track_no = 0
                         stop = 1
