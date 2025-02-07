@@ -357,9 +357,9 @@ class MP3Player(Frame):
             self.gpio_enable = 2
             self.voldn              = 16 # external volume down gpio input
             self.volup              = 12 # external volume up gpio input
-            self.mute               = 26 # external mute gpio input
-            self.start_album        = 13 # external start/stop album gpio input
-            self.start_play         = 6  # external start/stop playlist gpio input
+            self.mute               = 13 # external mute gpio input
+            self.start_album        = 6  # external start/stop album gpio input
+            self.start_play         = 5  # external start/stop playlist gpio input
             self.button_voldn       = Button(self.voldn)
             self.button_mute        = Button(self.mute)
             self.button_volup       = Button(self.volup)
@@ -1502,10 +1502,11 @@ class MP3Player(Frame):
             self.volume_DN()
         elif self.button_mute.is_pressed:
             self.Mute()
-        elif self.button_start_album.is_pressed:
-            self.Play_Album()
-        elif self.button_start_play.is_pressed:
-            self.Play()
+        if self.gpio_enable == 2:
+            if self.button_start_album.is_pressed:
+                self.Play_Album()
+            elif self.button_start_play.is_pressed:
+                self.Play()
         self.after(500, self.check_buttons) # set for 500mS
    
     def Show_Track(self):
