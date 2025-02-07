@@ -357,7 +357,7 @@ class MP3Player(Frame):
             self.gpio_enable = 2
             self.voldn           = 16 # external volume down gpio input
             self.volup           = 12 # external volume up gpio input
-            self.mute            = 26 # external mute gpio input
+            self.mute            = 13 # external mute gpio input
             self.button_voldn    = Button(self.voldn)
             self.button_mute     = Button(self.mute)
             self.button_volup    = Button(self.volup)
