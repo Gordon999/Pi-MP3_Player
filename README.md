@@ -208,7 +208,7 @@ Format: Track start time text
 
 - Adds a display of Playlist time, and time left to play (upto 120 minutes).
 
-- Optional external volume UP/DOWN/MUTE switches, on GPIO 16,12 & 26. switches to gnd to operate.
+- Optional external volume UP/DOWN/MUTE switches, on GPIO 16,12 & 13. Play gpio 5, play album gpio 6 ,switches to gnd to operate.
 
 - 'ADD artist to .m3u' will make a m3u file with all tracks by a selected artist.
 
