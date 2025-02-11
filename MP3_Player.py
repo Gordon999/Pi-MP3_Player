@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.68
+# Pi_MP3_Player v17.70
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -123,6 +123,7 @@ class MP3Player(Frame):
         self.trace          = 0
         self.repeat         = 0
         self.play           = 0
+        self.stop7          = 0
         self.sleep_time     = 0
         self.sleep_time_min = 0
         self.max_sleep      = 120
@@ -355,12 +356,16 @@ class MP3Player(Frame):
         # enable buttons on other displays and cutdowns
         else:
             self.gpio_enable = 2
-            self.voldn           = 16 # external volume down gpio input
-            self.volup           = 12 # external volume up gpio input
-            self.mute            = 26 # external mute gpio input
-            self.button_voldn    = Button(self.voldn)
-            self.button_mute     = Button(self.mute)
-            self.button_volup    = Button(self.volup)
+            self.voldn              = 16 # external volume down gpio input
+            self.volup              = 12 # external volume up gpio input
+            self.mute               = 13 # external mute gpio input
+            self.start_album        = 6  # external start/stop album gpio input
+            self.start_play         = 5  # external start/stop playlist gpio input
+            self.button_voldn       = Button(self.voldn)
+            self.button_mute        = Button(self.mute)
+            self.button_volup       = Button(self.volup)
+            self.button_start_album = Button(self.start_album)
+            self.button_start_play  = Button(self.start_play)
         # enable LCD backlight
         if self.LCD_backlight == 1:
             self.gpio_enable = 1
@@ -1072,21 +1077,21 @@ class MP3Player(Frame):
             self.Artist_variable = StringVar(self.Frame10)
             self.Disp_artist_name = ttk.Combobox(self.Frame10, textvariable=Artist_variable, values=self.Artist_options)
             self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 6)
-            self.Disp_artist_name.bind("<<ComboboxSelected>>",self.artist_callback)
+            self.Disp_artist_name.bind("<<ComboboxSelected>>",self.artist_callback2)
             self.Disp_artist_name.configure(width=50, font="Verdana 12")
             Album_variable = ""
             self.Album_options = [""]
             self.Album_variable = StringVar(self.Frame10)
             self.Disp_album_name = ttk.Combobox(self.Frame10, textvariable=Album_variable, values=self.Album_options)
             self.Disp_album_name.grid(row = 3, column = 1, columnspan = 6)
-            self.Disp_album_name.bind("<<ComboboxSelected>>",self.album_callback)
+            self.Disp_album_name.bind("<<ComboboxSelected>>",self.album_callback2)
             self.Disp_album_name.configure(width=50, font="Verdana 12")
             Track_variable = ""
             self.Track_options = [""]
             self.Track_variable = StringVar(self.Frame10)
             self.Disp_track_name = ttk.Combobox(self.Frame10, textvariable=Track_variable, values=self.Track_options)
             self.Disp_track_name.grid(row = 4, column = 1,columnspan = 6)
-            self.Disp_track_name.bind("<<ComboboxSelected>>",self.callback)
+            self.Disp_track_name.bind("<<ComboboxSelected>>",self.callback2)
             self.Disp_track_name.configure(width=50, font="Verdana 12")
             self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", bg = "green",fg = "white",width = 7, height = hei2,font = 18, command = self.Play, wraplength=80, justify=CENTER)
             self.Button_Start.grid(row = 0, column = 0, padx = 10,pady = 10)
@@ -1239,7 +1244,10 @@ class MP3Player(Frame):
         if os.path.exists(self.mp3_jpg) and (self.cutdown != 1 or self.cutdown != 4):
             self.load = Image.open(self.mp3_jpg)
             self.render = ImageTk.PhotoImage(self.load)
+            
         self.Check_Wheel()
+        if self.gpio_enable > 0:
+            self.check_buttons()
         
         # check default .m3u exists, if not then make it
         if not os.path.exists(self.que_dir):
@@ -1314,6 +1322,7 @@ class MP3Player(Frame):
                 self.artistdata.append(self.artist_name_1)
             self.artistdata = list(dict.fromkeys(self.artistdata))
             self.artistdata.sort()
+            #print(self.track_no,self.artistdata)
             self.Disp_artist_name["values"] = self.artistdata
             if self.auto_albums == 1 or self.reload == 1:
                 self.Disp_artist_name.set(self.artist_name)
@@ -1328,16 +1337,21 @@ class MP3Player(Frame):
 
     def artist_callback(self,a):
         if self.trace > 0:
-            print ("artist callback",self.track_no,self.ac)
+            print ("artist callback",self.track_no,self.ac,self.bc,self.cc)
+        if self.play == 0:
+            self.artist_name3,self.album_name3,self.track_name3,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
+        else:
+            self.artist_name3,self.album_name3,self.track_name3,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no + 1].split('^')
         self.albumdata = []
         self.Disp_album_name["values"] = self.albumdata
         if (self.shuffle_on == 0 and self.album_start == 0 and self.Radio_ON == 0) or self.auto_albums == 1:
             for x in range(0,len(self.tunes)):
                 self.artist_name_1,self.album_name_1,self.track_name_1,self.drive_name_1,self.drive_name1_1,self.drive_name2_1,self.genre_name  = self.tunes[x].split('^')
-                if self.artist_name_1 == self.Disp_artist_name.get():
+                if self.artist_name_1 == self.artist_name3:
                     self.albumdata.append(self.album_name_1)
             self.albumdata = list(dict.fromkeys(self.albumdata))
             self.albumdata.sort()
+            #print(self.track_no,self.albumdata)
             self.Disp_album_name["values"] = self.albumdata
             if self.ac == 0 and self.bc == 0:
                 self.Disp_album_name.set(self.albumdata[0])
@@ -1358,19 +1372,23 @@ class MP3Player(Frame):
             print ("album callback",self.track_no)
         self.trackdata = []
         self.Disp_track_name["values"] = self.trackdata
-        self.Disp_track_name.set("Choose a Track")
+        if self.play == 0:
+            self.artist_name3,self.album_name3,self.track_name3,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
+        else:
+            self.artist_name3,self.album_name3,self.track_name3,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no + 1].split('^')
         if self.shuffle_on == 0 or self.album_start == 1:
             for x in range(0,len(self.tunes)):
                 self.artist_name_1,self.album_name_1,self.track_name_1,self.drive_name_1,self.drive_name1_1,self.drive_name2_1,self.genre_name  = self.tunes[x].split('^')
-                if self.artist_name_1 == self.Disp_artist_name.get() and self.album_name_1[:-1] == self.Disp_album_name.get()[:-1]:
+                if self.artist_name_1 == self.artist_name3 and self.album_name_1[:-1] == self.album_name3[:-1]:
                     self.trackdata.append(self.track_name_1)
             self.trackdata = list(dict.fromkeys(self.trackdata))
             self.Disp_track_name["values"] = self.trackdata
             if self.ac == 0 and len(self.trackdata) > 0:
                 self.Disp_track_name.set(self.trackdata[0])
+        #print(self.track_no,self.trackdata)
         self.ac = 0
         self.bc = 0
-        tpath = self.Disp_artist_name.get() + "^" + self.Disp_album_name.get() + "^" + self.Disp_track_name.get()
+        tpath = self.artist_name + "^" + self.album_name + "^" + self.track_name
         if self.trace > 0:
             print ("album callback track",tpath)
         stop = 0
@@ -1486,11 +1504,180 @@ class MP3Player(Frame):
             self.track_no -=1
             self.Next_Track()
 
-      
+    def plist_callback2(self):
+        if self.trace > 0:
+            print ("plist callback",self.track_no,len(self.tunes))
+        self.artistdata = []
+        self.Disp_artist_name["values"] = self.artistdata
+        if self.shuffle_on == 0 and self.Radio_ON == 0 and self.tracker == 0:
+            for x in range(0,len(self.tunes)):
+                self.artist_name_1,self.album_name_1,self.track_name_1,self.drive_name_1,self.drive_name1_1,self.drive_name2_1,self.genre_name  = self.tunes[x].split('^')
+                self.artistdata.append(self.artist_name_1)
+            self.artistdata = list(dict.fromkeys(self.artistdata))
+            self.artistdata.sort()
+            #print(self.track_no,self.artistdata)
+            self.Disp_artist_name["values"] = self.artistdata
+            if self.auto_albums == 1 or self.reload == 1:
+                self.Disp_artist_name.set(self.artist_name)
+                self.reload = 0
+        elif self.Radio_ON == 1:
+            for x in range(0,len(self.Radio_Stns),3):
+                self.artistdata.append(self.Radio_Stns[x])
+            self.Disp_artist_name["values"] = self.artistdata
+        if self.Radio_ON == 0 and self.tracker == 0:
+            self.artist_callback2(0)
+        self.tracker = 0
+
+    def artist_callback2(self,a):
+        if self.trace > 0:
+            print ("artist callback2",self.track_no,self.ac)
+        self.albumdata = []
+        self.Disp_album_name["values"] = self.albumdata
+        if (self.shuffle_on == 0 and self.album_start == 0 and self.Radio_ON == 0) or self.auto_albums == 1:
+            for x in range(0,len(self.tunes)):
+                self.artist_name_1,self.album_name_1,self.track_name_1,self.drive_name_1,self.drive_name1_1,self.drive_name2_1,self.genre_name  = self.tunes[x].split('^')
+                if self.artist_name_1 == self.Disp_artist_name.get():
+                    self.albumdata.append(self.album_name_1)
+            self.albumdata = list(dict.fromkeys(self.albumdata))
+            self.albumdata.sort()
+            self.Disp_album_name["values"] = self.albumdata
+            if self.ac == 0 and self.bc == 0:
+                self.Disp_album_name.set(self.albumdata[0])
+        elif self.Radio_ON == 1:
+            stop = 0
+            k = 0
+            while stop == 0 and k < len(self.Radio_Stns):
+                if self.Radio_Stns[k] == self.Disp_artist_name.get():
+                    stop = 1
+                    self.NewRadio = k
+                k +=1
+            self.Next_Artist()
+        if self.Radio_ON == 0:
+            self.album_callback2(0)
+
+    def album_callback2(self,a):
+        if self.trace > 0:
+            print ("album callback2",self.track_no)
+        self.trackdata = []
+        self.Disp_track_name["values"] = self.trackdata
+        self.Disp_track_name.set("Choose a Track")
+        if self.shuffle_on == 0 or self.album_start == 1:
+            for x in range(0,len(self.tunes)):
+                self.artist_name_1,self.album_name_1,self.track_name_1,self.drive_name_1,self.drive_name1_1,self.drive_name2_1,self.genre_name  = self.tunes[x].split('^')
+                if self.artist_name_1 == self.Disp_artist_name.get() and self.album_name_1[:-1] == self.Disp_album_name.get()[:-1]:
+                    self.trackdata.append(self.track_name_1)
+            self.trackdata = list(dict.fromkeys(self.trackdata))
+            self.Disp_track_name["values"] = self.trackdata
+            if self.ac == 0 and len(self.trackdata) > 0:
+                self.Disp_track_name.set(self.trackdata[0])
+        self.ac = 0
+        self.bc = 0
+        tpath = self.Disp_artist_name.get() + "^" + self.Disp_album_name.get() + "^" + self.Disp_track_name.get()
+        if self.trace > 0:
+            print ("album callback track2",tpath)
+        stop = 0
+        k = 0
+        while stop == 0 and k < len(self.tunes) - 1:
+            a,b,c,d,e,f,g = self.tunes[k].split("^")
+            if tpath == a + "^" + b + "^" + c :
+                stop = 1
+                self.track_no = k
+            k +=1
+        self.Disp_track_no.config(text = self.track_no)
+        self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
+        if self.drive_name[-1] == "*":
+            self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
+        elif self.genre_name == "None":
+            self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name, self.artist_name, self.album_name, self.track_name)
+        else:
+            self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name,self.genre_name, self.artist_name, self.album_name, self.track_name)
+        if os.path.exists(self.track):
+                if self.track[-4:] == ".mp3":
+                    audio = MP3(self.track)
+                    self.track_len = audio.info.length
+                elif self.track[-4:] == "flac":
+                    audio = FLAC(self.track)
+                    self.track_len = audio.info.length
+                elif self.track[-4:] == ".dsf":
+                    audio = DSF(self.track)
+                    self.track_len = audio.info.length
+                elif self.track[-4:] == ".wav":
+                    with contextlib.closing(wave.open(self.track,'r')) as f:
+                        frames = f.getnframes()
+                        rate = f.getframerate()
+                        self.track_len = frames / float(rate)
+                minutes = int(self.track_len // 60)
+                seconds = int (self.track_len - (minutes * 60))
+                self.Disp_track_len.config(text ="%03d:%02d" % (minutes, seconds % 60))        
+        if self.trace > 0:
+            print ("album callback exit2",self.track_no)
+        self.auto_albums = 0
+
+
+    def callback2(self,a):
+        if self.trace > 0:
+            print ("callback2",self.track_no)
+        tpath = self.Disp_artist_name.get() + "^" + self.Disp_album_name.get() + "^" + self.Disp_track_name.get()
+        if self.trace > 0:
+            print ("callback exit2",tpath)
+        stop = 0
+        k = 0
+        while stop == 0 and k < len(self.tunes) - 1:
+           a,b,c,d,e,f,g = self.tunes[k].split("^")
+           if tpath == a + "^" + b + "^" + c :
+              stop = 1
+              self.track_no = k
+           k +=1
+        self.Disp_track_no.config(text = self.track_no)
+        self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
+        if self.drive_name[-1] == "*":
+            self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
+        elif self.genre_name == "None":
+            self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name, self.artist_name, self.album_name, self.track_name)
+        else:
+            self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name,self.genre_name,self.artist_name, self.album_name, self.track_name)
+        if os.path.exists(self.track):
+            if self.track[-4:] == ".mp3":
+                audio = MP3(self.track)
+                self.track_len = audio.info.length
+            elif self.track[-4:] == "flac":
+                audio = FLAC(self.track)
+                self.track_len = audio.info.length
+            elif self.track[-4:] == ".dsf":
+                audio = DSF(self.track)
+                self.track_len = audio.info.length
+            elif self.track[-4:] == ".wav":
+                with contextlib.closing(wave.open(self.track,'r')) as f:
+                    frames = f.getnframes()
+                    rate = f.getframerate()
+                    self.track_len = frames / float(rate)
+            minutes = int(self.track_len // 60)
+            seconds = int (self.track_len - (minutes * 60))
+            self.Disp_track_len.config(text ="%03d:%02d" % (minutes, seconds % 60))
+        if self.trace > 0:
+            print ("callback exit2",self.track_no)
+        if self.play == 1:
+            self.track_no -=1
+            self.Next_Track()
+
+    def check_buttons(self):
+        # check the external switches
+        if self.button_volup.is_pressed:
+            self.volume_UP()
+        elif self.button_voldn.is_pressed:
+            self.volume_DN()
+        elif self.button_mute.is_pressed:
+            self.Mute()
+        if self.gpio_enable == 2:
+            if self.button_start_album.is_pressed:
+                self.Play_Album()
+            elif self.button_start_play.is_pressed:
+                self.Play()
+        self.after(500, self.check_buttons) # set for 500mS
    
     def Show_Track(self):
         if self.trace > 0:
-            print ("Show Track", self.track_no)
+            print ("Show Track", self.track_no,self.play)
         if len(self.tunes) > 0:
             if self.album_start == 0:
                 self.Disp_Total_tunes.config(text =len(self.tunes))
@@ -1603,10 +1790,10 @@ class MP3Player(Frame):
                     if self.cc == 1:
                         self.bc = 1
                         self.cc = 0
-                    self.plist_callback()
                     self.Disp_album_name.set(self.album_name)
                     self.Disp_track_name.set(self.track_name)
                     self.Disp_track_no.config(text = self.track_no + 1)
+                    self.plist_callback()
                 else:
                     if self.track_no < len(self.tunes) - 1:
                         self.artist_name_1,self.album_name_1,self.track_name_1,self.drive_name_1,self.drive_name1_1,self.drive_name2_1,self.genre_name1 = self.tunes[self.track_no + 1].split('^')
@@ -2284,15 +2471,7 @@ class MP3Player(Frame):
             if self.count7 > (11 - self.scroll_rate):
                 self.count7 = 0
             
-        # if GPIO enabled and using Waveshare28 LCD, then check the external switches
-        if (self.gpio_enable == 1 and self.waveshare == 1 and self.cutdown == 4) or self.gpio_enable == 2:
-            if self.button_volup.is_pressed:
-                self.volume_UP()
-            elif self.button_voldn.is_pressed:
-                self.volume_DN()
-            elif self.button_mute.is_pressed:
-                self.Mute()
-                    
+                   
         # end of album (no repeat)
         if self.album_start == 1:
             if self.minutes == 0 and ((self.gapless == 0 and self.seconds <= 1 and self.BT == 0) or (self.gapless == 1 and self.seconds == (2 * self.BT) and self.BT == 1) or (self.gapless == self.gapless_time and self.seconds <= self.gapless_time)) and self.album_start == 1 and self.repeat_album == 0:
@@ -2386,9 +2565,10 @@ class MP3Player(Frame):
             # fade out track if using Bluetooth
             if time.monotonic() - self.start > (self.track_len - self.gapless) - 4 and self.play == 1 and self.paused == 0 and self.BT == 1:
                 self.Fade()
-            # stop track (early if using Bluetooth)    
-            if ((time.monotonic() - self.start > (self.track_len - self.gapless) - self.BT) or self.xxx == 1) and self.play == 1 and self.paused == 0:
+            # stop track (early if using Bluetooth)
+            if (((time.monotonic() - self.start > (self.track_len - self.gapless) - self.BT) or self.xxx == 1) and self.play == 1 and self.paused == 0) or self.stop7 == 1:
                 self.xxx = 0
+                self.stop7 = 0
                 if self.imgxon == 1:
                     self.imgx.after(100, self.imgx.destroy())
                     self.imgxon = 0
@@ -2924,9 +3104,15 @@ class MP3Player(Frame):
                 if self.cutdown == 7:
                     self.ac = 0
                     if self.auto_albums == 1:
-                        self.plist_callback()
+                        if self.shuffle_on == 0:
+                            self.plist_callback2()
+                        else:
+                            self.plist_callback2()
                     else:
-                        self.album_callback(0)
+                        if self.shuffle_on == 0:
+                            self.album_callback2(0)
+                        else:
+                            self.album_callback2(0)
                     self.artistdata = []
                     self.Disp_artist_name["values"] = self.artistdata
                     self.albumdata = []
@@ -3660,6 +3846,7 @@ class MP3Player(Frame):
                     else:
                         player.stop()
                     self.start = 0
+                    self.stop7 = 1
                 self.count1 = 0
                 self.count2 = 0
                 self.Time_Left_Play()
@@ -3846,6 +4033,7 @@ class MP3Player(Frame):
                     else:
                         player.stop()
                     self.start = 0
+                    self.stop7 = 1
                 self.count1 = 0
                 self.count2 = 0
                 self.Time_Left_Play()
@@ -3907,7 +4095,7 @@ class MP3Player(Frame):
                     if self.track_no < 0:
                         self.track_no = -1 
                         stop = 1
-                if self.play == 0:
+                if self.play == 0: # and self.cutdown != 7:
                     self.track_no +=1
                 if self.track_no > len(self.tunes) - 1:
                     self.track_no = 0
@@ -3917,13 +4105,15 @@ class MP3Player(Frame):
                     else:
                          player.stop()
                     self.start = 0
+                    self.stop7 = 1
+                self.bc = 1
                 self.count1 = 0
                 self.count2 = 0
                 self.Time_Left_Play()
 
     def Next_Album(self):
         if self.trace > 0:
-            print ("Next Album", self.track_no)
+            print ("Next Album entry ", self.track_no,self.play)
         if self.paused == 0 and self.album_start == 0 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
             if self.imgxon == 1:
                 self.imgx.after(100, self.imgx.destroy())
@@ -3968,24 +4158,34 @@ class MP3Player(Frame):
                     self.Button_Pause.config(fg = "black",bg = "light blue", text ="Pause")
             stop = 0
             if len(self.tunes) > 0:
+                if self.trace > 0:
+                    print(self.track_no,(self.tunes[self.track_no].split('^')[1]),self.album_name )
                 while (self.tunes[self.track_no].split('^')[1]) == self.album_name and stop == 0:
                     self.track_no +=1
-                    #print(self.tunes[self.track_no].split('^')[1], self.album_name,self.tunes[self.track_no].split('^')[0], self.artist_name )
                     if self.track_no > len(self.tunes) - 1:
                         self.track_no = 0
                         stop = 1
+                if self.trace > 0:
+                    print("==========================================================================")
+                    print(self.track_no,(self.tunes[self.track_no].split('^')[1]),self.album_name )
                 if self.play == 1:
-                    if self.track_no != 0:
-                        self.track_no -=1
+                    self.track_no -=1
+                if self.trace > 0:
+                    print(self.track_no,(self.tunes[self.track_no].split('^')[1]),self.album_name )
+                if self.play == 1:
                     if self.version == 1:
                         self.p.kill()
                     else:
                         player.stop()
                     self.start = 0
+                    self.stop7 = 1
+                self.bc = 1
                 self.count1 = 0
                 self.count2 = 0
                 self.Time_Left_Play()
-
+        if self.trace > 0:
+            print ("Next Album exit ", self.track_no,self.play)
+            
     def Prev_Track(self):
         if self.album_track != 1 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
             if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 3:
@@ -4036,6 +4236,7 @@ class MP3Player(Frame):
                    else:
                        player.stop()
                    self.start = 0
+                   self.stop7 = 1
                    self.xxx = 1
                    self.track_no -=2
                    if self.track_no < -1:
@@ -4112,6 +4313,7 @@ class MP3Player(Frame):
                     else:
                         player.stop()
                     self.start = 0
+                    self.stop7 = 1
                     self.xxx = 1
                     if self.album_start == 0:
                         self.count1 = 0
@@ -4187,10 +4389,13 @@ class MP3Player(Frame):
                  self.Disp_Name_m3u.delete('1.0','20.0')
                  self.Disp_Name_m3u.insert(INSERT,">" + str(self.Disp_max_time) + ":00" )
          if self.play == 1:
-            self.Start_Play()
+             #self.bc = 1
+             self.ac = 1
+             self.Show_Track()
+             self.Start_Play()
          else:
-            self.stopstart = 0
-            self.Show_Track()
+             self.stopstart = 0
+             self.Show_Track()
 
     def nextAZ(self):
         if ((self.Radio_RON == 1 or self.album_start == 1) and (self.cutdown == 6 or self.cutdown == 5)) or (self.Radio_RON == 1 and (self.cutdown == 4 or  self.cutdown == 2)):
@@ -4517,7 +4722,7 @@ class MP3Player(Frame):
                 if self.cutdown == 7:
                     self.Disp_artist_name.set(self.artist_name)
                     self.ac = 1
-                    self.plist_callback()
+                    self.plist_callback2()
                     self.Disp_album_name.set(self.album_name)
                     self.Disp_track_name.set(self.track_name)
             else:
@@ -4540,7 +4745,7 @@ class MP3Player(Frame):
                 if self.cutdown == 7:
                     self.Disp_artist_name.set(self.artist_name)
                     self.ac = 0
-                    self.plist_callback()
+                    self.plist_callback2()
                     self.Disp_album_name.set(self.album_name)
                     self.Disp_track_name.set(self.track_name)
             if self.play == 1:
