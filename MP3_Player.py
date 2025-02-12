@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.70
+# Pi_MP3_Player v17.71
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,7 +25,7 @@ SOFTWARE."""
 global fullscreen
 global cutdown
 cutdown    = 7
-fullscreen = 0
+fullscreen = 1
 
 import tkinter as tk
 from tkinter import *
@@ -1987,7 +1987,7 @@ class MP3Player(Frame):
             abs_x = self.master.winfo_pointerx() - self.master.winfo_rootx()
             abs_y = self.master.winfo_pointery() - self.master.winfo_rooty()
             if abs_x > 314 and abs_x < 514 and abs_y > 152 and abs_y < 369 and self.cutdown == 6 and self.Radio_ON == 0:
-                y_pos = int((abs_y - 152)/24) + 1
+                y_pos = int((abs_y - 152)/24)
                 self.track_no += y_pos
                 if self.album_start == 1:
                     if self.track_no > self.tcount:
