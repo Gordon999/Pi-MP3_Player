@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.71
+# Pi_MP3_Player v17.72
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -1612,6 +1612,35 @@ class MP3Player(Frame):
         if self.trace > 0:
             print ("album callback exit2",self.track_no)
         self.auto_albums = 0
+        if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 3 or self.cutdown == 6:
+                self.render2 = ""
+                if self.drive_name[-1] == "*":
+                    path = "/" + self.drive_name1 + "/" +self.drive_name2 + "/" + self.drive_name[:-1] + "/" + self.artist_name + " - " + self.album_name + "/" +  "*.jpg"
+                elif self.genre_name == "None":
+                    path = "/" + self.drive_name1 + "/" +self.drive_name2 + "/" + self.drive_name + "/" + self.artist_name + "/" + self.album_name + "/" +  "*.jpg"
+                else:
+                    path = "/" + self.drive_name1 + "/" +self.drive_name2 + "/" + self.drive_name + "/" + self.genre_name + "/" + self.artist_name + "/" + self.album_name + "/" +  "*.jpg"
+                pictures = glob.glob(path)
+                if self.trace > 0:
+                    print(path)
+                    print(pictures)
+                if len(pictures) > 0: 
+                    if len(pictures) > 1:
+                        r = random.randrange(len(pictures))
+                        self.image = pictures[r]
+                    else:
+                        self.image = pictures[0]
+                    self.load = Image.open(self.image)
+                    self.load = self.load.resize((218, 218), Image.LANCZOS) 
+                    self.render2 = ImageTk.PhotoImage(self.load)
+                    if self.timer4 == 0:
+                        self.img.config(image = self.render2)
+                elif self.version == 2: 
+                    if os.path.exists(self.mp3c_jpg):
+                        self.img.config(image = self.renderc)
+                else:
+                    if os.path.exists(self.mp3_jpg):
+                        self.img.config(image = self.render)
 
 
     def callback2(self,a):
