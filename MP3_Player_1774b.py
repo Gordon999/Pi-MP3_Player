@@ -25,7 +25,7 @@ SOFTWARE."""
 global fullscreen
 global cutdown
 cutdown    = 7
-fullscreen = 0
+fullscreen = 1
 
 import tkinter as tk
 from tkinter import *
