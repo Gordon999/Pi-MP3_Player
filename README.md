@@ -5,11 +5,11 @@ Note this will work under BUSTER, BULLSEYE , OR BOOKWORM
 
 v1774a (BETA) version notes:
 
-    Variable self.rotary = 1
+    Variable self.rotary = 1, set to 0 if you want to use the original external buttons.
     
-    Rotary Encoder 1 (KY-040) will set volume, it's button will start/stop Album Play
+    Rotary Encoder 1 (KY-040) will set volume, it's press button will start/stop Album Play
     
-    Rotary Encoder 2 (KY-040) will step through Albums, it's button will step forwards 
+    Rotary Encoder 2 (KY-040) will step through Albums, it's press button will step forwards 
     through Artists, both whilst not playing.
     Will step through tracks whilst playing an Album.
 
