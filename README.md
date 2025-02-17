@@ -9,7 +9,8 @@ v1774a version notes:
     
     Rotary Encoder (KY-040) will set volume, it's button will start/stop Album Play
     
-    Rotary Encoder (KY-040) will step through Albums, it's button will step forwards through Artists
+    Rotary Encoder (KY-040) will step through Albums, it's button will step forwards through Artists, both whilst not playing.
+    will step through tracks whilst playing an Album.
 
     see rotary_connections.jpg 
 
