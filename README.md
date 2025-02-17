@@ -1,11 +1,11 @@
-# Pi-MP3 and Radio Stream Player
+^# Pi-MP3 and Radio Stream Player
 Pi-MP3_Player
 
 Note this will work under BUSTER, BULLSEYE , OR BOOKWORM 
 
 v1774a (BETA) version notes:
 
-    Variable self.rotary = 1, set to 0 if you want to use the original external buttons.
+    Variable self.rotary = 1 (line 121), set to 0 if you want to use the original external buttons.
     
     Rotary Encoder 1 (KY-040) will set volume, it's press button will start/stop Album Play
     
