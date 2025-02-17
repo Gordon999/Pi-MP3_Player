@@ -4,8 +4,11 @@ Pi-MP3_Player
 Note this will work under BUSTER, BULLSEYE , OR BOOKWORM 
 
 v1774a version notes:
+
     Variable self.rotary = 1
+    
     Rotary Encoder (KY-040) will set volume, it's button will start/stop Album Play
+    
     Rotary Encoder (KY-040) will step through Albums, it's button will step forwards through Artists
 
 Note tested on a Pi5 with bookworm but not with the PI 7" screens.
