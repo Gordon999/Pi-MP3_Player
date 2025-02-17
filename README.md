@@ -1,4 +1,4 @@
-^# Pi-MP3 and Radio Stream Player
+# Pi-MP3 and Radio Stream Player
 Pi-MP3_Player
 
 Note this will work under BUSTER, BULLSEYE , OR BOOKWORM 
