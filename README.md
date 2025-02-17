@@ -11,6 +11,8 @@ v1774a version notes:
     
     Rotary Encoder (KY-040) will step through Albums, it's button will step forwards through Artists
 
+    see rotary_connections.jpg 
+
 Note tested on a Pi5 with bookworm but not with the PI 7" screens.
 
 Designed to be used with a Pi and the Pi 7" Touchscreen LCD, but will work on other monitors. Playing .mp3, .flac, .wav, .dsf, .m4a tracks from USB sticks (or HDD) under /media/pi/usb_stick_name/artist name/album_name/tracks.
