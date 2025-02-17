@@ -3,7 +3,7 @@ Pi-MP3_Player
 
 Note this will work under BUSTER, BULLSEYE , OR BOOKWORM 
 
-v1774a version notes:
+v1774a (BETA) version notes:
 
     Variable self.rotary = 1
     
