@@ -3,7 +3,7 @@ Pi-MP3_Player
 
 Note this will work under BUSTER, BULLSEYE , OR BOOKWORM 
 
-v1774b (BETA) version notes:
+v1774c (BETA) version notes:
 
     Variable self.rotary = 1 (line 121), set to 0 if you want to use the original external buttons.
     
