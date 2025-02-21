@@ -26,8 +26,8 @@ global fullscreen
 global cutdown
 global rotary
 cutdown    = 7 # set the format required
-fullscreen = 0 # set to 1 for fullscreen
-rotary     = 1 # set to 1 if using rotary encoders (see rotary_connections.jpg for wiring details)
+fullscreen = 1 # set to 1 for fullscreen
+rotary     = 0 # set to 1 if using rotary encoders (see rotary_connections.jpg for wiring details)
 
 import tkinter as tk
 from tkinter import *
