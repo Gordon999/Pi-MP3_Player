@@ -26,8 +26,8 @@ global fullscreen
 global cutdown
 global rotary
 cutdown    = 7 # set the format required
-fullscreen = 1 # set to 1 for fullscreen
-rotary     = 0 # set to 1 if using rotary encoders (see rotary_connections.jpg for wiring details)
+fullscreen = 0 # set to 1 for fullscreen
+rotary     = 1 # set to 1 if using rotary encoders (see rotary_connections.jpg for wiring details)
 
 import tkinter as tk
 from tkinter import *
@@ -1441,6 +1441,7 @@ class MP3Player(Frame):
 
         self.ac = 0
         self.bc = 0
+        self.Disp_artist_name.set(self.artist_name3)
         tpath = self.artist_name3 + "^" + self.album_name3 + "^" + self.track_name3
         if self.trace > 0:
             print ("album callback track",tpath)
