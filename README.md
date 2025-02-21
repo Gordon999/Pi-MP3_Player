@@ -11,7 +11,7 @@ v1774c (BETA) version notes:
     
     Rotary Encoder 2 (KY-040) will step through Albums, it's press button will step forwards 
     through Artists, both whilst not playing.
-    Will step through tracks whilst playing an Album.
+    Will step through tracks whilst playing an Album. Button will set SLEEP time whilst playing  the album.
 
     see rotary_connections.jpg 
 
