@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.72
+# Pi_MP3_Player v17.74
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,8 +24,10 @@ SOFTWARE."""
 # 6:800x480 List 10 tracks, 7:800x480 with scrollbars
 global fullscreen
 global cutdown
-cutdown    = 7
-fullscreen = 1
+global rotary
+cutdown    = 7 # set the format required
+fullscreen = 1 # set to 1 for fullscreen
+rotary     = 0 # set to 1 if using rotary encoders (see rotary_connections.jpg for wiring details)
 
 import tkinter as tk
 from tkinter import *
@@ -191,6 +193,7 @@ class MP3Player(Frame):
         self.Radio_ON       = 0
         self.Radio_RON      = 0
         self.cutdown        = cutdown
+        self.rotary         = rotary
         self.tname          = "Unknown"
         self.auto_rec_set   = 0
         self.auto_play      = 0
@@ -221,6 +224,8 @@ class MP3Player(Frame):
         self.album_name     = ""
         self.track_name     = ""
         self.genre_name     = ""
+        self.old_rotor1     = 0
+        self.old_rotor2     = 0
 
         if "System clock synchronized: yes" in os.popen("timedatectl").read().split("\n"):
             self.synced = 1
@@ -356,16 +361,25 @@ class MP3Player(Frame):
         # enable buttons on other displays and cutdowns
         else:
             self.gpio_enable = 2
-            self.voldn              = 16 # external volume down gpio input
-            self.volup              = 12 # external volume up gpio input
-            self.mute               = 13 # external mute gpio input
-            self.start_album        = 6  # external start/stop album gpio input
-            self.start_play         = 5  # external start/stop playlist gpio input
-            self.button_voldn       = Button(self.voldn)
-            self.button_mute        = Button(self.mute)
-            self.button_volup       = Button(self.volup)
-            self.button_start_album = Button(self.start_album)
-            self.button_start_play  = Button(self.start_play)
+            if self.rotary == 0:
+                self.voldn              = 16 # external volume down gpio input
+                self.volup              = 12 # external volume up gpio input
+                self.mute               = 13 # external mute gpio input
+                self.button_voldn       = Button(self.voldn)
+                self.button_mute        = Button(self.mute)
+                self.button_volup       = Button(self.volup)
+                self.start_album        = 6  # external start/stop album gpio input
+                self.start_play         = 5  # external start/stop playlist gpio input
+                self.button_start_album = Button(self.start_album)
+                self.button_start_play  = Button(self.start_play)
+            else:
+                from gpiozero import RotaryEncoder
+                self.rotor1 = RotaryEncoder(12,16, wrap=False, max_steps=48)
+                self.rotor2 = RotaryEncoder(13, 5, wrap=False, max_steps=48)
+                self.start_album        = 6  # external start/stop album gpio input
+                self.button_start_album = Button(self.start_album)
+                self.next               = 20  # external start/stop album gpio input
+                self.button_next        = Button(self.next)
         # enable LCD backlight
         if self.LCD_backlight == 1:
             self.gpio_enable = 1
@@ -1311,6 +1325,47 @@ class MP3Player(Frame):
         else:
             self.Time_Left_Play()
 
+        if self.rotary == 1:
+            self.rotary_volume()
+
+    def rotary_volume(self):
+        if self.m != 0:
+          if self.old_rotor1 != self.rotor1.value:
+            if self.rotor1.value > self.old_rotor1:
+                self.old_rotor1 = self.rotor1.value
+                self.volume +=2
+            else:
+                self.old_rotor1 = self.rotor1.value
+                self.volume -=2
+            self.volume = max(self.volume,0)
+            self.volume = min(self.volume,100)
+            self.f_volume = self.volume
+            self.m.setvolume(self.volume)
+            os.system("amixer -D pulse sset Master " + str(self.volume) + "%")
+            if self.mixername == "DSP Program":
+                os.system("amixer set 'Digital' " + str(self.volume + 107))
+            if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2:
+                self.Button_volume.config(text = self.volume)
+            else:
+                self.Button_Vol_UP.config(text = "Vol >   " + str(self.volume))
+            with open('Lasttrack3.txt', 'w') as f:
+                f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
+            time.sleep(.2)
+        if self.old_rotor2 != self.rotor2.value:
+            if self.rotor2.value > self.old_rotor2:
+                self.old_rotor2 = self.rotor2.value
+                if self.album_start == 0:
+                    self.Prev_Album()
+                else:
+                    self.Prev_Track()
+            else:
+                self.old_rotor2 = self.rotor2.value
+                if self.album_start == 0:
+                    self.Next_Album()
+                else:
+                    self.Next_Track()
+        self.after(250, self.rotary_volume)
+        
     def plist_callback(self):
         if self.trace > 0:
             print ("plist callback",self.track_no,len(self.tunes))
@@ -1322,7 +1377,6 @@ class MP3Player(Frame):
                 self.artistdata.append(self.artist_name_1)
             self.artistdata = list(dict.fromkeys(self.artistdata))
             self.artistdata.sort()
-            #print(self.track_no,self.artistdata)
             self.Disp_artist_name["values"] = self.artistdata
             if self.auto_albums == 1 or self.reload == 1:
                 self.Disp_artist_name.set(self.artist_name)
@@ -1351,7 +1405,6 @@ class MP3Player(Frame):
                     self.albumdata.append(self.album_name_1)
             self.albumdata = list(dict.fromkeys(self.albumdata))
             self.albumdata.sort()
-            #print(self.track_no,self.albumdata)
             self.Disp_album_name["values"] = self.albumdata
             if self.ac == 0 and self.bc == 0:
                 self.Disp_album_name.set(self.albumdata[0])
@@ -1384,11 +1437,11 @@ class MP3Player(Frame):
             self.trackdata = list(dict.fromkeys(self.trackdata))
             self.Disp_track_name["values"] = self.trackdata
             if self.ac == 0 and len(self.trackdata) > 0:
-                self.Disp_track_name.set(self.trackdata[0])
-        #print(self.track_no,self.trackdata)
+               self.Disp_track_name.set(self.trackdata[0])
+
         self.ac = 0
         self.bc = 0
-        tpath = self.artist_name + "^" + self.album_name + "^" + self.track_name
+        tpath = self.artist_name3 + "^" + self.album_name3 + "^" + self.track_name3
         if self.trace > 0:
             print ("album callback track",tpath)
         stop = 0
@@ -1457,6 +1510,10 @@ class MP3Player(Frame):
                 else:
                     if os.path.exists(self.mp3_jpg):
                         self.img.config(image = self.render)
+        if self.stopstart == 1:
+            self.track_no -=1
+            if self.trace > 0:
+                print (self.track_no)
 
     def callback(self,a):
         if self.trace > 0:
@@ -1691,17 +1748,21 @@ class MP3Player(Frame):
 
     def check_buttons(self):
         # check the external switches
-        if self.button_volup.is_pressed:
-            self.volume_UP()
-        elif self.button_voldn.is_pressed:
-            self.volume_DN()
-        elif self.button_mute.is_pressed:
-            self.Mute()
-        if self.gpio_enable == 2:
-            if self.button_start_album.is_pressed:
-                self.Play_Album()
-            elif self.button_start_play.is_pressed:
-                self.Play()
+        if self.rotary == 0:
+            if self.button_volup.is_pressed:
+                self.volume_UP()
+            elif self.button_voldn.is_pressed:
+                self.volume_DN()
+            elif self.button_mute.is_pressed:
+                self.Mute()
+        if self.gpio_enable == 2 and self.button_start_album.is_pressed:
+            self.Play_Album()
+        elif self.gpio_enable == 2 and self.rotary == 1 and self.album_start == 0 and self.button_next.is_pressed:
+            self.Next_Artist()
+        elif self.gpio_enable == 2 and self.rotary == 1 and self.album_start == 1 and self.button_next.is_pressed:
+            self.sleep()
+        elif self.gpio_enable == 2 and self.rotary == 0 and self.button_start_play.is_pressed:
+            self.Play()
         self.after(500, self.check_buttons) # set for 500mS
    
     def Show_Track(self):
@@ -2846,10 +2907,12 @@ class MP3Player(Frame):
                 os.remove(rems[x])
             if self.Radio_Stns[self.Radio + 2] == 0:
                 self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                time.sleep(1)
             else:
                 self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
                 time.sleep(1)
                 self.q = subprocess.Popen(["mplayer","-nocache","http://localhost:8000"] , shell=False)
+                time.sleep(1)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
                 if len(track) == 0:
                    time.sleep(2)
@@ -3459,8 +3522,7 @@ class MP3Player(Frame):
     def volume_DN(self):
         if self.m != 0:
             self.volume -=2
-            if self.volume < 0:
-                self.volume = 0
+            self.volume = max(self.volume,0)
             self.f_volume = self.volume
             self.m.setvolume(self.volume)
             os.system("amixer -D pulse sset Master " + str(self.volume) + "%")
@@ -3477,8 +3539,7 @@ class MP3Player(Frame):
     def volume_UP(self):
         if self.m != 0:
             self.volume +=2
-            if self.volume > 100:
-                self.volume = 100
+            self.volume = min(self.volume,100)
             self.f_volume = self.volume
             self.m.setvolume(self.volume)
             os.system("amixer -D pulse sset Master " + str(self.volume) + "%")
@@ -5555,8 +5616,8 @@ class MP3Player(Frame):
                 self.Disp_album_name.set(self.album_name)
                 self.Disp_track_name.set(self.track_name)
             self.reload = 1
-            if self.cutdown == 7 and len(self.tunes) > 0:
-                self.plist_callback()
+            #if self.cutdown == 7 and len(self.tunes) > 0:
+            #    self.plist_callback()
             self.Show_Track()
         # START RADIO BUTTON
         elif self.paused == 0 and self.album_start == 0 and self.stopstart == 0 and self.Radio_ON == 0:
@@ -5975,7 +6036,6 @@ class MP3Player(Frame):
             self.freeram2 = (st.f_bavail * st.f_frsize)/1100000
             self.max_record = int(int((self.freeram1 - self.ram_min) / ((self.freeram1 - self.freeram2) * 2)) * 1.9)
             self.max_record = min(self.max_record,990)
-            #print(self.freeram1,self.freeram2,self.ram_min,self.freeram1 - self.freeram2,self.max_record )
             if self.record_time > self.max_record and self.max_record > 0:
                 self.record_time = self.max_record
                 self.total_record = self.max_record * 60
@@ -6224,6 +6284,13 @@ class MP3Player(Frame):
                     else:
                         infofile = filename
                         break
+            if infofile == '':
+                m3us = glob.glob(ipath + "/*.m3u")
+                if len(m3us) > 0:
+                    for txt in m3us:
+                        filename = os.path.split(txt)[1]
+                        infofile = m3us[0]
+                
             if infofile != '':
                 popup = Tk()
                 if self.cutdown > 4 or self.cutdown == 0:
