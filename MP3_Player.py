@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.74
+# Pi_MP3_Player v17.75
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -4174,19 +4174,20 @@ class MP3Player(Frame):
                     self.Button_Pause.config(fg = "black",bg = "light blue", text ="Pause")
             stop = 0
             if len(self.tunes) > 0:
-                while (self.tunes[self.track_no].split('^')[1]) == self.album_name and stop == 0:
+                while (self.tunes[self.track_no].split('^')[0]) == self.artist_name and (self.tunes[self.track_no].split('^')[1]) == self.album_name and stop == 0:
                     self.track_no -=1
                     if self.track_no < 0:
                         self.track_no = 0 
                         stop = 1
-                new_album_name = self.tunes[self.track_no].split('^')[1]
+                new_album_name  = self.tunes[self.track_no].split('^')[1]
+                new_artist_name = self.tunes[self.track_no].split('^')[0]
                 stop = 0
-                while (self.tunes[self.track_no].split('^')[1]) == new_album_name and stop == 0:
+                while (self.tunes[self.track_no].split('^')[0]) == new_artist_name and (self.tunes[self.track_no].split('^')[1]) == new_album_name and stop == 0:
                     self.track_no -=1
                     if self.track_no < 0:
                         self.track_no = -1 
                         stop = 1
-                if self.play == 0: # and self.cutdown != 7:
+                if self.play == 0:
                     self.track_no +=1
                 if self.track_no > len(self.tunes) - 1:
                     self.track_no = 0
@@ -4251,7 +4252,7 @@ class MP3Player(Frame):
             if len(self.tunes) > 0:
                 if self.trace > 0:
                     print(self.track_no,(self.tunes[self.track_no].split('^')[1]),self.album_name )
-                while (self.tunes[self.track_no].split('^')[1]) == self.album_name and stop == 0:
+                while (self.tunes[self.track_no].split('^')[0]) == self.artist_name and (self.tunes[self.track_no].split('^')[1]) == self.album_name and stop == 0:
                     self.track_no +=1
                     if self.track_no > len(self.tunes) - 1:
                         self.track_no = 0
