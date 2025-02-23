@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.75
+# Pi_MP3_Player v17.76
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -1354,14 +1354,22 @@ class MP3Player(Frame):
         if self.old_rotor2 != self.rotor2.value:
             if self.rotor2.value > self.old_rotor2:
                 self.old_rotor2 = self.rotor2.value
-                if self.album_start == 0:
+                if self.album_start == 0 and self.Radio_ON == 0:
                     self.Prev_Album()
+                elif self.album_start == 0 and self.Radio_ON == 1 and self.Radio_RON == 0:
+                    self.Prev_Artist()
+                elif self.album_start == 0 and self.Radio_ON == 1 and self.Radio_RON == 1:
+                    self.R_record()
                 else:
                     self.Prev_Track()
             else:
                 self.old_rotor2 = self.rotor2.value
-                if self.album_start == 0:
+                if self.album_start == 0 and self.Radio_ON == 0:
                     self.Next_Album()
+                elif self.album_start == 0 and self.Radio_ON == 1 and self.Radio_RON == 0:
+                    self.Next_Artist()
+                elif self.album_start == 0 and self.Radio_ON == 1 and self.Radio_RON == 1:
+                    self.Pause()
                 else:
                     self.Next_Track()
         self.after(250, self.rotary_volume)
@@ -1756,8 +1764,10 @@ class MP3Player(Frame):
                 self.volume_DN()
             elif self.button_mute.is_pressed:
                 self.Mute()
-        if self.gpio_enable == 2 and self.button_start_album.is_pressed:
+        if self.gpio_enable == 2 and self.Radio_ON == 0 and self.button_start_album.is_pressed:
             self.Play_Album()
+        elif self.gpio_enable == 2 and self.Radio_ON == 1 and self.button_start_album.is_pressed:
+            self.RadioX()
         elif self.gpio_enable == 2 and self.rotary == 1 and self.album_start == 0 and self.button_next.is_pressed:
             self.Next_Artist()
         elif self.gpio_enable == 2 and self.rotary == 1 and self.album_start == 1 and self.button_next.is_pressed:
@@ -2927,6 +2937,7 @@ class MP3Player(Frame):
 
         elif self.Radio_ON == 1 and self.Radio_RON == 1 and self.Radio_Stns[self.Radio + 2] == 1 and self.record == 1:
             self.record_time = int(self.record_time + self.rec_step)
+            self.old_rs = self.record_time
             self.total_record += self.rec_step * 60
             if self.record_time <= self.max_record:
                 self.stop_record += timedelta(minutes=self.rec_step)
@@ -3004,6 +3015,34 @@ class MP3Player(Frame):
                 if os.path.exists(self.mp3c_jpg) and self.cutdown !=1 and self.cutdown != 4 and self.cutdown != 5:
                     self.img.config(image = self.renderc)
                 player.pause()
+
+    def R_record(self):
+        if self.Radio_ON == 1 and self.Radio_RON == 1 and self.Radio_Stns[self.Radio + 2] == 1 and self.record == 1:
+            self.record_time = int(self.record_time - self.rec_step)
+            if self.record_time < self.rec_step:
+                self.record_time = self.rec_step
+            self.total_record -= self.rec_step * 60
+            if self.total_record < self.rec_step * 60:
+                self.total_record += self.rec_step * 60    
+            if self.record_time >= self.rec_step and self.old_rs != self.record_time:
+                self.stop_record -= timedelta(minutes=self.rec_step)
+                self.old_rs = self.record_time
+            if self.trace == 1:
+                print(self.record_time,self.total_record,self.stop_record)
+            self.auto_rec_time = self.record_time
+            with open('Lasttrack3.txt', 'w') as f:
+                f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
+            self.record_time_min = self.record_time * 60
+            t_minutes = int(self.total_record // 60)
+            t_seconds = int (self.total_record - (t_minutes * 60))
+            self.Disp_track_len.config(text ="%03d:%02d" % (t_minutes, t_seconds % 60))
+            self.record_current = int((self.total_record - (time.monotonic() - self.rec_begin))/60)
+            self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
+            if cutdown == 7 and self.synced == 1:
+                self.L6.config(text = "(" + str(self.stop_record)[11:16] + ")")
+            if self.Radio_ON == 1 and self.Radio_RON == 1 and self.shutdown == 1 and self.record_sleep == 1:
+                self.sleep_time_min = (self.record_current *60) + 60
+                self.sleep_time = int(self.sleep_time_min / 60)
 
     def Gapless(self):
         if self.BT == 0 and self.Radio_ON == 0:
