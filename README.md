@@ -5,7 +5,7 @@ Note this will work under BUSTER, BULLSEYE , OR BOOKWORM
 
 v17.74 version notes:
 
-    Variable self.rotary = 1 (line 30), set to 0 if you want to use the original external buttons.
+   Set Variable rotary = 1 (line 30), set to 0 if you want to use the original external buttons.
     
     Rotary Encoder 1 (KY-040) will set volume, it's press button will start/stop Album Play
     
