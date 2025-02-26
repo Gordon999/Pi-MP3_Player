@@ -1430,8 +1430,15 @@ class MP3Player(Frame):
                 self.volume_DN()
             elif self.button_mute.is_pressed:
                 self.Mute()
-        if self.gpio_enable == 2 and self.Radio_ON == 1 and self.button_start_album.is_pressed:
+        if self.gpio_enable == 2 and self.Radio_ON == 0 and self.button_start_album.is_pressed and self.album_start == 0 and self.stopstart == 0:
+            self.rot_mode = 1
             self.RadioX()
+        elif self.gpio_enable == 2 and self.Radio_ON == 1 and self.button_start_album.is_pressed and self.album_start == 0 and self.stopstart == 0:
+            self.rot_mode = 0
+            self.Button_Prev_Artist.config(fg = 'yellow')
+            self.RadioX()
+        elif self.gpio_enable == 2 and self.button_start_album.is_pressed and (self.album_start == 1 or self.stopstart == 1 ):
+            self.sleep()
         elif self.gpio_enable == 2 and self.rotary == 1 and self.album_start == 0 and self.button_next.is_pressed and self.rot_mode == 0 and self.rot_pos < 3 and self.stopstart == 0:
             self.rot_mode = 1
             self.Button_Prev_Artist.config(fg = 'black')
@@ -5686,7 +5693,10 @@ class MP3Player(Frame):
                 self.Disp_plist_name.config(text=" " + self.que_dir[len(self.m3u_dir):])
             else:
                 self.Button_Next_Artist.config(text="Artist >")
-                self.Button_Prev_Artist.config(text="< Artist")
+                if self.rotary == 0:
+                    self.Button_Prev_Artist.config(text="< Artist")
+                else:
+                    self.Button_Prev_Artist.config(fg = "yellow",text="< Artist")
             self.Button_Shuffle.config(bg  = "light blue", fg = "black", text = "Shuffle")
             if self.cutdown == 0 or self.cutdown == 7:
                 self.Button_Search_to_m3u.config(bg = "light green", fg = "black", text = "Search to .m3u")
@@ -5697,7 +5707,10 @@ class MP3Player(Frame):
             if self.cutdown != 5 and self.cutdown != 6 :
                 self.Button_Prev_PList.config(fg = "black")
             self.Button_Start.config(bg  = "green", fg = "white")
-            self.Button_Prev_Artist.config(bg = "light blue", fg = "black")
+            if self.rotary == 0:
+                self.Button_Prev_Artist.config(bg = "light blue", fg = "black")
+            else:
+                self.Button_Prev_Artist.config(bg = "light blue",fg = "yellow",text="< Artist")
             self.Button_Prev_Album.config(bg = "light blue", fg = "black")
             self.Button_Prev_Track.config(bg = "light blue", fg = "black")
             self.Button_Next_Artist.config(bg = "light blue", fg = "black")
