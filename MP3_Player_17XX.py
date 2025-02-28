@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.XX3
+# Pi_MP3_Player v17.XX4
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -225,7 +225,24 @@ class MP3Player(Frame):
         self.genre_name     = ""
         self.old_rotor1     = 0
         self.old_rotor2     = 0
-        self.rot_pos        = 3
+        self.rot_posp       = 3
+        if self.cutdown == 0:
+            self.order = [1,2,12,3,4,9,10,6,7,8,5,11,0]
+        elif self.cutdown == 1:
+            self.order = [1,2,12,3,4,10,6,7,8,9,5,11,0]
+        elif self.cutdown == 2:
+            self.order = [1,2,12,3,4,9,6,7,8,5,10,11,0]
+        elif self.cutdown == 3:
+            self.order = [1,2,12,3,4,6,7,8,5,9,10,11,0]
+        elif self.cutdown == 4:
+            self.order = [1,2,12,3,4,10,7,8,6,9,5,11,0]
+        elif self.cutdown == 5:
+            self.order = [1,2,3,4,5,6,7,8,9,10,11,0]
+        elif self.cutdown == 6:
+            self.order = [1,2,3,4,5,6,7,8,9,10,11,0]
+        elif self.cutdown == 7:
+            self.order = [1,2,12,3,4,9,10,6,7,8,5,11,0]
+        self.rot_pos        = self.order[self.rot_posp]
         self.rot_mode       = 0
 
         if "System clock synchronized: yes" in os.popen("timedatectl").read().split("\n"):
@@ -1353,23 +1370,24 @@ class MP3Player(Frame):
             if self.rotor2.value > self.old_rotor2:
                 self.old_rotor2 = self.rotor2.value
                 if self.rot_mode == 0:
-                    self.rot_pos -=1
-                    if self.rot_pos < 0:
-                        self.rot_pos = 12
-                    if self.cutdown > 4 and self.cutdown < 7 and self.rot_pos == 12:
-                        self.rot_pos = 11
-                    if self.stopstart == 1 and self.album_start == 0 and self.rot_pos == 4:
-                        self.rot_pos = 3
-                    if self.album_start == 1 and self.rot_pos == 3:
-                        self.rot_pos = 0
-                    if self.album_start == 1 and self.rot_pos == 12:
-                        self.rot_pos = 11
-                    if self.Radio_ON == 1 and self.rot_pos == 1:
-                        self.rot_pos = 10
-                    elif self.Radio_ON == 1 and self.rot_pos == 4:
-                        self.rot_pos = 2
-                    elif self.Radio_ON == 1 and self.rot_pos == 11:
-                        self.rot_pos = 10
+                    self.rot_posp -=1
+                    if self.rot_posp < 0:
+                        self.rot_posp = 12
+                    if self.cutdown > 4 and self.cutdown < 7 and self.rot_posp == 12:
+                        self.rot_posp = 11
+                    if self.stopstart == 1 and self.album_start == 0 and self.rot_posp == 4:
+                        self.rot_posp = 3
+                    if self.album_start == 1 and self.rot_posp == 3:
+                        self.rot_posp = 0
+                    if self.album_start == 1 and self.rot_posp == 12:
+                        self.rot_posp = 11
+                    if self.Radio_ON == 1 and self.rot_posp == 1:
+                        self.rot_posp = 10
+                    elif self.Radio_ON == 1 and self.rot_posp == 4:
+                        self.rot_posp = 2
+                    elif self.Radio_ON == 1 and self.rot_posp == 11:
+                        self.rot_posp = 10
+                    self.rot_pos = self.order[self.rot_posp]
                     if self.album_start == 0:
                         self.Button_Prev_Artist.config(bg = 'light blue')
                         self.Button_Prev_Album.config(bg = 'light blue')
@@ -1442,21 +1460,22 @@ class MP3Player(Frame):
             else:
                 self.old_rotor2 = self.rotor2.value
                 if self.rot_mode == 0:
-                    self.rot_pos +=1
-                    if self.rot_pos > 12:
-                        self.rot_pos = 0
-                    if self.cutdown > 4 and self.cutdown < 7 and self.rot_pos == 12:
-                        self.rot_pos = 0
-                    if self.stopstart == 1 and self.album_start == 0 and self.rot_pos == 4:
-                        self.rot_pos = 5
-                    if self.album_start == 1 and self.rot_pos == 1:
-                        self.rot_pos = 4
-                    if self.album_start == 1 and self.rot_pos == 12:
-                        self.rot_pos = 0
-                    if self.Radio_ON == 1 and self.rot_pos == 11:
-                        self.rot_pos = 2
-                    elif self.Radio_ON == 1 and self.rot_pos == 3:
-                        self.rot_pos = 5
+                    self.rot_posp +=1
+                    if self.rot_posp > 12:
+                        self.rot_posp = 0
+                    if self.cutdown > 4 and self.cutdown < 7 and self.rot_posp == 12:
+                        self.rot_posp = 0
+                    if self.stopstart == 1 and self.album_start == 0 and self.rot_posp == 4:
+                        self.rot_posp = 5
+                    if self.album_start == 1 and self.rot_posp == 1:
+                        self.rot_posp = 4
+                    if self.album_start == 1 and self.rot_posp == 12:
+                        self.rot_posp = 0
+                    if self.Radio_ON == 1 and self.rot_posp == 11:
+                        self.rot_posp = 2
+                    elif self.Radio_ON == 1 and self.rot_posp == 3:
+                        self.rot_posp = 5
+                    self.rot_pos = self.order[self.rot_posp]
                     if self.album_start == 0:
                         self.Button_Prev_Artist.config(bg = 'light blue')
                         self.Button_Prev_Album.config(bg = 'light blue')
@@ -5103,7 +5122,7 @@ class MP3Player(Frame):
             self.Time_Left_Play()
         if rotary == 1:
             self.rot_mode = 0
-            self.rot_pos = 3
+            self.rot_pos = 3 
             self.Button_Start.config(bg = "yellow",fg = "black")
         
 
