@@ -6729,7 +6729,7 @@ class MP3Player(Frame):
     def Shutdown(self):
         if (self.shuffle_on == 1 and self.sleep_time > 0 and self.play == 0) or self.Shutdown_exit == 0:
             self.exit()
-            if rotary == 1:
+            if self.rotary == 1:
                 os.system("sudo shutdown -h now")
             
 def main():
