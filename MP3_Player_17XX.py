@@ -202,7 +202,7 @@ class MP3Player(Frame):
         self.auto_album     = 0
         self.auto_radio     = 0
         self.auto_record    = 0
-        self.auto_rec_time  = 10
+        self.auto_rec_time  = 0
         self.usave          = 0
         self.minutes        = 0
         self.seconds        = 10
