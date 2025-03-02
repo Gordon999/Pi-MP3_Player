@@ -335,6 +335,7 @@ class MP3Player(Frame):
         self.auto_rec_set = 0
         self.f_volume     = self.volume
         self.NewRadio     = -1
+        self.auto_rec_time = 0
         
         # wait for internet,if required for auto_radio
         #count = 0
