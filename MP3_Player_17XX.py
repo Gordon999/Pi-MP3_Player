@@ -202,7 +202,7 @@ class MP3Player(Frame):
         self.auto_album     = 0
         self.auto_radio     = 0
         self.auto_record    = 0
-        self.auto_rec_time  = 0
+        self.auto_rec_time  = 10
         self.usave          = 0
         self.minutes        = 0
         self.seconds        = 10
@@ -332,9 +332,9 @@ class MP3Player(Frame):
             self.rot_posp = 3
             self.rot_pos = 3
         #if self.auto_record == 1:
-        #    self.auto_rec_set = 1
+        self.auto_rec_set = 0
         self.f_volume     = self.volume
-        self.NewRadio = -1
+        self.NewRadio     = -1
         
         # wait for internet,if required for auto_radio
         #count = 0
@@ -6261,9 +6261,10 @@ class MP3Player(Frame):
                 self.Name = self.Radio_Stns[self.Radio]
                 if self.Radio_Stns[self.Radio + 2] == 1 and self.record == 1:
                     self.Disp_played.config(text ="000:00")
-                    if self.cutdown != 1 and self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 6  and self.cutdown != 3 and self.touchscreen == 1:
+                    if self.cutdown != 1 and self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 6  and self.cutdown != 3:
                         self.Button_Pause.config(fg = "black", bg = "light blue", text = "RECORD")
-                        self.L8.config(text = ".mp3")
+                        if self.touchscreen == 1:
+                            self.L8.config(text = ".mp3")
                         self.L6.config(text="")
                 else:
                     if self.cutdown != 1 and self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 6 and self.touchscreen == 1:
