@@ -2742,8 +2742,15 @@ class MP3Player(Frame):
                     print ("Start_Play - Track exists", self.track)
                 if self.cutdown == 4:
                     self.Button_Next_AZ.config(text = "NextAZ", bg = "light grey", fg = "black")
-                if self.version == 2: 
-                    self.Button_Reload.config(bg = "light blue", fg = "black", text = "Skip Fwd")
+                if self.version == 2:
+                    if self.rotary == 0:
+                        self.Button_Reload.config(bg = "light blue", fg = "black", text = "Skip Fwd")
+                    else:
+                        if self.rot_pos == 11:
+                            self.Button_Reload.config(bg = "yellow", fg = "black", text = "Skip Fwd")
+                        else:
+                            self.Button_Reload.config(bg = "light blue", fg = "black", text = "Skip Fwd")
+                            
                 else:
                     self.Button_Reload.config(bg = "light grey", fg = "black")
                 if self.version == 2:
