@@ -83,7 +83,8 @@ class MP3Player(Frame):
                            "Radio Paradise Mellow (192)","http://stream.radioparadise.com/mellow-192",1,
                            "Radio Paradise World 192","http://stream.radioparadise.com/world-etc-192",1,
                            "Radio Paradise World","http://stream.radioparadise.com/eclectic-flac",0,
-                           "Radio Caroline","http://sc6.radiocaroline.net:10558/",0
+                           "Radio Caroline","http://sc6.radiocaroline.net:10558/",0,
+                           "tst","http://pointblankradio.co.uk:9002/stream",0
                           ]
         # settings
         self.Shutdown_exit  = 1  # set to 1 to shutdown the Pi on pressing SHUTDOWN (left mouse button), 0 to only exit script
@@ -282,6 +283,12 @@ class MP3Player(Frame):
                             self.Radio_Stns.append(a)
                             self.Radio_Stns.append(b)
                             self.Radio_Stns.append(int(c.strip()))
+                    elif line.count(",") == 1:
+                        a,b = line.split(",")
+                        if a[0:1] != "#":
+                            self.Radio_Stns.append(a)
+                            self.Radio_Stns.append(b)
+                            self.Radio_Stns.append("0")
                     line = textobj.readline()
 
         # read radio_stns.csv (Station Name,URL,X,)
@@ -3472,7 +3479,8 @@ class MP3Player(Frame):
                 os.remove(self.rems2[x])
             self.rems2 = glob.glob("/run/shm/music/*/*/*.mp3")
             for x in range(0,len(self.rems2)):
-                os.remove(self.rems2[x])
+                if os.path.exists(self.rems2[x]):
+                    os.remove(self.rems2[x])
             self.rems3 = glob.glob("/run/shm/music/*/*/*.cue")
             for x in range(0,len(self.rems3)):
                 os.remove(self.rems3[x])
@@ -4473,8 +4481,10 @@ class MP3Player(Frame):
                 self.Disp_played.config(text = int((self.Radio)/3)+1)
             if self.Radio_Stns[self.Radio + 2] == 0:
                 self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                #print(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]])
             else:
                 self.r = subprocess.Popen(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
+                #print(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]])
                 time.sleep(1)
                 self.q = subprocess.Popen(["mplayer", "-nocache", "http://localhost:8000"] , shell=False)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
@@ -4669,8 +4679,11 @@ class MP3Player(Frame):
                 self.Disp_played.config(text = int((self.Radio)/3)+1)
             if self.Radio_Stns[self.Radio + 2] == 0:
                 self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                #print(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]])
             else:
                 self.r = subprocess.Popen(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
+                #print(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]])
+                
                 time.sleep(1)
                 self.q = subprocess.Popen(["mplayer", "-nocache", "http://localhost:8000"] , shell=False)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
