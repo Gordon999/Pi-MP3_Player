@@ -11,7 +11,7 @@ Classic FM UK,http://ice-the.musicradio.com/ClassicFMMP3
 Classic FM at the Movies,http://media-sov.musicradio.com/ClassicFM-M-Movies
 Classic FM Relax,http://media-the.musicradio.com/ClassicFM-M-Relax
 Celtic Music Radio,http://stream.celticmusicradio.net:8000/celticmusic.mp3,1
-Chill,http://media-ice.musicradio.com/ChillMP3.m3u
+Chill,http://media-ice.musicradio.com/ChillMP3.m3u,1
 #CRI,http://sk.cri.cn/915.m3u8
 #CRI News Plus AM1008,http://sk.cri.cn/am1008.m3u8
 Danubius Rádió,http://stream.danubiusradio.hu/danubius_128k
