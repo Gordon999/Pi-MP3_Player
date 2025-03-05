@@ -1,6 +1,6 @@
 #Angel Radio,http://s2.xrad.io:8522/listen.pls?sid=1
 #Bartók Rádió,http://mr-stream.mediaconnect.hu/4742/mr3hq.mp3
-BBC World Service,https://stream.live.vc.bbcmedia.co.uk/bbc_world_service
+BBC World Service,https://stream.live.vc.bbcmedia.co.uk/bbc_world_service,1
 #BBC World Service,http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_world_service/format/pls.pls
 #BBC World Service,https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/ak/bbc_world_service.m3u8
 Capital UK,http://vis.media-ice.musicradio.com/CapitalUK
