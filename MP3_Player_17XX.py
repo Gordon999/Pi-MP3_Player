@@ -83,8 +83,8 @@ class MP3Player(Frame):
                            "Radio Paradise Mellow (192)","http://stream.radioparadise.com/mellow-192",1,
                            "Radio Paradise World 192","http://stream.radioparadise.com/world-etc-192",1,
                            "Radio Paradise World","http://stream.radioparadise.com/eclectic-flac",0,
-                           "Radio Caroline","http://sc6.radiocaroline.net:10558/",0,
-                           "tst","http://pointblankradio.co.uk:9002/stream",0
+                           "Radio Caroline","http://sc6.radiocaroline.net:10558/",0
+                           
                           ]
         # settings
         self.Shutdown_exit  = 1  # set to 1 to shutdown the Pi on pressing SHUTDOWN (left mouse button), 0 to only exit script
