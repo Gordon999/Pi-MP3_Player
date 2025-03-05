@@ -105,6 +105,5 @@ VOA1 – The Hits,http://voa-22.akacast.akamaistream.net/7/48/322034/v1/ibb.akac
 VOA Voice of America Global English,http://voa-28.akacast.akamaistream.net/7/54/322040/v1/ibb.akacast.akamaistream.net/voa-28,1
 VOA Chinese,http://voa-11.akacast.akamaistream.net/7/317/322023/v1/ibb.akacast.akamaistream.net/voa-11,1
 VOA-Voice of America African Service (English),http://voa-17.akacast.akamaistream.net/7/315/322029/v1/ibb.akacast.akamaistream.net/voa-17,1
-#Aljazeera English,http://live-hls-web-aje.getaj.net/AJE/06.m3u8
-#BBC News,https://vs-hls-push-ww-live.akamaized.net/x=4/i=urn:bbc:pips:service:bbc_news_channel_hd/t=3840/v=pv14/b=5070016/main.m3u8
-#RAI Südtirol,http://wzstreaming.rai.it/TVlive/liveStream/playlist.m3u8
+
+
