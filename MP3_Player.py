@@ -83,10 +83,7 @@ class MP3Player(Frame):
                            "Radio Paradise Mellow (192)","http://stream.radioparadise.com/mellow-192",1,
                            "Radio Paradise World 192","http://stream.radioparadise.com/world-etc-192",1,
                            "Radio Paradise World","http://stream.radioparadise.com/eclectic-flac",0,
-                           "Radio Caroline","http://sc6.radiocaroline.net:10558/",0,
-                           "100% Radio - Carcassonne","http://100radio-carcassonne.ice.infomaniak.ch/100radio-carcassonne-128.mp3",1,
-                           "Soma FM - Groove Salad","http://ice.somafm.com/groovesalad",0,
-                           "Soma FM - Indie Pop Rocks!","http://ice.somafm.com/indiepop",0
+                           "Radio Caroline","http://sc6.radiocaroline.net:10558/",0
                            
                           ]
         # settings
