@@ -20,9 +20,6 @@ v17.77 version notes:
 
     Note:-
     Pressing RELOAD / Radio may take a while before you see anything happening.
-    
-
-
     Don't be tempted to press any screen buttons if using the rotary encoders, this will confuse the code !!
     Don't set rotary = 0 if you have the rotarys connected.
 
