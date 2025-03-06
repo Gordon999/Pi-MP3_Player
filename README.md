@@ -15,6 +15,17 @@ v17.77 version notes:
 
     see rotary_connections.jpg 
 
+    I would recommend cutdowns 0 or 5 with the rotary encoders. 7 has the drop downs which are no use with the rotary encoders 
+    and slow the system down, 0 is quicker and has the same options.
+
+    Note:-
+    Pressing RELOAD / Radio may take a while before you see anything happening.
+    
+
+
+Don't be tempted to press any screen buttons if using the rotary encoders, this will confuse the code !!
+Don't set rotary = 0 if you have the rotarys connected.
+
 Note tested on a Pi5 with bookworm but not with the PI 7" screens.
 
 Designed to be used with a Pi and the Pi 7" Touchscreen LCD, but will work on other monitors. Playing .mp3, .flac, .wav, .dsf, .m4a tracks from USB sticks (or HDD) under /media/pi/usb_stick_name/artist name/album_name/tracks.
