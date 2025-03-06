@@ -3,15 +3,15 @@ Pi-MP3_Player
 
 Note this will work under BUSTER, BULLSEYE , OR BOOKWORM 
 
-v17.76 version notes:
+v17.77 version notes:
 
-    Set Variable rotary = 1 (line 30), set to 0 if you want to use the original external buttons.
+    Set Variable rotary = 1 (line 31), set to 0 if you want to use the original external buttons.
     
-    Rotary Encoder 1 (KY-040) will set volume, it's press button will start/stop Album Play
+    Rotary Encoder 1 (KY-040) will set volume, it's press button will MUTE
     
-    Rotary Encoder 2 (KY-040) will step through Albums, it's press button will step forwards 
-    through Artists, both whilst not playing.
-    Will step through tracks whilst playing an Album. Button will set SLEEP time whilst playing  the album.
+    Rotary Encoder 2 (KY-040) will step through the onscreen buttons, press (goes red) and select Plist/Artist/Album/Track
+    press again (goes yellow) and choose Play Playlist / Play Album and press again.
+    Will step through tracks whilst playing an Album. 
 
     see rotary_connections.jpg 
 
