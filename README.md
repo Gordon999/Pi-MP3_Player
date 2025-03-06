@@ -23,8 +23,8 @@ v17.77 version notes:
     
 
 
-Don't be tempted to press any screen buttons if using the rotary encoders, this will confuse the code !!
-Don't set rotary = 0 if you have the rotarys connected.
+    Don't be tempted to press any screen buttons if using the rotary encoders, this will confuse the code !!
+    Don't set rotary = 0 if you have the rotarys connected.
 
 Note tested on a Pi5 with bookworm but not with the PI 7" screens.
 
