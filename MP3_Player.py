@@ -83,7 +83,11 @@ class MP3Player(Frame):
                            "Radio Paradise Mellow (192)","http://stream.radioparadise.com/mellow-192",1,
                            "Radio Paradise World 192","http://stream.radioparadise.com/world-etc-192",1,
                            "Radio Paradise World","http://stream.radioparadise.com/eclectic-flac",0,
-                           "Radio Caroline","http://sc6.radiocaroline.net:10558/",0
+                           "Radio Caroline","http://sc6.radiocaroline.net:10558/",0,
+                           "100% Radio - Carcassonne","http://100radio-carcassonne.ice.infomaniak.ch/100radio-carcassonne-128.mp3",1,
+                           "Soma FM - Groove Salad","http://ice.somafm.com/groovesalad",0,
+                           "Soma FM - Indie Pop Rocks!","http://ice.somafm.com/indiepop",0
+                           
                           ]
         # settings
         self.Shutdown_exit  = 1  # set to 1 to shutdown the Pi on pressing SHUTDOWN (left mouse button), 0 to only exit script
@@ -286,10 +290,9 @@ class MP3Player(Frame):
                         a,b = line.split(",")
                         if a[0:1] != "#":
                             self.Radio_Stns.append(a)
-                            self.Radio_Stns.append(b)
-                            self.Radio_Stns.append("0")
+                            self.Radio_Stns.append(b.strip())
+                            self.Radio_Stns.append(0)
                     line = textobj.readline()
-
         # read radio_stns.csv (Station Name,URL,X,)
         if os.path.exists ("radio_stns.csv"): 
             with open("radio_stns.csv","r") as textobj:
