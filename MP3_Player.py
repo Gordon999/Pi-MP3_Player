@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.76
+# Pi_MP3_Player v17.77
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,9 +25,11 @@ SOFTWARE."""
 global fullscreen
 global cutdown
 global rotary
-cutdown    = 7 # set the format required
-fullscreen = 1 # set to 1 for fullscreen
-rotary     = 0 # set to 1 if using rotary encoders (see rotary_connections.jpg for wiring details)
+global touchscreen
+cutdown     = 7 # set the format required
+fullscreen  = 0 # set to 1 for fullscreen
+rotary      = 0 # set to 1 if using rotary encoders (see rotary_connections.jpg for wiring details)
+touchscreen = 1 # if using the rotary encoders and a non-touchscreen set to 0
 
 import tkinter as tk
 from tkinter import *
@@ -85,7 +87,6 @@ class MP3Player(Frame):
                           ]
         # settings
         self.Shutdown_exit  = 1  # set to 1 to shutdown the Pi on pressing SHUTDOWN (left mouse button), 0 to only exit script
-        self.Button_info_on = 1  # show Info button, set = 1 to enable
         self.Button_Radi_on = 1  # show Radio button,set = 1 to enable
         self.m3u_dir        = self.h_user + "/Documents/"     # where .m3us are stored
         self.mp3sd_search   = self.h_user + "/*/*/*/*.mp3"    # search criteria for mp3s  (/home/USER/USBDrive Name/Artist Name/Album Name/Tracks.mp3)
@@ -194,6 +195,7 @@ class MP3Player(Frame):
         self.Radio_RON      = 0
         self.cutdown        = cutdown
         self.rotary         = rotary
+        self.touchscreen    = touchscreen
         self.tname          = "Unknown"
         self.auto_rec_set   = 0
         self.auto_play      = 0
@@ -226,6 +228,25 @@ class MP3Player(Frame):
         self.genre_name     = ""
         self.old_rotor1     = 0
         self.old_rotor2     = 0
+        self.rot_posp       = 3
+        if self.cutdown == 0:
+            self.order = [1,2,12,3,4,9,13,10,6,7,8,5,14,15,11,0]
+        elif self.cutdown == 1:
+            self.order = [1,2,12,3,4,10,6,7,8,9,5,11,0]
+        elif self.cutdown == 2:
+            self.order = [1,2,12,3,4,9,13,10,6,7,8,5,14,15,11,0]
+        elif self.cutdown == 3:
+            self.order = [1,2,12,3,4,6,7,8,15,5,9,14,13,10,11,0]
+        elif self.cutdown == 4:
+            self.order = [1,2,12,3,4,13,10,7,8,6,9,5,11,0]
+        elif self.cutdown == 5:
+            self.order = [ 0,1,2,3,4,5,6,7,8,9,10,11]
+        elif self.cutdown == 6:
+            self.order = [ 0,1,2,3,4,5,6,7,8,9,10,11]
+        elif self.cutdown == 7:
+            self.order = [1,2,12,3,4,9,13,10,6,7,8,5,14,15,11,0]
+        self.rot_pos  = self.order[self.rot_posp]
+        self.rot_mode = 0
 
         if "System clock synchronized: yes" in os.popen("timedatectl").read().split("\n"):
             self.synced = 1
@@ -261,6 +282,12 @@ class MP3Player(Frame):
                             self.Radio_Stns.append(a)
                             self.Radio_Stns.append(b)
                             self.Radio_Stns.append(int(c.strip()))
+                    elif line.count(",") == 1:
+                        a,b = line.split(",")
+                        if a[0:1] != "#":
+                            self.Radio_Stns.append(a)
+                            self.Radio_Stns.append(b)
+                            self.Radio_Stns.append("0")
                     line = textobj.readline()
 
         # read radio_stns.csv (Station Name,URL,X,)
@@ -296,6 +323,8 @@ class MP3Player(Frame):
            self.auto_album    = int(file.readline())
         if self.auto_album == 1:
             self.auto_albums = 1
+            self.rot_posp = 4
+            self.rot_pos = 4
         else:
             self.auto_albums = 0
         if self.auto_play == 1 or self.auto_album == 1:
@@ -306,10 +335,12 @@ class MP3Player(Frame):
             self.start = self.auto_play
         else:
             self.start = 1
-        if self.auto_record == 1:
-            self.auto_rec_set = 1
+            self.rot_posp = 3
+            self.rot_pos = 3
+        self.auto_rec_set = 0
         self.f_volume     = self.volume
-        self.NewRadio = -1
+        self.NewRadio     = -1
+        self.auto_rec_time = 0
         
         # wait for internet,if required for auto_radio
         count = 0
@@ -320,6 +351,12 @@ class MP3Player(Frame):
                 out = self.isConnected()
                 time.sleep(1)
                 count += 1
+            rcount = 0
+            for r in range(0,len(self.order)):
+                if self.order[r] == 8:
+                    self.rot_pos = r
+                    self.rot_posp = r
+                rcount +=1
                         
         # check for audio mixers
         print (alsaaudio.mixers())
@@ -374,11 +411,11 @@ class MP3Player(Frame):
                 self.button_start_play  = Button(self.start_play)
             else:
                 from gpiozero import RotaryEncoder
-                self.rotor1 = RotaryEncoder(12,16, wrap=False, max_steps=48)
-                self.rotor2 = RotaryEncoder(13, 5, wrap=False, max_steps=48)
-                self.start_album        = 6  # external start/stop album gpio input
-                self.button_start_album = Button(self.start_album)
-                self.next               = 20  # external start/stop album gpio input
+                self.rotor1 = RotaryEncoder(12,16, wrap=True, max_steps=99)
+                self.rotor2 = RotaryEncoder(13, 5, wrap=True, max_steps=99)
+                self.mute               = 6  # external mute
+                self.button_mute        = Button(self.mute)
+                self.next               = 20  # external next action
                 self.button_next        = Button(self.next)
         # enable LCD backlight
         if self.LCD_backlight == 1:
@@ -407,55 +444,48 @@ class MP3Player(Frame):
             self.exit()
 
         if self.cutdown == 0: # Pi 7" Display 800 x 480
-            self.length = 60
-            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", bg = "green",fg = "white",width = 7, height = 2,font = 18, command = self.Play, wraplength=80, justify=CENTER)
+            self.length = 30
+            self.helv01 = tkFont.Font(family='Helvetica', size=18, weight='bold') # Names font size
+            self.helv02 = tkFont.Font(family='Helvetica', size=12) # Buttons font size
+            self.helv03 = tkFont.Font(family='Helvetica', size=11) # RELOAD font size
+            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", bg = "green",fg = "black",width = 8, height = 3,font = self.helv02, command = self.Play, wraplength=80, justify=CENTER)
             self.Button_Start.grid(row = 0, column = 0, padx = 10,pady = 10)
-            self.Button_Pause = tk.Button(self.Frame10, text = "Pause",bg = "light blue", width = 7, height = 2,command=self.Pause, wraplength=80, justify=CENTER)
+            self.Button_Pause = tk.Button(self.Frame10, text = "Pause",bg = "light blue", width = 8, height = 2,font = self.helv02,command=self.Pause, wraplength=80, justify=CENTER)
             self.Button_Pause.grid(row = 0, column = 2, padx = 0,pady = 10)
-            self.Button_Gapless = tk.Button(self.Frame10, text = "Gapless", fg = "black",bg = "light blue", width = 7, height = 2,command=self.Gapless, wraplength=80, justify=CENTER)
+            self.Button_Gapless = tk.Button(self.Frame10, text = "Gapped", fg = "black",bg = "light blue", width = 8, height = 2,font = self.helv02,command=self.Gapless, wraplength=80, justify=CENTER)
             self.Button_Gapless.grid(row = 0, column = 3,pady = 10)
-            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", bg = "blue",fg = "white", width = 7, height = 2,font = 18,command=self.Play_Album, wraplength=80, justify=CENTER)
+            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", bg = "blue",fg = "black", width = 8, height = 3,font = self.helv02,command=self.Play_Album, wraplength=80, justify=CENTER)
             self.Button_TAlbum.grid(row = 0, column = 1,pady = 10)
-            Button_Volume_Dn =  tk.Button(self.Frame10, text = " < Vol ",    bg = "yellow",width = 7, height = 2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
+            Button_Volume_Dn =  tk.Button(self.Frame10, text = " < Vol ",    bg = "light green",width = 8, height = 2,font = self.helv02,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
             Button_Volume_Dn.grid(row = 0, column = 5)
             if self.m == 0:
-                self.Button_volume = tk.Button(self.Frame10, text = self.volume, fg = "black",width = 1, height = 2,command = self.Mute)
+                self.Button_volume = tk.Button(self.Frame10, text = self.volume, fg = "black",width = 1, height = 2,font = self.helv02,command = self.Mute)
             else:
-                self.Button_volume = tk.Button(self.Frame10, text = self.volume, fg = "green",width = 1, height = 2,command = self.Mute)
+                self.Button_volume = tk.Button(self.Frame10, text = self.volume, fg = "green",width = 1, height = 2,font = self.helv02,command = self.Mute)
             self.Button_volume.grid(row = 0, column = 6)
-            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol >",      bg = "yellow",width = 7, height = 2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
+            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol >",      bg = "light green",width = 8, height = 2,font = self.helv02,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_UP.grid(row = 0, column = 7)
-            self.Button_Prev_PList =  tk.Button(self.Frame10, text = "< P-list",   bg = "light blue",width = 7, height = 1,command = self.Prev_m3u,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_PList =  tk.Button(self.Frame10, text = "< P-list",   bg = "light blue",width = 8, height = 1,font = self.helv02,command = self.Prev_m3u,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_PList.grid(row = 1, column = 0)
-            self.Button_Next_PList =  tk.Button(self.Frame10, text = "P-list >",   bg = "light blue",width = 7, height = 1,command = self.Next_m3u,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_PList =  tk.Button(self.Frame10, text = "P-list >",   bg = "light blue",width = 8, height = 1,font = self.helv02,command = self.Next_m3u,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_PList.grid(row = 1, column = 7)
-            self.Button_Prev_Artist =  tk.Button(self.Frame10, text = "< Artist",   bg = "light blue",fg = "red",width = 7, height = 2,command = self.Prev_Artist,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_Artist =  tk.Button(self.Frame10, text = "< Artist",   bg = "light blue",fg = "black",width = 8, height = 2,font = self.helv02,command = self.Prev_Artist,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Artist.grid(row = 2, column = 0)
-            self.Button_Next_Artist =  tk.Button(self.Frame10, text = "Artist >",   bg = "light blue",width = 7, height = 2,command = self.Next_Artist,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Artist =  tk.Button(self.Frame10, text = "Artist >",   bg = "light blue",width = 8, height = 2,font = self.helv02,command = self.Next_Artist,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_Artist.grid(row = 2, column = 7)
-            self.Button_Prev_Album =  tk.Button(self.Frame10, text = "< Album",    bg = "light blue",width = 7, height = 2,command = self.Prev_Album,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_Album =  tk.Button(self.Frame10, text = "< Album",    bg = "light blue",width = 8, height = 2,font = self.helv02,command = self.Prev_Album,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Album.grid(row = 3, column = 0)
-            self.Button_Next_Album =  tk.Button(self.Frame10, text = "Album >",     bg = "light blue",width = 7, height = 2,command = self.Next_Album,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Album =  tk.Button(self.Frame10, text = "Album >",     bg = "light blue",width = 8, height = 2,font = self.helv02,command = self.Next_Album,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_Album.grid(row = 3, column = 7)
-            if self.Button_info_on == 1:
-                self.Button_Prev_Track =  tk.Button(self.Frame10, text = "< Track",    bg = "light blue",width = 7, height = 1,command = self.Prev_Track,repeatdelay=1000, repeatinterval=500)
-                self.Button_Prev_Track.grid(row = 4, column = 0)
-                self.Button_Next_Track = tk.Button(self.Frame10, text = "Track >",    bg = "light blue",width = 7, height = 1,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
-                self.Button_Next_Track.grid(row = 4, column = 7)
-                self.Button_Info = tk.Button(self.Frame10, text = "Info",    bg = "light blue",width = 7, height = 1, command=self.PopupInfo)
-                self.Button_Info.grid(row =5 , column = 7)
-            else:
-                self.Button_Prev_Track =  tk.Button(self.Frame10, text = "< Track",    bg = "light blue",width = 7, height = 2,command = self.Prev_Track,repeatdelay=1000, repeatinterval=500)
-                self.Button_Prev_Track.grid(row = 4, column = 0)
-                self.Button_Next_Track = tk.Button(self.Frame10, text = "Track >",    bg = "light blue",width = 7, height = 2,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
-                self.Button_Next_Track.grid(row = 4, column = 7)
+            self.Button_Prev_Track =  tk.Button(self.Frame10, text = "< Track",    bg = "light blue",width = 8, height = 2,font = self.helv02,command = self.Prev_Track,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_Track.grid(row = 4, column = 0)
+            self.Button_Next_Track = tk.Button(self.Frame10, text = "Track >",    bg = "light blue",width = 8, height = 2,font = self.helv02,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Track.grid(row = 4, column = 7)
             if self.Button_Radi_on == 1:
-                self.Button_Radio = tk.Button(self.Frame10, text = "Radio",    bg = "light blue",width = 7, height = 2,command = self.RadioX, wraplength=80, justify=CENTER)
+                self.Button_Radio = tk.Button(self.Frame10, text = "Radio",    bg = "light blue",width = 8, height = 2,font = self.helv02,command = self.RadioX, wraplength=80, justify=CENTER)
                 self.Button_Radio.grid(row = 9, column = 5, columnspan = 2)
-            self.Button_Search_to_m3u = tk.Button(self.Frame10, text = "Search to .m3u",    bg = "light green",width = 7, height = 2, wraplength=80,command = self.Search)
-            self.Button_Search_to_m3u.grid(row = 9, column = 4, padx = 8)
-            
-            self.Button_Next_AZ = tk.Button(self.Frame10, text = "Next A-Z",   width = 7, height = 2,bg = "light blue",command=self.nextAZ,repeatdelay=250, repeatinterval=500)
+                        
+            self.Button_Next_AZ = tk.Button(self.Frame10, text = "Next A-Z",   width = 8, height = 2,font = self.helv02,bg = "light blue",command=self.nextAZ,repeatdelay=250, repeatinterval=500)
             self.Button_Next_AZ.grid(row = 7, column = 7)
             if os.path.exists(self.mp3c_jpg):
                 self.load = Image.open(self.mp3c_jpg)
@@ -465,35 +495,38 @@ class MP3Player(Frame):
             else:
                 self.img = tk.Label(self.Frame10)
                 self.img.grid(row = 5, column = 0, columnspan = 2, rowspan = 5, pady = 2)
-            self.Button_Reload = tk.Button(self.Frame10, text = " RELOAD " + self.m3u_def ,width = 7, height = 2, bg = "#c5c",command = self.RELOAD_List, wraplength=80, justify=CENTER)
-            self.Button_Reload.grid(row = 7, column = 2,padx = 10, pady = 0)
+            self.Button_Reload = tk.Button(self.Frame10, text = " RELOAD " + self.m3u_def ,width = 8, height = 2,font = self.helv03, bg = "#c5c",command = self.RELOAD_List, wraplength=80, justify=CENTER)
+            self.Button_Reload.grid(row = 7, column = 2,padx = 10)
             if self.Shutdown_exit == 1:
-                self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdown",   bg = "gray",width = 7, height = 2,command = self.Shutdown, wraplength=80, justify=CENTER)
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdown",   bg = "gray",width = 8, height = 2,font = self.helv02,command = self.Shutdown, wraplength=80, justify=CENTER)
             else:
-                self.Button_Shutdown = tk.Button(self.Frame10, text = "EXIT",   bg = "gray",width = 7, height = 2,command = self.Shutdown, wraplength=80, justify=CENTER)
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "EXIT",   bg = "gray",width = 8, height = 2,font = self.helv02,command = self.Shutdown, wraplength=80, justify=CENTER)
             self.Button_Shutdown.grid(row = 9, column = 7, padx = 8)
-            self.Button_Add_to_FAV = tk.Button(self.Frame10, text = "Add track to FAV .m3u  " ,width = 7, height = 2, bg = "light green",command = self.FAV_List, wraplength=80, justify=CENTER)
-            self.Button_Add_to_FAV.grid(row = 9, column = 2)
             if self.shuffle_on == 0:
-                self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", bg = "light blue",width = 7, height = 2,command = self.Shuffle_Tracks, wraplength=80, justify=CENTER)
+                self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", bg = "light blue",width = 8, height = 2,font = self.helv02,command = self.Shuffle_Tracks, wraplength=80, justify=CENTER)
             else:
-                self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", bg = "green",width = 7, height = 2,command = self.Shuffle_Tracks, wraplength=80, justify=CENTER)
+                self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", bg = "green",width = 8, height = 2,font = self.helv02,command = self.Shuffle_Tracks, wraplength=80, justify=CENTER)
             self.Button_Shuffle.grid(row = 7, column = 5, columnspan = 2)
-            self.Button_AZ_artists = tk.Button(self.Frame10, text = "A-Z Sort",bg = "light blue", fg = "black",width = 7, height = 2,command = self.AZ_Tracks, wraplength=80, justify=CENTER)
+            self.Button_AZ_artists = tk.Button(self.Frame10, text = "A-Z Sort",bg = "light blue", fg = "black",width = 8, height = 2,font = self.helv02,command = self.AZ_Tracks, wraplength=80, justify=CENTER)
             self.Button_AZ_artists.grid(row = 7, column = 3)
-            self.Button_Sleep = tk.Button(self.Frame10, text = "SLEEP", bg = "light blue",width = 7, height = 2,command = self.sleep,repeatdelay=1000, repeatinterval=500)
+            self.Button_Sleep = tk.Button(self.Frame10, text = "SLEEP", bg = "light blue",width = 8, height = 2,font = self.helv02,command = self.sleep,repeatdelay=1000, repeatinterval=500)
             self.Button_Sleep.grid(row = 0, column = 4, padx = 0)
-            self.Button_Track_m3u = tk.Button(self.Frame10, text = "ADD track   to .m3u", bg = "light green",width = 7, height = 2,command = self.Track_m3u, wraplength=80, justify=CENTER)
-            self.Button_Track_m3u.grid(row = 8, column = 2)
-            self.Button_Artist_m3u = tk.Button(self.Frame10, text = "ADD artist   to .m3u", bg = "light green",width = 7, height = 2,command = self.Artist_m3u, wraplength=80, justify=CENTER)
-            self.Button_Artist_m3u.grid(row = 8, column = 5, columnspan = 2)
-            self.Button_Album_m3u = tk.Button(self.Frame10, text = "ADD album   to .m3u", bg = "light green",width = 7, height = 2,command = self.Album_m3u, wraplength=80, justify=CENTER)
-            self.Button_Album_m3u.grid(row = 8, column = 4)
-            self.Button_PList_m3u = tk.Button(self.Frame10, text = "ADD P-list   to .m3u", bg = "light green",width = 7, height = 2,command = self.PList_m3u, wraplength=80, justify=CENTER)
-            self.Button_PList_m3u.grid(row = 8, column = 7)
-            self.Button_DELETE_m3u = tk.Button(self.Frame10, text = "DEL .m3u",width = 6, height = 1,command = self.DelPL_m3u)
-            self.Button_DELETE_m3u.grid(row = 9, column = 3)
-            self.Button_repeat = tk.Button(self.Frame10, text = "Repeat", bg = "light blue",fg = "black",width = 7, height = 2,command = self.Repeat, wraplength=80, justify=CENTER)
+            if self.touchscreen == 1:
+                self.Button_Track_m3u = tk.Button(self.Frame10, text = "ADD track   to .m3u", bg = "light green",width = 8, height = 2,font = self.helv03,command = self.Track_m3u, wraplength=80, justify=CENTER)
+                self.Button_Track_m3u.grid(row = 8, column = 2)
+                self.Button_Artist_m3u = tk.Button(self.Frame10, text = "ADD artist   to .m3u", bg = "light green",width = 8, height = 2,font = self.helv03,command = self.Artist_m3u, wraplength=80, justify=CENTER)
+                self.Button_Artist_m3u.grid(row = 8, column = 5, columnspan = 2)
+                self.Button_Album_m3u = tk.Button(self.Frame10, text = "ADD album   to .m3u", bg = "light green",width = 8, height = 2,font = self.helv03,command = self.Album_m3u, wraplength=80, justify=CENTER)
+                self.Button_Album_m3u.grid(row = 8, column = 4)
+                self.Button_PList_m3u = tk.Button(self.Frame10, text = "ADD P-list   to .m3u", bg = "light green",width = 8, height = 2,font = self.helv03,command = self.PList_m3u, wraplength=80, justify=CENTER)
+                self.Button_PList_m3u.grid(row = 8, column = 7)
+                self.Button_DELETE_m3u = tk.Button(self.Frame10, text = "DEL .m3u",width = 6, height = 1,font = self.helv02,command = self.DelPL_m3u)
+                self.Button_DELETE_m3u.grid(row = 9, column = 3)
+                self.Button_Search_to_m3u = tk.Button(self.Frame10, text = "Search to .m3u",    bg = "light green",width = 8, height = 2,font = self.helv03, wraplength=80,command = self.Search)
+                self.Button_Search_to_m3u.grid(row = 9, column = 4, padx = 8)
+                self.Button_Add_to_FAV = tk.Button(self.Frame10, text = "Add track to FAV .m3u  " ,width = 8, height = 2,font = self.helv03, bg = "light green",command = self.FAV_List, wraplength=80, justify=CENTER)
+                self.Button_Add_to_FAV.grid(row = 9, column = 2)
+            self.Button_repeat = tk.Button(self.Frame10, text = "Repeat", bg = "light blue",fg = "black",width = 8, height = 2,font = self.helv02,command = self.Repeat, wraplength=80, justify=CENTER)
             self.Button_repeat.grid(row = 7, column = 4)
             if self.BT == 1:
                 self.Button_Pause.config(fg = "light gray",bg = "light gray")
@@ -511,27 +544,28 @@ class MP3Player(Frame):
             self.L5.grid(row = 5, column = 4, sticky = W,padx = 12)
             self.L6 = tk.Label(self.Frame10, text="Playlist :")
             self.L6.grid(row = 6, column = 4, sticky = W,padx = 12)
-            self.L8 = tk.Label(self.Frame10, text=".m3u")
-            self.L8.grid(row = 8, column = 3, sticky = S)
+            if self.touchscreen == 1:
+                self.L8 = tk.Label(self.Frame10, text=".m3u")
+                self.L8.grid(row = 8, column = 3, sticky = S)
             self.L9 = tk.Label(self.Frame10, text=" ")
             self.L9.grid(row = 6, column = 6, sticky = E)
         
             self.Disp_plist_name = tk.Label(self.Frame10, height=1, width=57,bg='white',   anchor="w", borderwidth=2, relief="groove")
             self.Disp_plist_name.grid(row = 1, column = 1, columnspan = 6)
             self.Disp_plist_name.config(text=" " + self.que_dir[len(self.m3u_dir):])
-            self.Disp_artist_name = tk.Label(self.Frame10, height=1, width=50,bg='white', font = 40, padx = 10, pady = 10, anchor="w", borderwidth=2, relief="groove")
+            self.Disp_artist_name = tk.Label(self.Frame10, height=1, width=40,bg='white',font = self.helv01, padx = 10, pady = 10, anchor="w", borderwidth=2, relief="groove")
             self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 6)
-            self.Disp_album_name = tk.Label(self.Frame10, height=1, width=50,bg='white',font = 40, padx = 10, pady = 10, anchor="w", borderwidth=2, relief="groove")
+            self.Disp_album_name = tk.Label(self.Frame10, height=1, width=40,bg='white',font = self.helv01, padx = 10, pady = 10, anchor="w", borderwidth=2, relief="groove")
             self.Disp_album_name.grid(row = 3, column = 1, columnspan = 6)
-            self.Disp_track_name = tk.Label(self.Frame10, height=1, width=50,bg='white',font = 40, padx = 10, pady = 10, anchor="w", borderwidth=2, relief="groove")
+            self.Disp_track_name = tk.Label(self.Frame10, height=1, width=40,bg='white',font = self.helv01, padx = 10, pady = 10, anchor="w", borderwidth=2, relief="groove")
             self.Disp_track_name.grid(row = 4, column = 1, columnspan = 6)
-            self.Disp_track_no = tk.Label(self.Frame10, height=1, width=5)
+            self.Disp_track_no = tk.Label(self.Frame10, height=1, width = 5)
             self.Disp_track_no.grid(row = 5, column = 2, sticky = E)
-            self.Disp_Total_tunes = tk.Label(self.Frame10, height=1, width=5) 
+            self.Disp_Total_tunes = tk.Label(self.Frame10, height=1, width = 5) 
             self.Disp_Total_tunes.grid(row = 5, column = 3, sticky = E)
-            self.Disp_played = tk.Label(self.Frame10, height=1, width=5)
+            self.Disp_played = tk.Label(self.Frame10, height = 1, width = 5)
             self.Disp_played.grid(row = 6, column = 2, sticky = E)
-            self.Disp_track_len = tk.Label(self.Frame10, height=1, width=5)
+            self.Disp_track_len = tk.Label(self.Frame10, height=1, width = 5)
             self.Disp_track_len.grid(row = 6, column = 3, sticky = E)
             self.Disp_Drive = tk.Label(self.Frame10, height=1, width=17)
             self.Disp_Drive.grid(row = 5, column = 4, columnspan = 3, sticky = E)
@@ -542,15 +576,15 @@ class MP3Player(Frame):
 
         if self.cutdown == 1: # 320 x 240
             self.length = 25
-            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", bg =  'green',fg = "white",width = 4, height = 2, command = self.Play, wraplength=50, justify=CENTER)
+            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", bg =  'green',fg = "black",width = 4, height = 2, command = self.Play, wraplength=50, justify=CENTER)
             self.Button_Start.grid(row = 0, column = 0)
-            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", bg = "blue",fg = "white", width = 4, height = 2,command=self.Play_Album, wraplength=50, justify=CENTER)
-            self.Button_TAlbum.grid(row = 0, column = 1,pady = 0)
+            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", bg = "blue",fg = "black", width = 4, height = 2,command=self.Play_Album, wraplength=50, justify=CENTER)
+            self.Button_TAlbum.grid(row = 0, column = 1)
             self.Button_Sleep = tk.Button(self.Frame10, text = "SLEEP", bg = "light blue",width = 4, height = 2,command = self.sleep,repeatdelay=1000, repeatinterval=500)
             self.Button_Sleep.grid(row = 0, column = 4)
-            self.Button_Vol_DN =  tk.Button(self.Frame10, text = " < Vol " + "...", wraplength=40,    bg = "yellow",width = 4, height = 2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
+            self.Button_Vol_DN =  tk.Button(self.Frame10, text = " < Vol " + "...", wraplength=40,    bg = "light green",width = 4, height = 2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_DN.grid(row = 0, column = 2)
-            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol >   " + str(self.volume), wraplength=55,bg = "yellow",width = 4, height = 2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
+            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol >   " + str(self.volume), wraplength=55,bg = "light green",width = 4, height = 2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_UP.grid(row = 0, column = 3)
             self.Button_Prev_PList =  tk.Button(self.Frame10, text = "<P-list",   bg = "light blue",width = 4, height = 1,command = self.Prev_m3u,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_PList.grid(row = 1, column = 0)
@@ -606,142 +640,155 @@ class MP3Player(Frame):
             self.L2.grid(row = 5, column = 0, sticky = E)
             self.L4 = tk.Label(self.Frame10,text="/")
             self.L4.grid(row = 5, column = 3, sticky = W,padx = 5)
-            
-        if self.cutdown == 2: # 640 x 480 or 656 x 416
-            self.length = 60
-            if scr_width == 640 and scr_height == 480:
-                wid = 44
-                hei = 2
-            else:
-                wid = 46
-                hei = 1
-            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", bg = "green",fg = "white",width = 6, height = 2,font = 18, command = self.Play, wraplength=80, justify=CENTER)
-            self.Button_Start.grid(row = 0, column = 0, padx = 0,pady = 0)
-            self.Button_Pause = tk.Button(self.Frame10, text = "Pause",bg = "light blue", width = 5, height = 2,command=self.Pause, wraplength=80, justify=CENTER)
-            self.Button_Pause.grid(row = 0, column = 3, padx = 0,pady = 0)
-            self.Button_Gapless = tk.Button(self.Frame10, text = "Gapless", fg = "white", width = 5, height = 2,command=self.Gapless, wraplength=80, justify=CENTER)
-            self.Button_Gapless.grid(row = 0, column = 4,pady = 0)
-            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", bg = "blue",fg = "white", width = 6, height = 2,font = 18,command=self.Play_Album, wraplength=60, justify=CENTER)
-            self.Button_TAlbum.grid(row = 0, column = 1,pady = 0)
-            self.Button_Vol_DN =  tk.Button(self.Frame10, text = " < Vol ",    bg = "yellow",width = 6, height = 2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
-            self.Button_Vol_DN.grid(row = 0, column = 5)
+
+        if self.cutdown == 2: # 640 x 480
+            self.length = 30
+            self.helv01 = tkFont.Font(family='Helvetica', size=10, weight='bold') # Names font size
+            self.helv02 = tkFont.Font(family='Helvetica', size=11) # Buttons font size
+            self.helv03 = tkFont.Font(family='Helvetica', size=8)  # other font size
+            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", bg = "green",fg = "black",width = 5, height = 2,font = self.helv02, command = self.Play, wraplength=80, justify=CENTER)
+            self.Button_Start.grid(row = 0, column = 0, padx = 10,pady = 10)
+            self.Button_Pause = tk.Button(self.Frame10, text = "Pause",bg = "light blue", width = 5, height = 2,font = self.helv02,command=self.Pause, wraplength=80, justify=CENTER)
+            self.Button_Pause.grid(row = 0, column = 2, padx = 0,pady = 10)
+            self.Button_Gapless = tk.Button(self.Frame10, text = "Gapped", fg = "black",bg = "light blue", width = 5, height = 2,font = self.helv02,command=self.Gapless, wraplength=80, justify=CENTER)
+            self.Button_Gapless.grid(row = 0, column = 3,pady = 10)
+            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", bg = "blue",fg = "black", width = 5, height = 2,font = self.helv02,command=self.Play_Album, wraplength=80, justify=CENTER)
+            self.Button_TAlbum.grid(row = 0, column = 1,pady = 10)
+            Button_Volume_Dn =  tk.Button(self.Frame10, text = " < Vol ",    bg = "light green",width = 5, height = 2,font = self.helv02,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
+            Button_Volume_Dn.grid(row = 0, column = 5)
             if self.m == 0:
-                self.Button_volume = tk.Button(self.Frame10, text = self.volume, bg = "yellow",fg = "black",width = 1, height = 2,command = self.Mute)
+                self.Button_volume = tk.Button(self.Frame10, text = self.volume, fg = "black",width = 1, height = 2,font = self.helv02,command = self.Mute)
             else:
-                self.Button_volume = tk.Button(self.Frame10, text = self.volume, bg = "yellow",fg = "green",width = 1, height = 2,command = self.Mute)
-            self.Button_volume.grid(row = 0, column = 6,pady = 0)
-            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol >",      bg = "yellow",width = 6, height = 2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
+                self.Button_volume = tk.Button(self.Frame10, text = self.volume, fg = "green",width = 1, height = 2,font = self.helv02,command = self.Mute)
+            self.Button_volume.grid(row = 0, column = 6)
+            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol >",      bg = "light green",width = 5, height = 2,font = self.helv02,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_UP.grid(row = 0, column = 7)
-            self.Button_Prev_PList =  tk.Button(self.Frame10, text = "< P-list",   bg = "light blue",width = 6, height = hei,command = self.Prev_m3u,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_PList =  tk.Button(self.Frame10, text = "< P-list",   bg = "light blue",width = 5, height = 1,font = self.helv02,command = self.Prev_m3u,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_PList.grid(row = 1, column = 0)
-            self.Button_Next_PList =  tk.Button(self.Frame10, text = "P-list >",   bg = "light blue",width = 6, height = hei,command = self.Next_m3u,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_PList =  tk.Button(self.Frame10, text = "P-list >",   bg = "light blue",width = 5, height = 1,font = self.helv02,command = self.Next_m3u,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_PList.grid(row = 1, column = 7)
-            self.Button_Prev_Artist =  tk.Button(self.Frame10, text = "< Artist",   bg = "light blue",width = 6, height = hei,command = self.Prev_Artist,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_Artist =  tk.Button(self.Frame10, text = "< Artist",   bg = "light blue",fg = "black",width = 5, height = 1,font = self.helv02,command = self.Prev_Artist,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Artist.grid(row = 2, column = 0)
-            self.Button_Next_Artist =  tk.Button(self.Frame10, text = "Artist >",   bg = "light blue",fg = "red",width = 6, height = hei,command = self.Next_Artist,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Artist =  tk.Button(self.Frame10, text = "Artist >",   bg = "light blue",width = 5, height = 1,font = self.helv02,command = self.Next_Artist,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_Artist.grid(row = 2, column = 7)
-            self.Button_Prev_Album =  tk.Button(self.Frame10, text = "< Album",    bg = "light blue",width = 6, height = hei,command = self.Prev_Album,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_Album =  tk.Button(self.Frame10, text = "< Album",    bg = "light blue",width = 5, height = 1,font = self.helv02,command = self.Prev_Album,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Album.grid(row = 3, column = 0)
-            self.Button_Next_Album =  tk.Button(self.Frame10, text = "Album >",     bg = "light blue",width = 6, height = hei,command = self.Next_Album,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Album =  tk.Button(self.Frame10, text = "Album >",     bg = "light blue",width = 5, height = 1,font = self.helv02,command = self.Next_Album,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_Album.grid(row = 3, column = 7)
-            self.Button_Prev_Track =  tk.Button(self.Frame10, text = "< Track",    bg = "light blue",width = 6, height = hei,command = self.Prev_Track,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_Track =  tk.Button(self.Frame10, text = "< Track",    bg = "light blue",width = 5, height = 1,font = self.helv02,command = self.Prev_Track,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Track.grid(row = 4, column = 0)
-            self.Button_Next_Track = tk.Button(self.Frame10, text = "Track >",    bg = "light blue",width = 6, height = hei,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
-            self.Button_Next_Track.grid(row =4, column = 7)
-            self.Button_Next_AZ = tk.Button(self.Frame10, text = "Next A-Z",   width = 6, height = 1,bg = "light blue",command=self.nextAZ,repeatdelay=250, repeatinterval=500)
-            self.Button_Next_AZ.grid(row = 5, column = 7, pady = 0)
+            self.Button_Next_Track = tk.Button(self.Frame10, text = "Track >",    bg = "light blue",width = 5, height = 1,font = self.helv02,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Track.grid(row = 4, column = 7)
+            if self.Button_Radi_on == 1:
+                self.Button_Radio = tk.Button(self.Frame10, text = "Radio",    bg = "light blue",width = 5, height = 2,font = self.helv02,command = self.RadioX, wraplength=80, justify=CENTER)
+                self.Button_Radio.grid(row = 9, column = 5, columnspan = 2)
+                        
+            self.Button_Next_AZ = tk.Button(self.Frame10, text = "Next A-Z",   width = 5, height = 2,font = self.helv02,bg = "light blue",command=self.nextAZ,repeatdelay=250, repeatinterval=500)
+            self.Button_Next_AZ.grid(row = 7, column = 7)
             if os.path.exists(self.mp3c_jpg):
                 self.load = Image.open(self.mp3c_jpg)
+                self.load = self.load.resize((150, 150), Image.LANCZOS)
                 self.renderc = ImageTk.PhotoImage(self.load)
                 self.img = tk.Label(self.Frame10, image = self.renderc)
-                self.img.grid(row = 5, column = 0, columnspan = 3, rowspan = 5, pady = 2)
+                self.img.grid(row = 5, column = 0, columnspan = 2, rowspan = 5, pady = 2)
             else:
                 self.img = tk.Label(self.Frame10)
                 self.img.grid(row = 5, column = 0, columnspan = 2, rowspan = 5, pady = 2)
-            self.Button_Reload = tk.Button(self.Frame10, text = " RELOAD " + self.m3u_def ,width = 6, height = 2,font=("Arial",8), bg = "#c5c",command = self.RELOAD_List, wraplength=80, justify=CENTER)
-            self.Button_Reload.grid(row = 7, column = 3,padx = 10, pady = 0)
+            self.Button_Reload = tk.Button(self.Frame10, text = " RELOAD " + self.m3u_def ,width = 5, height = 2,font = self.helv03, bg = "#c5c",command = self.RELOAD_List, wraplength=80, justify=CENTER)
+            self.Button_Reload.grid(row = 7, column = 2,padx = 10)
             if self.Shutdown_exit == 1:
-                self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdown",   bg = "gray",width = 5, height = 2,command = self.Shutdown)
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdown",   bg = "gray",width = 5, height = 2,font = self.helv02,command = self.Shutdown, wraplength=80, justify=CENTER)
             else:
-                self.Button_Shutdown = tk.Button(self.Frame10, text = "EXIT",   bg = "gray",width = 5, height = 2,command = self.Shutdown)
-            self.Button_Shutdown.grid(row = 9, column = 7)
-            self.Button_Add_to_FAV = tk.Button(self.Frame10, text = "Add track to FAV .m3u  " ,width = 6, height = 2, bg = "light green",font=("Arial",9),command = self.FAV_List, wraplength=70, justify=CENTER)
-            self.Button_Add_to_FAV.grid(row = 7, column = 4)
-            self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", bg = "light blue",width = 5, height = 2,command = self.Shuffle_Tracks, wraplength=80, justify=CENTER)
-            self.Button_Shuffle.grid(row = 7, column = 6)
-            self.Button_AZ_artists = tk.Button(self.Frame10, text = "A-Z Sort",bg = "light blue", fg = "black",width = 6, height = 2,font=("Arial",8),command = self.AZ_Tracks, wraplength=65, justify=CENTER)
-            self.Button_AZ_artists.grid(row = 7, column = 7)
-            self.Button_Sleep = tk.Button(self.Frame10, text = "SLEEP", bg = "light blue",width = 5, height = 2,command = self.sleep,repeatdelay=1000, repeatinterval=500)
-            self.Button_Sleep.grid(row = 9, column = 3, padx = 0)
-            self.Button_Track_m3u = tk.Button(self.Frame10, text = "ADD track   to .m3u", bg = "light green",width = 6,font=("Arial",8), height = 2,command = self.Track_m3u, wraplength=65, justify=CENTER)
-            self.Button_Track_m3u.grid(row = 8, column = 3)
-            self.Button_Artist_m3u = tk.Button(self.Frame10, text = "ADD artist   to .m3u", bg = "light green",width = 6, height = 2,font=("Arial",8),command = self.Artist_m3u, wraplength=65, justify=CENTER)
-            self.Button_Artist_m3u.grid(row = 8, column = 6)
-            self.Button_Album_m3u = tk.Button(self.Frame10, text = "ADD album  to .m3u", bg = "light green",width = 6, height = 2,font=("Arial",8),command = self.Album_m3u, wraplength=65, justify=CENTER)
-            self.Button_Album_m3u.grid(row = 8, column = 5)
-            self.Button_PList_m3u = tk.Button(self.Frame10, text = "ADD P-list   to .m3u", bg = "light green",width = 6, height = 2,font=("Arial",8),command = self.PList_m3u, wraplength=63, justify=CENTER)
-            self.Button_PList_m3u.grid(row = 8, column = 7)
-            self.Button_DELETE_m3u = tk.Button(self.Frame10, text = "DEL .m3u", bg = "light grey",width = 5, height = 1,command = self.DelPL_m3u)
-            self.Button_DELETE_m3u.grid(row = 9, column = 5, padx = 0)
-            if self.Button_Radi_on == 1:
-                self.Button_Radio = tk.Button(self.Frame10, text = "Radio",    bg = "light blue",width = 5, height = 2,command = self.RadioX, wraplength=60, justify=CENTER)
-                self.Button_Radio.grid(row = 9, column = 6)
-            self.Button_repeat = tk.Button(self.Frame10, text = "Repeat", bg = "light blue",fg = "black",width = 5, height = 2,command = self.Repeat, wraplength=80, justify=CENTER)
-            self.Button_repeat.grid(row = 7, column = 5)
-            self.Disp_sleep = tk.Button(self.Frame10, text = "OFF", bg = "light blue",fg = "black",width = 2, height = 2,command = self.sleep_off)
-            self.Disp_sleep.grid(row = 9, column = 4, sticky = W)
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "EXIT",   bg = "gray",width = 5, height = 2,font = self.helv02,command = self.Shutdown, wraplength=80, justify=CENTER)
+            self.Button_Shutdown.grid(row = 9, column = 7, padx = 8)
+            if self.shuffle_on == 0:
+                self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", bg = "light blue",width = 5, height = 2,font = self.helv02,command = self.Shuffle_Tracks, wraplength=80, justify=CENTER)
+            else:
+                self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", bg = "green",width = 5, height = 2,font = self.helv02,command = self.Shuffle_Tracks, wraplength=80, justify=CENTER)
+            self.Button_Shuffle.grid(row = 7, column = 5, columnspan = 2)
+            self.Button_AZ_artists = tk.Button(self.Frame10, text = "A-Z Sort",bg = "light blue", fg = "black",width = 5, height = 2,font = self.helv02,command = self.AZ_Tracks, wraplength=80, justify=CENTER)
+            self.Button_AZ_artists.grid(row = 7, column = 3)
+            self.Button_Sleep = tk.Button(self.Frame10, text = "SLEEP", bg = "light blue",width = 5, height = 2,font = self.helv02,command = self.sleep,repeatdelay=1000, repeatinterval=500)
+            self.Button_Sleep.grid(row = 0, column = 4, padx = 0)
+            if self.touchscreen == 1:
+                self.Button_Track_m3u = tk.Button(self.Frame10, text = "ADD track to .m3u", bg = "light green",width = 6, height = 2,font = self.helv03,command = self.Track_m3u, wraplength=60, justify=CENTER)
+                self.Button_Track_m3u.grid(row = 8, column = 2)
+                self.Button_Artist_m3u = tk.Button(self.Frame10, text = "ADD artist to .m3u", bg = "light green",width = 6, height = 2,font = self.helv03,command = self.Artist_m3u, wraplength=60, justify=CENTER)
+                self.Button_Artist_m3u.grid(row = 8, column = 5, columnspan = 2)
+                self.Button_Album_m3u = tk.Button(self.Frame10, text = "ADD album to .m3u", bg = "light green",width = 6, height = 2,font = self.helv03,command = self.Album_m3u, wraplength=60, justify=CENTER)
+                self.Button_Album_m3u.grid(row = 8, column = 4)
+                self.Button_PList_m3u = tk.Button(self.Frame10, text = "ADD P-list to .m3u", bg = "light green",width = 6, height = 2,font = self.helv03,command = self.PList_m3u, wraplength=60, justify=CENTER)
+                self.Button_PList_m3u.grid(row = 8, column = 7)
+                self.Button_DELETE_m3u = tk.Button(self.Frame10, text = "DEL .m3u",width = 5, height = 1,font = self.helv03,command = self.DelPL_m3u)
+                self.Button_DELETE_m3u.grid(row = 9, column = 3)
+                self.Button_Search_to_m3u = tk.Button(self.Frame10, text = "Search to .m3u",    bg = "light green",width = 6, height = 2,font = self.helv03, wraplength=60,command = self.Search)
+                self.Button_Search_to_m3u.grid(row = 9, column = 4, padx = 8)
+                self.Button_Add_to_FAV = tk.Button(self.Frame10, text = "Add track to FAV .m3u  " ,width = 6, height = 2,font = self.helv03, bg = "light green",command = self.FAV_List, wraplength=60, justify=CENTER)
+                self.Button_Add_to_FAV.grid(row = 9, column = 2)
+            self.Button_repeat = tk.Button(self.Frame10, text = "Repeat", bg = "light blue",fg = "black",width = 5, height = 2,font = self.helv02,command = self.Repeat, wraplength=80, justify=CENTER)
+            self.Button_repeat.grid(row = 7, column = 4)
             if self.BT == 1:
                 self.Button_Pause.config(fg = "light gray",bg = "light gray")
                 self.Button_Gapless.config(fg = "light gray",bg = "light gray")
     
-            self.L2 = tk.Label(self.Frame10, text="of")
-            self.L2.grid(row = 5, column = 4, sticky = W, padx = 16)
-            self.L4 = tk.Label(self.Frame10,text="of")
-            self.L4.grid(row = 6, column = 4, sticky = W, padx = 16)
-            self.L8 = tk.Label(self.Frame10, text=".m3u")
-            self.L8.grid(row = 8, column = 4, sticky = S)
-            self.L9 = tk.Label(self.Frame10, text=" ")
-            self.L9.grid(row = 6, column = 5, sticky = E)
-            self.L6 = tk.Label(self.Frame10, text="Playlist :")
-            self.L6.grid(row = 5, column = 5, sticky = W)
-            self.Disp_plist_name = tk.Label(self.Frame10, height=hei, width=44,bg='white',   anchor="w", borderwidth=2, relief="groove")
+            self.L1 = tk.Label(self.Frame10, text="Track:",font = self.helv03)
+            self.L1.grid(row = 5, column = 2, sticky = W)
+            self.L2 = tk.Label(self.Frame10, text="of",font = self.helv03)
+            self.L2.grid(row = 5, column = 3, sticky = W, padx = 16)
+            self.L3 = tk.Label(self.Frame10, text="Played:",font = self.helv03)
+            self.L3.grid(row = 6, column = 2, sticky = W)
+            self.L4 = tk.Label(self.Frame10,text="of",font = self.helv03)
+            self.L4.grid(row = 6, column = 3, sticky = W, padx = 16)
+            self.L5 = tk.Label(self.Frame10, text="Drive :",font = self.helv03)
+            self.L5.grid(row = 5, column = 4, sticky = W,padx = 12)
+            self.L6 = tk.Label(self.Frame10, text="Playlist :",font = self.helv03)
+            self.L6.grid(row = 6, column = 4, sticky = W,padx = 12)
+            if self.touchscreen == 1:
+                self.L8 = tk.Label(self.Frame10, text=".m3u",font = self.helv03)
+                self.L8.grid(row = 8, column = 3, sticky = S)
+            self.L9 = tk.Label(self.Frame10, text=" ",font = self.helv03)
+            self.L9.grid(row = 6, column = 6, sticky = E)
+        
+            self.Disp_plist_name = tk.Label(self.Frame10, height=1, width=40,bg='white',   anchor="w", borderwidth=2, relief="groove")
             self.Disp_plist_name.grid(row = 1, column = 1, columnspan = 6)
             self.Disp_plist_name.config(text=" " + self.que_dir[len(self.m3u_dir):])
-            self.Disp_artist_name = tk.Label(self.Frame10, height=hei, width=wid,bg='white', font = 40, padx = 10, pady = 0, anchor="w", borderwidth=2, relief="groove")
+            self.Disp_artist_name = tk.Label(self.Frame10, height=1, width=50,bg='white',font = self.helv01, padx = 10, pady = 10, anchor="w", borderwidth=2, relief="groove")
             self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 6)
-            self.Disp_album_name = tk.Label(self.Frame10, height=hei, width=wid,bg='white',font = 40, padx = 10, pady = 0, anchor="w", borderwidth=2, relief="groove")
+            self.Disp_album_name = tk.Label(self.Frame10, height=1, width=50,bg='white',font = self.helv01, padx = 10, pady = 10, anchor="w", borderwidth=2, relief="groove")
             self.Disp_album_name.grid(row = 3, column = 1, columnspan = 6)
-            self.Disp_track_name = tk.Label(self.Frame10, height=hei, width=wid,bg='white',font = 40, padx = 10, pady = 0, anchor="w", borderwidth=2, relief="groove")
+            self.Disp_track_name = tk.Label(self.Frame10, height=1, width=50,bg='white',font = self.helv01, padx = 10, pady = 10, anchor="w", borderwidth=2, relief="groove")
             self.Disp_track_name.grid(row = 4, column = 1, columnspan = 6)
-            self.Disp_track_no = tk.Label(self.Frame10, height=1, width=5)
-            self.Disp_track_no.grid(row = 5, column = 3, sticky = E)
-            self.Disp_Total_tunes = tk.Label(self.Frame10, height=1, width=5)
-            self.Disp_Total_tunes.grid(row = 5, column = 4, sticky = E)
-            self.Disp_played = tk.Label(self.Frame10, height=1, width=5)
-            self.Disp_played.grid(row = 6, column = 3, sticky = E)
-            self.Disp_track_len = tk.Label(self.Frame10, height=1, width=5)
-            self.Disp_track_len.grid(row = 6, column = 4, sticky = E)
-            self.Disp_Name_m3u = tk.Text(self.Frame10,height = 1, width=13,font=("Arial",9))
-            self.Disp_Name_m3u.grid(row = 8, column = 4,sticky = N,pady = 10)
-            self.Disp_Total_Plist = tk.Label(self.Frame10, height=1, width=7)
-            self.Disp_Total_Plist.grid(row = 5, column = 5, columnspan = 2, sticky = E)
-           
+            self.Disp_track_no = tk.Label(self.Frame10, height=1, width = 5,font = self.helv03)
+            self.Disp_track_no.grid(row = 5, column = 2, sticky = E)
+            self.Disp_Total_tunes = tk.Label(self.Frame10, height=1, width = 5,font = self.helv03) 
+            self.Disp_Total_tunes.grid(row = 5, column = 3, sticky = E)
+            self.Disp_played = tk.Label(self.Frame10, height = 1, width = 5,font = self.helv03)
+            self.Disp_played.grid(row = 6, column = 2, sticky = E)
+            self.Disp_track_len = tk.Label(self.Frame10, height=1, width = 5,font = self.helv03)
+            self.Disp_track_len.grid(row = 6, column = 3, sticky = E)
+            self.Disp_Drive = tk.Label(self.Frame10, height=1, width=17,font = self.helv03)
+            self.Disp_Drive.grid(row = 5, column = 4, columnspan = 3, sticky = E)
+            self.Disp_Name_m3u = tk.Text(self.Frame10,height = 1, width=13,font = self.helv03)
+            self.Disp_Name_m3u.grid(row = 8, column = 3, sticky = N, pady = 5)
+            self.Disp_Total_Plist = tk.Label(self.Frame10, height=1, width=7,font = self.helv03)
+            self.Disp_Total_Plist.grid(row = 6, column = 4, columnspan = 2, sticky = E, padx = 50)
+            
         if self.cutdown == 3: # 480 x 800
             self.length = 35
-            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", bg = "green",fg = "white",width = 7, height = 2, command = self.Play, wraplength=50, justify=CENTER)
+            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", bg = "green",fg = "black",width = 7, height = 2, command = self.Play, wraplength=50, justify=CENTER)
             self.Button_Start.grid(row = 0, column = 0)
             if self.Button_Radi_on == 1:
                 self.Button_Radio = tk.Button(self.Frame10, text = "Radio",    bg = "light blue",width = 7, height = 2,command = self.RadioX, wraplength=80, justify=CENTER)
                 self.Button_Radio.grid(row = 15, column = 3)
-            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", bg = "blue",fg = "white", width = 7, height = 2,command=self.Play_Album, wraplength=50, justify=CENTER)
+            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", bg = "blue",fg = "black", width = 7, height = 2,command=self.Play_Album, wraplength=50, justify=CENTER)
             self.Button_TAlbum.grid(row = 0, column = 2,pady = 0)
             self.Button_Pause = tk.Button(self.Frame10, text = "Pause",bg = "light blue",fg = "blue", width = 7, height = 2,command=self.Pause, wraplength=80, justify=CENTER)
             self.Button_Pause.grid(row = 6, column = 2)
-            self.Button_Gapless = tk.Button(self.Frame10, text = "Gapless", fg = "white", width = 7, height = 2,command=self.Gapless, wraplength=80, justify=CENTER)
+            self.Button_Gapless = tk.Button(self.Frame10, text = "Gapped", fg = "black", width = 7, height = 2,command=self.Gapless, wraplength=80, justify=CENTER)
             self.Button_Gapless.grid(row = 15, column = 2)
-            self.Button_Vol_DN =  tk.Button(self.Frame10, text = " < Vol " + "...", wraplength=40,    bg = "yellow",width = 7, height = 2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
+            self.Button_Vol_DN =  tk.Button(self.Frame10, text = " < Vol " + "...", wraplength=40,    bg = "light green",width = 7, height = 2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_DN.grid(row = 0, column = 3)
-            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol > " + str(self.volume), wraplength=55,bg = "yellow",width = 7, height = 2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
+            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol > " + str(self.volume), wraplength=55,bg = "light green",width = 7, height = 2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_UP.grid(row = 0, column = 4)
             self.Button_Prev_PList =  tk.Button(self.Frame10, text = "<P-list",   bg = "light blue",width = 5, height = 2,command = self.Prev_m3u,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_PList.grid(row = 1, column = 0)
@@ -778,9 +825,6 @@ class MP3Player(Frame):
             else:
                 self.img = tk.Label(self.Frame10)
                 self.img.grid(row = 5, column = 0, columnspan = 2, rowspan = 5, pady = 2)
-            if self.Button_info_on == 1:
-                self.Button_Info = tk.Button(self.Frame10, text = "Info",    bg = "light blue",width = 7, height = 2, command=self.PopupInfo)
-                self.Button_Info.grid(row =15 , column = 1)
             self.Button_AZ_artists = tk.Button(self.Frame10, text = "A-Z Sort",bg = "light blue", fg = "black",width = 5, height = 2,command = self.AZ_Tracks, wraplength=80, justify=CENTER)
             self.Button_AZ_artists.grid(row = 6, column = 4)
             self.Button_Sleep = tk.Button(self.Frame10, text = "SLEEP", bg = "light blue",width = 5, height = 2,command = self.sleep,repeatdelay=1000, repeatinterval=500)
@@ -808,8 +852,9 @@ class MP3Player(Frame):
             self.L5.grid(row = 8, column = 2, sticky = E)
             self.L6 = tk.Label(self.Frame10, text="Playlist :")
             self.L6.grid(row = 7, column = 3, sticky = E)
-            self.L8 = tk.Label(self.Frame10, text=".m3u")
-            self.L8.grid(row = 14, column = 2, sticky = W)
+            if self.touchscreen == 1:
+                self.L8 = tk.Label(self.Frame10, text=".m3u")
+                self.L8.grid(row = 14, column = 2, sticky = W)
         
             self.Disp_plist_name = tk.Label(self.Frame10, height=2, width=32,bg='white',   anchor="w", borderwidth=2, relief="groove")
             self.Disp_plist_name.grid(row = 1, column = 1, columnspan = 3)
@@ -837,15 +882,15 @@ class MP3Player(Frame):
 
         if self.cutdown == 4: # 480 x 320
             self.length = 36
-            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", bg = "green",fg = "white",width = 6, height = 3, command = self.Play, wraplength=50, justify=CENTER)
+            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", bg = "green",fg = "black",width = 6, height = 3, command = self.Play, wraplength=50, justify=CENTER)
             self.Button_Start.grid(row = 0, column = 0)
-            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", bg = "blue",fg = "white", width = 6, height = 3,command=self.Play_Album, wraplength=50, justify=CENTER)
+            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", bg = "blue",fg = "black", width = 6, height = 3,command=self.Play_Album, wraplength=50, justify=CENTER)
             self.Button_TAlbum.grid(row = 0, column = 1,pady = 0)
-            self.Button_Gapless = tk.Button(self.Frame10, text = "Gapless", fg = "black",bg = "light blue", width = 6, height = 3,command=self.Gapless, wraplength=80, justify=CENTER)
+            self.Button_Gapless = tk.Button(self.Frame10, text = "Gapped", fg = "black",bg = "light blue", width = 6, height = 3,command=self.Gapless, wraplength=80, justify=CENTER)
             self.Button_Gapless.grid(row = 0, column = 2)
-            self.Button_Vol_DN =  tk.Button(self.Frame10, text = " < Vol " + "...", wraplength=40,    bg = "yellow",width = 6, height = 3,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
+            self.Button_Vol_DN =  tk.Button(self.Frame10, text = " < Vol " + "...", wraplength=40,    bg = "light green",width = 6, height = 3,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_DN.grid(row = 0, column = 3)
-            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol > " + str(self.volume), wraplength=55,bg = "yellow",width = 6, height = 3,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
+            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol > " + str(self.volume), wraplength=55,bg = "light green",width = 6, height = 3,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_UP.grid(row = 0, column = 4)
             self.Button_Prev_PList =  tk.Button(self.Frame10, text = "<P-list",   bg = "light blue",width = 6, height = 1,command = self.Prev_m3u,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_PList.grid(row = 1, column = 0)
@@ -922,15 +967,15 @@ class MP3Player(Frame):
             self.length = 25
             self.helv01 = tkFont.Font(family='Helvetica', size=25, weight='bold')
             self.helv02 = tkFont.Font(family='Helvetica', size=13, weight='bold')
-            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", font = self.helv01,bg = "green",fg = "white",width = 7, height = 2, command = self.Play, wraplength=120, justify=CENTER)
+            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", font = self.helv01,bg = "green",fg = "black",width = 7, height = 2, command = self.Play, wraplength=120, justify=CENTER)
             self.Button_Start.grid(row = 0, column = 0)
-            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", font = self.helv01, bg = "blue",fg = "white", width = 7, height = 2,command=self.Play_Album, wraplength=120, justify=CENTER)
+            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", font = self.helv01, bg = "blue",fg = "black", width = 7, height = 2,command=self.Play_Album, wraplength=120, justify=CENTER)
             self.Button_TAlbum.grid(row = 0, column = 1,pady = 0)
             self.Button_Sleep = tk.Button(self.Frame10, text = "SLEEP", font = self.helv01, bg = "light blue",width = 7, height = 2,command = self.sleep,repeatdelay=1000, repeatinterval=500)
             self.Button_Sleep.grid(row = 6, column = 1)
-            self.Button_Vol_DN =  tk.Button(self.Frame10, text = " < Vol ", wraplength=100,    bg = "yellow", font = self.helv01,width = 6, height = 2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
+            self.Button_Vol_DN =  tk.Button(self.Frame10, text = " < Vol ", wraplength=100,    bg = "light green", font = self.helv01,width = 6, height = 2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_DN.grid(row = 0, column = 3)
-            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol > " + str(self.volume), wraplength=120,bg = "yellow", font = self.helv01,width = 7, height = 2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
+            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol > " + str(self.volume), wraplength=120,bg = "light green", font = self.helv01,width = 7, height = 2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_UP.grid(row = 0, column = 4)
             self.Button_Prev_Artist =  tk.Button(self.Frame10, text = "<Artist", font = self.helv01,   bg = "light blue",width = 7, height = 2,command = self.Prev_Artist,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Artist.grid(row = 2, column = 0)
@@ -986,15 +1031,15 @@ class MP3Player(Frame):
 
         if self.cutdown == 6: # Pi 7" Display 800 x 480 (Album Layout)
             self.length = 60
-            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", font = 50,bg = "green",fg = "white",width = 12, height = 2, command = self.Play, wraplength=60, justify=CENTER)
+            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", font = 50,bg = "green",fg = "black",width = 12, height = 2, command = self.Play, wraplength=60, justify=CENTER)
             self.Button_Start.grid(row = 0, column = 0)
-            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", font = 50, bg = "blue",fg = "white", width = 12, height = 2,command=self.Play_Album, wraplength=60, justify=CENTER)
+            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", font = 50, bg = "blue",fg = "black", width = 12, height = 2,command=self.Play_Album, wraplength=60, justify=CENTER)
             self.Button_TAlbum.grid(row = 0, column = 1,pady = 0)
             self.Button_Sleep = tk.Button(self.Frame10, text = "SLEEP", font = 50, bg = "light blue",width = 12, height = 2,command = self.sleep,repeatdelay=1000, repeatinterval=500)
             self.Button_Sleep.grid(row = 19, column = 1)
-            self.Button_Vol_DN =  tk.Button(self.Frame10, text = " < Vol ", wraplength=50,    bg = "yellow", font = 50,width = 12, height = 2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
+            self.Button_Vol_DN =  tk.Button(self.Frame10, text = " < Vol ", wraplength=50,    bg = "light green", font = 50,width = 12, height = 2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_DN.grid(row = 0, column = 3)
-            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol > " + str(self.volume), wraplength=60,bg = "yellow", font = 50,width = 12, height = 2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
+            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol > " + str(self.volume), wraplength=60,bg = "light green", font = 50,width = 12, height = 2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_UP.grid(row = 0, column = 4)
             self.Button_Prev_Artist =  tk.Button(self.Frame10, text = "<Artist", font = 50,   bg = "light blue",width = 12, height = 1,command = self.Prev_Artist,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Artist.grid(row = 2, column = 0)
@@ -1079,7 +1124,7 @@ class MP3Player(Frame):
 
 
         if self.cutdown == 7: # Pi 7" Display 800 x 480 with scrollbars
-            self.length = 62
+            self.length = 40
             if scr_width == 800 and scr_height == 600:
                 hei = 3
                 hei2 = 3
@@ -1092,37 +1137,37 @@ class MP3Player(Frame):
             self.Disp_artist_name = ttk.Combobox(self.Frame10, textvariable=Artist_variable, values=self.Artist_options)
             self.Disp_artist_name.grid(row = 2, column = 1,columnspan = 6)
             self.Disp_artist_name.bind("<<ComboboxSelected>>",self.artist_callback2)
-            self.Disp_artist_name.configure(width=50, font="Verdana 12")
+            self.Disp_artist_name.configure(width=40, font="Verdana 16")
             Album_variable = ""
             self.Album_options = [""]
             self.Album_variable = StringVar(self.Frame10)
             self.Disp_album_name = ttk.Combobox(self.Frame10, textvariable=Album_variable, values=self.Album_options)
             self.Disp_album_name.grid(row = 3, column = 1, columnspan = 6)
             self.Disp_album_name.bind("<<ComboboxSelected>>",self.album_callback2)
-            self.Disp_album_name.configure(width=50, font="Verdana 12")
+            self.Disp_album_name.configure(width=40, font="Verdana 16")
             Track_variable = ""
             self.Track_options = [""]
             self.Track_variable = StringVar(self.Frame10)
             self.Disp_track_name = ttk.Combobox(self.Frame10, textvariable=Track_variable, values=self.Track_options)
             self.Disp_track_name.grid(row = 4, column = 1,columnspan = 6)
             self.Disp_track_name.bind("<<ComboboxSelected>>",self.callback2)
-            self.Disp_track_name.configure(width=50, font="Verdana 12")
-            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", bg = "green",fg = "white",width = 7, height = hei2,font = 18, command = self.Play, wraplength=80, justify=CENTER)
+            self.Disp_track_name.configure(width=40, font="Verdana 16")
+            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", bg = "green",fg = "black",width = 7, height = hei2,font = 18, command = self.Play, wraplength=80, justify=CENTER)
             self.Button_Start.grid(row = 0, column = 0, padx = 10,pady = 10)
             self.Button_Pause = tk.Button(self.Frame10, text = "Pause",bg = "light blue", width = 7, height = hei2,command=self.Pause, wraplength=80, justify=CENTER)
             self.Button_Pause.grid(row = 0, column = 2, padx = 0,pady = 10)
-            self.Button_Gapless = tk.Button(self.Frame10, text = "Gapless", fg = "black",bg = "light blue", width = 7, height = hei2,command=self.Gapless, wraplength=80, justify=CENTER)
+            self.Button_Gapless = tk.Button(self.Frame10, text = "Gapped", fg = "black",bg = "light blue", width = 7, height = hei2,command=self.Gapless, wraplength=80, justify=CENTER)
             self.Button_Gapless.grid(row = 0, column = 3,pady = 10)
-            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", bg = "blue",fg = "white", width = 7, height = hei2,font = 18,command=self.Play_Album, wraplength=80, justify=CENTER)
+            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", bg = "blue",fg = "black", width = 7, height = hei2,font = 18,command=self.Play_Album, wraplength=80, justify=CENTER)
             self.Button_TAlbum.grid(row = 0, column = 1,pady = 10)
-            Button_Volume_Dn =  tk.Button(self.Frame10, text = " < Vol ",    bg = "yellow",width = 7, height = hei2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
+            Button_Volume_Dn =  tk.Button(self.Frame10, text = " < Vol ",    bg = "light green",width = 7, height = hei2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
             Button_Volume_Dn.grid(row = 0, column = 5)
             if self.m == 0:
                 self.Button_volume = tk.Button(self.Frame10, text = self.volume, fg = "black",width = 4, height = hei2,command = self.Mute)
             else:
                 self.Button_volume = tk.Button(self.Frame10, text = self.volume, fg = "green",width = 4, height = hei2,command = self.Mute)
             self.Button_volume.grid(row = 0, column = 6)
-            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol >",      bg = "yellow",width = 7, height = hei2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
+            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol >",      bg = "light green",width = 7, height = hei2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_UP.grid(row = 0, column = 7)
             self.Button_Prev_PList =  tk.Button(self.Frame10, text = "< P-list",   bg = "light blue",width = 7, height = hei,command = self.Prev_m3u,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_PList.grid(row = 1, column = 0)
@@ -1136,23 +1181,16 @@ class MP3Player(Frame):
             self.Button_Prev_Album.grid(row = 3, column = 0)
             self.Button_Next_Album =  tk.Button(self.Frame10, text = "Album >",     bg = "light blue",width = 7, height = hei2,command = self.Next_Album,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_Album.grid(row = 3, column = 7)
-            if self.Button_info_on == 1:
-                self.Button_Prev_Track =  tk.Button(self.Frame10, text = "< Track",    bg = "light blue",width = 7, height = hei,command = self.Prev_Track,repeatdelay=1000, repeatinterval=500)
-                self.Button_Prev_Track.grid(row = 4, column = 0)
-                self.Button_Next_Track = tk.Button(self.Frame10, text = "Track >",    bg = "light blue",width = 7, height = hei,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
-                self.Button_Next_Track.grid(row = 4, column = 7)
-                self.Button_Info = tk.Button(self.Frame10, text = "Info",    bg = "light blue",width = 7, height = 1, command=self.PopupInfo)
-                self.Button_Info.grid(row =5 , column = 7)
-            else:
-                self.Button_Prev_Track =  tk.Button(self.Frame10, text = "< Track",    bg = "light blue",width = 7, height = 2,command = self.Prev_Track,repeatdelay=1000, repeatinterval=500)
-                self.Button_Prev_Track.grid(row = 4, column = 0)
-                self.Button_Next_Track = tk.Button(self.Frame10, text = "Track >",    bg = "light blue",width = 7, height = 2,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
-                self.Button_Next_Track.grid(row = 4, column = 7)
+            self.Button_Prev_Track =  tk.Button(self.Frame10, text = "< Track",    bg = "light blue",width = 7, height = 2,command = self.Prev_Track,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_Track.grid(row = 4, column = 0)
+            self.Button_Next_Track = tk.Button(self.Frame10, text = "Track >",    bg = "light blue",width = 7, height = 2,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Track.grid(row = 4, column = 7)
             if self.Button_Radi_on == 1:
                 self.Button_Radio = tk.Button(self.Frame10, text = "Radio",    bg = "light blue",width = 7, height = 2,command = self.RadioX, wraplength=80, justify=CENTER)
                 self.Button_Radio.grid(row = 9, column = 5, columnspan = 2)
-            self.Button_Search_to_m3u = tk.Button(self.Frame10, text = "Search to .m3u",    bg = "light green",width = 7, height = 2, wraplength=80,command = self.Search)
-            self.Button_Search_to_m3u.grid(row = 9, column = 4, padx = 8)
+            if self.touchscreen == 1:
+                self.Button_Search_to_m3u = tk.Button(self.Frame10, text = "Search to .m3u",    bg = "light green",width = 7, height = 2, wraplength=80,command = self.Search)
+                self.Button_Search_to_m3u.grid(row = 9, column = 4, padx = 8)
             
             self.Button_Next_AZ = tk.Button(self.Frame10, text = "Next A-Z",   width = 7, height = 2,bg = "light blue",command=self.nextAZ,repeatdelay=250, repeatinterval=500)
             self.Button_Next_AZ.grid(row = 7, column = 7)
@@ -1171,8 +1209,6 @@ class MP3Player(Frame):
             else:
                 self.Button_Shutdown = tk.Button(self.Frame10, text = "EXIT",   bg = "gray",width = 7, height = 2,command = self.Shutdown, wraplength=80, justify=CENTER)
             self.Button_Shutdown.grid(row = 9, column = 7, padx = 8)
-            self.Button_Add_to_FAV = tk.Button(self.Frame10, text = "Add track to FAV .m3u  " ,width = 7, height = 2, bg = "light green",command = self.FAV_List, wraplength=80, justify=CENTER)
-            self.Button_Add_to_FAV.grid(row = 9, column = 2)
             if self.shuffle_on == 0:
                 self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", bg = "light blue",width = 7, height = 2,command = self.Shuffle_Tracks, wraplength=80, justify=CENTER)
             else:
@@ -1182,16 +1218,19 @@ class MP3Player(Frame):
             self.Button_AZ_artists.grid(row = 7, column = 3)
             self.Button_Sleep = tk.Button(self.Frame10, text = "SLEEP", bg = "light blue",width = 7, height = hei2,command = self.sleep,repeatdelay=1000, repeatinterval=500)
             self.Button_Sleep.grid(row = 0, column = 4, padx = 0)
-            self.Button_Track_m3u = tk.Button(self.Frame10, text = "ADD track   to .m3u", bg = "light green",width = 7, height = 2,command = self.Track_m3u, wraplength=80, justify=CENTER)
-            self.Button_Track_m3u.grid(row = 8, column = 2)
-            self.Button_Artist_m3u = tk.Button(self.Frame10, text = "ADD artist   to .m3u", bg = "light green",width = 7, height = 2,command = self.Artist_m3u, wraplength=80, justify=CENTER)
-            self.Button_Artist_m3u.grid(row = 8, column = 5, columnspan = 2)
-            self.Button_Album_m3u = tk.Button(self.Frame10, text = "ADD album   to .m3u", bg = "light green",width = 7, height = 2,command = self.Album_m3u, wraplength=80, justify=CENTER)
-            self.Button_Album_m3u.grid(row = 8, column = 4)
-            self.Button_PList_m3u = tk.Button(self.Frame10, text = "ADD P-list   to .m3u", bg = "light green",width = 7, height = 2,command = self.PList_m3u, wraplength=80, justify=CENTER)
-            self.Button_PList_m3u.grid(row = 8, column = 7)
-            self.Button_DELETE_m3u = tk.Button(self.Frame10, text = "DEL .m3u",width = 6, height = 1,command = self.DelPL_m3u)
-            self.Button_DELETE_m3u.grid(row = 9, column = 3)
+            if self.touchscreen == 1:
+                self.Button_Add_to_FAV = tk.Button(self.Frame10, text = "Add track to FAV .m3u  " ,width = 7, height = 2, bg = "light green",command = self.FAV_List, wraplength=80, justify=CENTER)
+                self.Button_Add_to_FAV.grid(row = 9, column = 2)
+                self.Button_Track_m3u = tk.Button(self.Frame10, text = "ADD track   to .m3u", bg = "light green",width = 7, height = 2,command = self.Track_m3u, wraplength=80, justify=CENTER)
+                self.Button_Track_m3u.grid(row = 8, column = 2)
+                self.Button_Artist_m3u = tk.Button(self.Frame10, text = "ADD artist   to .m3u", bg = "light green",width = 7, height = 2,command = self.Artist_m3u, wraplength=80, justify=CENTER)
+                self.Button_Artist_m3u.grid(row = 8, column = 5, columnspan = 2)
+                self.Button_Album_m3u = tk.Button(self.Frame10, text = "ADD album   to .m3u", bg = "light green",width = 7, height = 2,command = self.Album_m3u, wraplength=80, justify=CENTER)
+                self.Button_Album_m3u.grid(row = 8, column = 4)
+                self.Button_PList_m3u = tk.Button(self.Frame10, text = "ADD P-list   to .m3u", bg = "light green",width = 7, height = 2,command = self.PList_m3u, wraplength=80, justify=CENTER)
+                self.Button_PList_m3u.grid(row = 8, column = 7)
+                self.Button_DELETE_m3u = tk.Button(self.Frame10, text = "DEL .m3u",width = 6, height = 1,command = self.DelPL_m3u)
+                self.Button_DELETE_m3u.grid(row = 9, column = 3)
             self.Button_repeat = tk.Button(self.Frame10, text = "Repeat", bg = "light blue",fg = "black",width = 7, height = 2,command = self.Repeat, wraplength=80, justify=CENTER)
             self.Button_repeat.grid(row = 7, column = 4)
             if self.BT == 1:
@@ -1210,8 +1249,9 @@ class MP3Player(Frame):
             self.L5.grid(row = 5, column = 4, sticky = W,padx = 12)
             self.L6 = tk.Label(self.Frame10, text="Playlist :")
             self.L6.grid(row = 6, column = 4, sticky = W,padx = 12)
-            self.L8 = tk.Label(self.Frame10, text=".m3u")
-            self.L8.grid(row = 8, column = 3, sticky = S)
+            if self.touchscreen == 1:
+                self.L8 = tk.Label(self.Frame10, text=".m3u")
+                self.L8.grid(row = 8, column = 3, sticky = S)
             self.L9 = tk.Label(self.Frame10, text=" ")
             self.L9.grid(row = 6, column = 6, sticky = E)
         
@@ -1257,11 +1297,13 @@ class MP3Player(Frame):
         
         if os.path.exists(self.mp3_jpg) and (self.cutdown != 1 or self.cutdown != 4):
             self.load = Image.open(self.mp3_jpg)
+            if self.cutdown == 2:
+                self.load = self.load.resize((150, 150), Image.LANCZOS)
             self.render = ImageTk.PhotoImage(self.load)
             
+                               
         self.Check_Wheel()
-        if self.gpio_enable > 0:
-            self.check_buttons()
+        self.check_buttons()
         
         # check default .m3u exists, if not then make it
         if not os.path.exists(self.que_dir):
@@ -1304,7 +1346,10 @@ class MP3Player(Frame):
                 self.Disp_artist_name["values"] = self.Artist_options
             if  self.shuffle_on == 1:
                 shuffle(self.tunes)
-                self.Button_Shuffle.config(bg = "green",fg = "white",text = "Shuffle")
+                if self.rotary == 0:
+                    self.Button_Shuffle.config(bg = "green",fg = "black",text = "Shuffle")
+                else:
+                    self.Button_Shuffle.config(bg = "green",fg = "black",text = "Shuffled")
                 
             self.m3us = glob.glob(self.m3u_dir + "*.m3u")
             self.m3us.remove(self.m3u_dir + self.m3u_def + ".m3u")
@@ -1326,11 +1371,19 @@ class MP3Player(Frame):
             self.Time_Left_Play()
 
         if self.rotary == 1:
-            self.rotary_volume()
+            self.read_rotary()
+        if self.rotary == 1 and self.rot_mode == 0:
+            if self.rot_posp == 3:
+                self.Button_Start.config(bg = 'yellow')
+            elif self.rot_posp == 4:
+                self.Button_TAlbum.config(bg = 'yellow')
 
-    def rotary_volume(self):
-        if self.m != 0:
-          if self.old_rotor1 != self.rotor1.value:
+
+    def read_rotary(self):
+        if self.old_rotor1 != self.rotor1.value:
+            self.light_on = time.monotonic()
+            #if self.Pi7_backlight == 1:
+            #    os.system("rpi-backlight -b 100")
             if self.rotor1.value > self.old_rotor1:
                 self.old_rotor1 = self.rotor1.value
                 self.volume +=2
@@ -1352,27 +1405,623 @@ class MP3Player(Frame):
                 f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
             time.sleep(.2)
         if self.old_rotor2 != self.rotor2.value:
+            self.light_on = time.monotonic()
+            if self.Pi7_backlight == 1:
+                os.system("rpi-backlight -b 100")
             if self.rotor2.value > self.old_rotor2:
                 self.old_rotor2 = self.rotor2.value
-                if self.album_start == 0 and self.Radio_ON == 0:
-                    self.Prev_Album()
-                elif self.album_start == 0 and self.Radio_ON == 1 and self.Radio_RON == 0:
+                if self.rot_mode == 0:
+                    self.rot_posp -=1
+                    #print(self.rot_posp)
+                    if self.rot_posp < 0:
+                        self.rot_posp = 15
+                    if self.cutdown > 4 and self.cutdown < 7 and self.rot_posp > 11:
+                        self.rot_posp = 11
+                    if self.cutdown == 1 and self.rot_posp > 12:
+                        self.rot_posp = 12
+                    if self.cutdown == 4 and self.rot_posp > 13:
+                        self.rot_posp = 13
+                    if self.stopstart == 1 and self.album_start == 0 and self.rot_posp == 4:
+                        self.rot_posp = 3
+                    if self.Radio_ON == 1 and self.rot_posp == 0:
+                        self.rot_posp = 10
+                    if self.cutdown == 1 or self.cutdown == 4:
+                        if self.album_start == 1:
+                            if self.rot_posp == 3:
+                                self.rot_posp = 12
+                        if self.Radio_ON == 1:
+                            if self.rot_posp == 4:
+                                self.rot_posp = 1
+                            if self.rot_posp == 10 and self.cutdown == 1:
+                                self.rot_posp = 9
+                            if self.Radio_RON == 1:
+                                if self.rot_posp == 1:
+                                    self.rot_posp = 9
+                    if self.cutdown == 5 or self.cutdown == 6:
+                        if self.Radio_ON == 1:
+                            if self.rot_posp == 5:
+                                self.rot_posp = 2
+                            if self.rot_posp == 1:
+                                self.rot_posp = 10
+                            if self.rot_posp == 9 and self.Radio_Stns[self.Radio + 2] == 0:
+                                self.rot_posp = 8
+                        if self.Radio_RON == 1:
+                            if self.rot_posp == 2:
+                                self.rot_posp = 10
+                        if self.album_start == 1:
+                            if self.rot_posp == 3:
+                                self.rot_posp = 0
+                    if self.cutdown == 7 or self.cutdown == 0 or self.cutdown == 2:
+                        if self.album_start == 1:
+                            if self.rot_posp == 3:
+                                self.rot_posp = 15
+                            elif self.rot_posp == 13:
+                                self.rot_posp = 12
+                        if self.Radio_ON == 1:
+                            if self.rot_posp == 11:
+                                self.rot_posp = 10
+                            if self.rot_posp == 6 and self.Radio_Stns[self.Radio + 2] == 1:
+                                self.rot_posp = 5
+                            elif self.rot_posp == 6:
+                                self.rot_posp = 1
+                            if self.rot_posp == 4 and self.Radio_Stns[self.Radio + 2] == 1:
+                                self.rot_posp = 1
+                        if self.Radio_RON == 1:
+                            if self.rot_posp == 1:
+                                self.rot_posp = 10
+                    self.rot_pos = self.order[self.rot_posp]
+                    if self.album_start == 0:
+                        if self.Radio_RON == 0:
+                            self.Button_Prev_Artist.config(bg = 'light blue')
+                            self.Button_Prev_Album.config(bg = 'light blue')
+                        else:
+                            self.Button_Prev_Artist.config(bg = 'light gray')
+                            self.Button_Prev_Album.config(bg = 'light gray')
+                        if self.stopstart == 0:
+                            self.Button_Reload.config(bg = '#c5c')
+                        else:
+                            self.Button_Reload.config(bg = 'light blue')
+                            if self.gapless == 0:
+                                self.Button_Reload.config(bg = 'light blue')
+                            else:
+                                self.Button_Reload.config(bg = 'light gray')
+                        self.Button_Next_AZ.config(bg = 'light blue')
+                        if (self.cutdown < 5 or self.cutdown > 6):
+                            self.Button_Prev_PList.config(bg = 'light blue')
+                        if (self.cutdown < 5 or self.cutdown > 6) and self.cutdown != 1:
+                            self.Button_Gapless.config(bg = 'light blue')
+                        if (self.cutdown < 4 or self.cutdown > 6) and self.cutdown != 1:
+                            self.Button_repeat.config(bg = 'light blue')
+                            self.Button_AZ_artists.config(bg = 'light blue')
+                    if self.album_start == 1:
+                        self.Button_Prev_Artist.config(bg = 'light gray')
+                        self.Button_Prev_Album.config(bg = 'light gray')
+                        if self.gapless == 0:
+                            self.Button_Reload.config(bg = 'light blue')
+                        else:
+                            self.Button_Reload.config(bg = 'light gray')
+                        self.Button_Next_AZ.config(bg = 'light blue')
+                        if (self.cutdown < 5 or self.cutdown > 6):
+                            self.Button_Prev_PList.config(bg = 'light gray')
+                        if (self.cutdown < 5 or self.cutdown > 6) and self.cutdown != 1:
+                            self.Button_Gapless.config(bg = 'light blue')
+                        if (self.cutdown < 4 or self.cutdown > 6) and self.cutdown != 1:
+                            self.Button_repeat.config(bg = 'light blue')
+                            if self.Radio_ON == 0:
+                                self.Button_AZ_artists.config(bg = 'light gray')
+                    if self.Radio_ON == 1:
+                        self.Button_Prev_Track.config(bg = 'light gray')
+                        self.Button_Prev_Album.config(bg = 'light gray')
+                        self.Button_Reload.config(bg = 'light gray')
+                        if (self.cutdown < 5 or self.cutdown > 6):
+                            self.Button_Prev_PList.config(bg = 'light gray')
+                        if (self.cutdown < 5 or self.cutdown > 6) and self.cutdown != 1:
+                            self.Button_Gapless.config(bg = 'light gray')
+                        if (self.cutdown < 4 or self.cutdown > 6) and self.cutdown != 1:
+                            self.Button_repeat.config(bg = 'light gray')
+                            self.Button_AZ_artists.config(bg = 'light gray')
+                        if self.Radio_Stns[self.Radio + 2] == 1:
+                            self.Button_Pause.config(bg = 'light blue')
+                        else:
+                            self.Button_Pause.config(bg = 'light gray')
+                    if self.Radio_ON == 0:
+                        self.Button_Pause.config(bg = 'light blue')
+                        self.Button_Shuffle.config(bg = 'light blue')
+                        self.Button_Prev_Track.config(bg = 'light blue')
+                        if self.album_start == 0:
+                            self.Button_Start.config(bg = 'green')
+                        if self.stopstart == 1:
+                            self.Button_TAlbum.config(bg = 'light gray')
+                        else:
+                            self.Button_TAlbum.config(bg = 'blue')
+                        if self.album_start == 1:
+                            self.Button_TAlbum.config(bg = 'blue')
+                    self.Button_Shutdown.config(bg = 'grey')
+                    self.Button_Radio.config(bg = 'light blue')
+                    self.Button_Sleep.config(bg = 'light blue')
+                    
+                    if self.rot_pos == 2:
+                        self.Button_Prev_Artist.config(bg = 'yellow')
+                    elif self.rot_pos == 1:
+                        self.Button_Prev_Album.config(bg = 'yellow')
+                    elif self.rot_pos == 0:
+                        self.Button_Prev_Track.config(bg = 'yellow')
+                    elif self.rot_pos == 3:
+                        self.Button_Start.config(bg = 'yellow')
+                    elif self.rot_pos == 4:
+                        self.Button_TAlbum.config(bg = 'yellow')
+                    elif self.rot_pos == 5:
+                        self.Button_Shuffle.config(bg = 'yellow')
+                    elif self.rot_pos == 6:
+                        self.Button_Next_AZ.config(bg = 'yellow')
+                    elif self.rot_pos == 7:
+                        self.Button_Shutdown.config(bg = 'yellow')
+                    elif self.rot_pos == 8:
+                        self.Button_Radio.config(bg = 'yellow')
+                    elif self.rot_pos == 9:
+                        self.Button_Pause.config(bg = 'yellow')
+                    elif self.rot_pos == 10:
+                        self.Button_Sleep.config(bg = 'yellow')
+                    elif self.rot_pos == 11:
+                        self.Button_Reload.config(bg = 'yellow')
+                    elif self.rot_pos == 12:
+                        self.Button_Prev_PList.config(bg = 'yellow')
+                    elif self.rot_pos == 13:
+                        self.Button_Gapless.config(bg = 'yellow')
+                    elif self.rot_pos == 14:
+                        self.Button_repeat.config(bg = 'yellow')
+                    elif self.rot_pos == 15:
+                        self.Button_AZ_artists.config(bg = 'yellow')
+                if self.rot_mode == 1 and self.rot_pos == 2:
                     self.Prev_Artist()
-                elif self.album_start == 0 and self.Radio_ON == 1 and self.Radio_RON == 1:
-                    self.R_record()
-                else:
+                elif self.rot_mode == 1 and self.rot_pos == 1:
+                    self.Prev_Album()
+                elif self.rot_mode == 1 and self.rot_pos == 0:
                     self.Prev_Track()
+                elif self.rot_mode == 1 and self.rot_pos == 6:
+                    self.nextAZ()
+                elif self.rot_mode == 1 and self.rot_pos == 12:
+                    self.Next_m3u()
+
             else:
                 self.old_rotor2 = self.rotor2.value
-                if self.album_start == 0 and self.Radio_ON == 0:
-                    self.Next_Album()
-                elif self.album_start == 0 and self.Radio_ON == 1 and self.Radio_RON == 0:
+                if self.rot_mode == 0:
+                    self.rot_posp +=1
+                    #print(self.rot_posp)
+                    if self.rot_posp > 15:
+                        self.rot_posp = 0
+                    if self.cutdown > 4 and self.cutdown < 7 and self.rot_posp > 11:
+                        self.rot_posp = 0
+                    if self.cutdown == 1 and self.rot_posp > 12:
+                        self.rot_posp = 0
+                    if self.cutdown == 4 and self.rot_posp > 13:
+                        self.rot_posp = 0
+                    if self.stopstart == 1 and self.album_start == 0 and self.rot_posp == 4:
+                        self.rot_posp = 5
+                    if self.album_start == 1 and self.rot_posp == 1:
+                        self.rot_posp = 4
+                    if self.album_start == 1 and self.rot_posp > 15:
+                        self.rot_posp = 0
+                    if self.cutdown == 1 or self.cutdown == 4:
+                        if self.album_start == 1:
+                            if self.rot_posp == 0:
+                                self.rot_posp = 4
+                        if self.Radio_ON == 1:
+                            if self.cutdown == 1 and self.rot_posp == 10:
+                                self.rot_posp = 1
+                            if self.cutdown == 4 and self.rot_posp == 9:
+                                self.rot_posp = 10
+                            if self.cutdown == 4 and self.rot_posp == 11:
+                                self.rot_posp = 1
+                            if self.rot_posp == 2:
+                                self.rot_posp = 5
+                            if self.Radio_RON == 1:
+                                if self.rot_posp == 1:
+                                    self.rot_posp = 5
+                    if self.cutdown == 5 or self.cutdown == 6:
+                        if self.Radio_ON == 1:
+                            if self.rot_posp == 11:
+                                self.rot_posp = 2
+                            if self.rot_posp == 3:
+                                self.rot_posp = 6
+                            if self.rot_posp == 9 and self.Radio_Stns[self.Radio + 2] == 0:
+                                self.rot_posp = 10
+                            if self.Radio_RON == 1:
+                                if self.rot_posp == 2:
+                                    self.rot_posp = 6
+                    elif self.cutdown == 7 or self.cutdown == 0 or self.cutdown == 2:
+                        if self.album_start == 1:
+                            if self.rot_posp == 0:
+                                self.rot_posp = 4
+                            elif self.rot_posp == 13:
+                                self.rot_posp = 14
+                        elif self.Radio_ON == 1:
+                            if self.rot_posp == 11:
+                                self.rot_posp = 1
+                            if self.rot_posp == 2 and self.Radio_Stns[self.Radio + 2] == 0:
+                                self.rot_posp = 7
+                            elif self.rot_posp == 2:
+                                self.rot_posp = 5
+                            if self.rot_posp == 6:
+                                self.rot_posp = 7
+                            if self.Radio_RON == 1:
+                                if self.rot_posp == 1:
+                                    self.rot_posp = 5
+                    self.rot_pos = self.order[self.rot_posp]
+                    #print(self.rot_posp,self.rot_pos)
+                    if self.album_start == 0:
+                        if self.Radio_RON == 0:
+                            self.Button_Prev_Artist.config(bg = 'light blue')
+                            self.Button_Prev_Album.config(bg = 'light blue')
+                        else:
+                            self.Button_Prev_Artist.config(bg = 'light gray')
+                            self.Button_Prev_Album.config(bg = 'light gray')
+                        if self.stopstart == 0:
+                            self.Button_Reload.config(bg = '#c5c')
+                        else:
+                            self.Button_Reload.config(bg = 'light blue')
+                            if self.gapless == 0:
+                                self.Button_Reload.config(bg = 'light blue')
+                            else:
+                                self.Button_Reload.config(bg = "light gray")
+                        self.Button_Next_AZ.config(bg = 'light blue')
+                        self.Button_Pause.config(bg = 'light blue')
+                        if (self.cutdown < 5 or self.cutdown > 6):
+                            self.Button_Prev_PList.config(bg = 'light blue')
+                        if (self.cutdown < 5 or self.cutdown > 6) and self.cutdown != 1:
+                            self.Button_Gapless.config(bg = 'light blue')
+                        if (self.cutdown < 4 or self.cutdown > 6) and self.cutdown != 1:
+                            self.Button_repeat.config(bg = 'light blue')
+                            if self.Radio_ON == 0:
+                                self.Button_AZ_artists.config(bg = 'light blue')
+                    if self.album_start == 1:
+                        self.Button_Prev_Artist.config(bg = 'light gray')
+                        self.Button_Prev_Album.config(bg = 'light gray')
+                        if self.gapless == 0:
+                            self.Button_Reload.config(bg = 'light blue')
+                        else:
+                            self.Button_Reload.config(bg = 'light gray')
+                        self.Button_Next_AZ.config(bg = 'light blue')
+                        self.Button_Pause.config(bg = 'light blue')
+                        if (self.cutdown < 5 or self.cutdown > 6):
+                            self.Button_Prev_PList.config(bg = 'light gray')
+                        if (self.cutdown < 5 or self.cutdown > 6) and self.cutdown != 1:
+                            self.Button_Gapless.config(bg = 'light blue')
+                        if (self.cutdown < 4 or self.cutdown > 6) and self.cutdown != 1:
+                            self.Button_repeat.config(bg = 'light blue')
+                            self.Button_AZ_artists.config(bg = 'light gray')
+                    elif self.Radio_ON == 1:
+                        if self.Radio_RON == 0:
+                            self.Button_Prev_Artist.config(bg = 'light blue')
+                            self.Button_Prev_Album.config(bg = 'light gray')
+                        else:
+                            self.Button_Prev_Artist.config(bg = 'light gray')
+                            self.Button_Prev_Album.config(bg = 'light gray')
+                        self.Button_Prev_Track.config(bg = 'light gray')
+                        if self.Radio_Stns[self.Radio + 2] == 1:
+                            self.Button_Pause.config(bg = 'light blue')
+                        else:
+                            self.Button_Pause.config(bg = 'light gray')
+                        self.Button_Reload.config(bg = 'light gray')
+                        if (self.cutdown < 5 or self.cutdown > 6):
+                            self.Button_Prev_PList.config(bg = 'light gray')
+                        if (self.cutdown < 5 or self.cutdown > 6) and self.cutdown != 1:
+                            self.Button_Gapless.config(bg = 'light gray')
+                        if (self.cutdown < 4 or self.cutdown > 6) and self.cutdown != 1:
+                            self.Button_repeat.config(bg = 'light gray')
+                            self.Button_AZ_artists.config(bg = 'light gray')
+                    if self.Radio_ON == 0:
+                        self.Button_Prev_Track.config(bg = 'light blue')
+                        if self.album_start == 0:
+                            self.Button_Start.config(bg = 'green')
+                        if self.stopstart == 1:
+                            self.Button_TAlbum.config(bg = 'light gray')
+                        else:
+                            self.Button_TAlbum.config(bg = 'blue')
+                        if self.album_start == 1:
+                            self.Button_TAlbum.config(bg = 'blue')
+                        self.Button_Shuffle.config(bg = 'light blue')
+                    self.Button_Shutdown.config(bg = 'grey')
+                    self.Button_Radio.config(bg = 'light blue')
+                    self.Button_Sleep.config(bg = 'light blue')
+                    if self.rot_pos == 2:
+                        self.Button_Prev_Artist.config(bg = 'yellow')
+                    elif self.rot_pos == 1:
+                        self.Button_Prev_Album.config(bg = 'yellow')
+                    elif self.rot_pos == 0:
+                        self.Button_Prev_Track.config(bg = 'yellow')
+                    elif self.rot_pos == 3:
+                        self.Button_Start.config(bg = 'yellow')
+                    elif self.rot_pos == 4:
+                        self.Button_TAlbum.config(bg = 'yellow')
+                    elif self.rot_pos == 5:
+                        self.Button_Shuffle.config(bg = 'yellow')
+                    elif self.rot_pos == 6:
+                        self.Button_Next_AZ.config(bg = 'yellow')
+                    elif self.rot_pos == 7:
+                        self.Button_Shutdown.config(bg = 'yellow')
+                    elif self.rot_pos == 8:
+                        self.Button_Radio.config(bg = 'yellow')
+                    elif self.rot_pos == 9:
+                        self.Button_Pause.config(bg = 'yellow')
+                    elif self.rot_pos == 10:
+                        self.Button_Sleep.config(bg = 'yellow')
+                    elif self.rot_pos == 11:
+                        self.Button_Reload.config(bg = 'yellow')
+                    elif self.rot_pos == 12:
+                        self.Button_Prev_PList.config(bg = 'yellow')
+                    elif self.rot_pos == 13:
+                        self.Button_Gapless.config(bg = 'yellow')
+                    elif self.rot_pos == 14:
+                        self.Button_repeat.config(bg = 'yellow')
+                    elif self.rot_pos == 15:
+                        self.Button_AZ_artists.config(bg = 'yellow')
+                if self.rot_mode == 1 and self.rot_pos == 2:
                     self.Next_Artist()
-                elif self.album_start == 0 and self.Radio_ON == 1 and self.Radio_RON == 1:
-                    self.Pause()
-                else:
+                elif self.rot_mode == 1 and self.rot_pos == 1:
+                    self.Next_Album()
+                elif self.rot_mode == 1 and self.rot_pos == 0:
                     self.Next_Track()
-        self.after(250, self.rotary_volume)
+                elif self.rot_mode == 1 and self.rot_pos == 6:
+                    self.nextAZ()
+                elif self.rot_mode == 1 and self.rot_pos == 12:
+                    self.Next_m3u()
+        self.after(250, self.read_rotary)
+
+    def check_buttons(self):
+        # check the external switches
+        if self.rotary == 0:
+            if self.trace > 1:
+                print("check buttons")
+            if self.button_volup.is_pressed:
+                self.light_on = time.monotonic()
+                if self.Pi7_backlight == 1:
+                    os.system("rpi-backlight -b 100")
+                self.volume_UP()
+            elif self.button_voldn.is_pressed:
+                self.light_on = time.monotonic()
+                if self.Pi7_backlight == 1:
+                    os.system("rpi-backlight -b 100")
+                self.volume_DN()
+            elif self.button_mute.is_pressed:
+                self.light_on = time.monotonic()
+                if self.Pi7_backlight == 1:
+                    os.system("rpi-backlight -b 100")
+                self.Mute()
+        if self.gpio_enable == 2  and self.rotary == 1 and self.button_mute.is_pressed:
+            self.light_on = time.monotonic()
+            #if self.Pi7_backlight == 1:
+            #    os.system("rpi-backlight -b 100")
+            self.rot_mode = 0
+            self.Mute()
+        if self.gpio_enable == 2 and self.rotary == 1 and self.album_start == 0 and self.button_next.is_pressed and self.rot_mode == 0 and (self.rot_pos < 3 or self.rot_pos > 4) and self.stopstart == 0:
+            # not playing mp3
+            self.light_on = time.monotonic()
+            if self.Pi7_backlight == 1:
+                os.system("rpi-backlight -b 100")
+            self.rot_mode = 1
+            self.Button_Prev_Artist.config(bg = 'light blue')
+            self.Button_Prev_Album.config(bg = 'light blue')
+            self.Button_Prev_Track.config(bg = 'light blue')
+            self.Button_Next_AZ.config(bg = 'light blue')
+            if (self.cutdown < 5 or self.cutdown > 6):
+                self.Button_Prev_PList.config(bg = 'light blue')
+            if (self.cutdown < 5 or self.cutdown > 6) and self.cutdown != 1:
+                self.Button_Gapless.config(bg = 'light blue')
+            if self.rot_pos == 2:
+                self.Button_Prev_Artist.config(bg = 'red')
+                if self.Radio_ON == 1:
+                    self.Button_Prev_Track.config(bg = 'light gray')
+                    self.Button_Prev_Album.config(bg = 'light gray')
+                    if (self.cutdown < 5 or self.cutdown > 6):
+                        self.Button_Prev_PList.config(bg = 'light gray')
+            elif self.rot_pos == 1:
+                self.Button_Prev_Album.config(bg = 'red')
+            elif self.rot_pos == 0:
+                self.Button_Prev_Track.config(bg = 'red')
+                
+            elif self.rot_pos == 6:
+                if self.Radio_ON == 0:
+                    self.Button_Next_AZ.config(bg = 'red')
+                else:
+                    self.rot_mode = 0
+                    self.Button_Next_AZ.config(bg = 'yellow')
+                    self.nextAZ()
+            elif self.rot_pos == 5:
+                self.rot_mode = 0
+                self.Shuffle_Tracks()
+            elif self.rot_pos == 7:
+                self.Shutdown_exit = 0
+                self.Shutdown()
+            elif self.rot_pos == 8:
+                self.rot_mode = 0
+                self.RadioX()
+            elif self.rot_pos == 9:
+                self.rot_mode = 0
+                if self.Radio_ON == 0 :
+                    self.Button_Prev_Artist.config(bg = 'light blue')
+                    self.Button_Prev_Album.config(bg = 'light blue')
+                else:
+                    self.Button_Prev_Artist.config(bg = 'light gray')
+                    self.Button_Prev_Album.config(bg = 'light gray')
+                    self.Button_Prev_Track.config(bg = 'light gray')
+                    if (self.cutdown < 5 or self.cutdown > 6):
+                        self.Button_Prev_PList.config(bg = 'light gray')
+                self.Pause()
+            elif self.rot_pos == 10:
+                self.rot_mode = 0
+                self.sleep()
+            elif self.rot_pos == 11:
+                self.rot_mode = 0
+                self.Button_Reload.config(bg = 'red')
+                self.RELOAD_List()
+            elif self.rot_pos == 12:
+                self.Button_Prev_PList.config(bg = 'red')
+            elif self.rot_pos == 13:
+                self.rot_mode = 0
+                self.Gapless()
+            elif self.rot_pos == 14:
+                self.rot_mode = 0
+                self.Repeat()
+            elif self.rot_pos == 15:
+                self.rot_mode = 0
+                self.AZ_Tracks()
+ 
+            
+        elif self.gpio_enable == 2 and self.rotary == 1 and self.button_next.is_pressed and self.rot_mode == 0 and (self.rot_pos < 3 or self.rot_pos > 4) and (self.stopstart == 1 or self.album_start == 1):
+            # playing mp3
+            self.light_on = time.monotonic()
+            if self.Pi7_backlight == 1:
+                os.system("rpi-backlight -b 100")
+            self.rot_mode = 1
+            self.Button_Prev_Artist.config(bg = 'light blue')
+            self.Button_Prev_Album.config(bg = 'light blue')
+            self.Button_Prev_Track.config(bg = 'light blue')
+            self.Button_Next_AZ.config(bg = 'light blue')
+            if (self.cutdown < 5 or self.cutdown > 6):
+                self.Button_Prev_PList.config(bg = 'light blue')
+            if (self.cutdown < 5 or self.cutdown > 6) and self.cutdown != 1:
+                self.Button_Gapless.config(bg = 'light blue')
+            if self.rot_pos == 2:
+                self.Button_Prev_Artist.config(bg = 'red')
+            elif self.rot_pos == 1:
+                self.Button_Prev_Album.config(bg = 'red')
+            elif self.rot_pos == 0:
+                self.Button_Prev_Track.config(bg = 'red')
+            elif self.rot_pos == 6:
+                if self.Radio_ON == 0:
+                    self.rot_mode = 0
+                    self.nextAZ()
+                else:
+                    self.rot_mode = 0
+            elif self.rot_pos == 5:
+                self.rot_mode = 0
+                self.Shuffle_Tracks()
+            elif self.rot_pos == 7:
+                self.Shutdown_exit = 0
+                self.Shutdown()
+            elif self.rot_pos == 8:
+                self.rot_mode = 0
+                self.RadioX()
+            elif self.rot_pos == 9:
+                self.rot_mode = 0
+                if self.album_start == 1:
+                    self.Button_Prev_Artist.config(bg = 'light gray')
+                    self.Button_Prev_Album.config(bg = 'light gray')
+                    if (self.cutdown < 5 or self.cutdown > 6):
+                        self.Button_Prev_PList.config(bg = 'light gray')
+                self.Pause()
+            elif self.rot_pos == 10:
+                self.rot_mode = 0
+                self.sleep()
+            elif self.rot_pos == 11: # skip forward
+                self.rot_mode = 0
+                self.RELOAD_List()
+            elif self.rot_pos == 12:
+                self.Button_Prev_PList.config(bg = 'red')
+            elif self.rot_pos == 13:
+                self.rot_mode = 0
+                self.Gapless()
+            elif self.rot_pos == 14:
+                self.rot_mode = 0
+                self.Repeat()
+            elif self.rot_pos == 15:
+                self.rot_mode = 0
+                self.AZ_Tracks()
+        elif self.gpio_enable == 2 and self.rotary == 1 and self.button_next.is_pressed and self.rot_mode == 1 and (self.rot_pos < 3 or self.rot_pos > 4) and self.stopstart == 0 and self.album_start == 0 :
+            self.rot_mode = 0
+            self.light_on = time.monotonic()
+            if self.Pi7_backlight == 1:
+                os.system("rpi-backlight -b 100")
+            self.Button_Prev_Artist.config(bg = 'light blue')
+            self.Button_Prev_Album.config(bg = 'light blue')
+            self.Button_Prev_Track.config(bg = 'light blue')
+            self.Button_Next_AZ.config(bg = 'light blue')
+            if (self.cutdown < 5 or self.cutdown > 6):
+                self.Button_Prev_PList.config(bg = 'light blue')
+            if (self.cutdown < 5 or self.cutdown > 6) and self.cutdown != 1:
+                self.Button_Gapless.config(bg = 'light blue')
+            if self.rot_pos == 2:
+                self.Button_Prev_Artist.config(bg = 'yellow')
+                if self.Radio_ON == 1:
+                    self.Button_Prev_Track.config(bg = 'light gray')
+                    self.Button_Prev_Album.config(bg = 'light gray')
+                    if (self.cutdown < 5 or self.cutdown > 6):
+                        self.Button_Prev_PList.config(bg = 'light gray')
+            elif self.rot_pos == 1:
+                self.Button_Prev_Album.config(bg = 'yellow')
+            elif self.rot_pos == 0:
+                self.Button_Prev_Track.config(bg = 'yellow')
+            elif self.rot_pos == 6:
+                self.Button_Next_AZ.config(bg = 'yellow')
+            elif self.rot_pos == 12:
+                self.Button_Prev_PList.config(bg = 'yellow')
+        elif self.gpio_enable == 2 and self.rotary == 1 and self.button_next.is_pressed and self.rot_mode == 1 and (self.rot_pos < 3 or self.rot_pos > 4) and (self.stopstart == 1 or self.album_start == 1):
+            self.rot_mode = 0
+            self.light_on = time.monotonic()
+            if self.Pi7_backlight == 1:
+                os.system("rpi-backlight -b 100")
+            self.Button_Prev_Artist.config(bg = 'light blue')
+            self.Button_Prev_Album.config(bg = 'light blue')
+            self.Button_Prev_Track.config(bg = 'light blue')
+            self.Button_Next_AZ.config(bg = 'light blue')
+            if (self.cutdown < 5 or self.cutdown > 6):
+                self.Button_Prev_PList.config(bg = 'light blue')
+            if (self.cutdown < 5 or self.cutdown > 6) and self.cutdown != 1:
+                self.Button_Gapless.config(bg = 'light blue')
+            if self.rot_pos == 2:
+                self.Button_Prev_Artist.config(bg = 'yellow')
+            elif self.rot_pos == 1:
+                self.Button_Prev_Album.config(bg = 'yellow')
+            elif self.rot_pos == 0:
+                self.Button_Prev_Track.config(bg = 'yellow')
+            elif self.rot_pos == 6:
+                self.Button_Next_AZ.config(bg = 'yellow')
+            elif self.rot_pos == 12:
+                self.Button_Prev_PList.config(bg = 'yellow')
+        elif self.gpio_enable == 2 and self.rotary == 1 and self.button_next.is_pressed and self.Radio_ON == 0 and self.rot_pos == 3 and self.stopstart == 0 and self.album_start == 0:
+            self.rot_mode = 0
+            self.light_on = time.monotonic()
+            if self.Pi7_backlight == 1:
+                os.system("rpi-backlight -b 100")
+            self.rot_pos = 3
+            self.rot_posp = 3
+            self.Button_Start.config(bg = 'yellow')
+            self.Button_Next_AZ.config(bg = 'light blue', text = "Info")
+            self.Play()
+        elif self.gpio_enable == 2 and self.rotary == 1 and self.button_next.is_pressed and self.Radio_ON == 0 and self.rot_pos == 3 and self.stopstart == 1 and self.album_start == 0:
+            self.rot_mode = 0
+            self.light_on = time.monotonic()
+            if self.Pi7_backlight == 1:
+                os.system("rpi-backlight -b 100")
+            self.rot_pos = 3
+            self.rot_posp = 3
+            self.Button_Next_AZ.config(bg = 'light blue', text = "NextAZ")
+            self.Play()
+        elif self.gpio_enable == 2 and self.rotary == 1 and self.button_next.is_pressed and self.Radio_ON == 0 and self.rot_pos == 4 and self.album_start == 0:
+            self.rot_mode = 0
+            self.light_on = time.monotonic()
+            if self.Pi7_backlight == 1:
+                os.system("rpi-backlight -b 100")
+            self.rot_pos = 4
+            self.Button_Next_AZ.config(bg = 'light blue', text = "Info")
+            self.Play_Album()
+        elif self.gpio_enable == 2 and self.rotary == 1 and self.button_next.is_pressed and self.Radio_ON == 0 and self.rot_pos == 4 and self.album_start == 1:
+            self.rot_mode = 0
+            self.light_on = time.monotonic()
+            if self.Pi7_backlight == 1:
+                os.system("rpi-backlight -b 100")
+            self.rot_pos = 4
+            self.Button_TAlbum.config(bg = 'yellow')
+            self.Button_Next_AZ.config(bg = 'light blue', text = "NextAZ")
+            self.Play_Album()
+        elif self.gpio_enable == 2 and self.rotary == 0 and self.button_start_play.is_pressed:
+            self.light_on = time.monotonic()
+            if self.Pi7_backlight == 1:
+                os.system("rpi-backlight -b 100")
+            self.Play()
+
+        self.after(500, self.check_buttons) # set for 500mS
         
     def plist_callback(self):
         if self.trace > 0:
@@ -1444,12 +2093,13 @@ class MP3Player(Frame):
                     self.trackdata.append(self.track_name_1)
             self.trackdata = list(dict.fromkeys(self.trackdata))
             self.Disp_track_name["values"] = self.trackdata
-            if self.ac == 0 and len(self.trackdata) > 0:
-               self.Disp_track_name.set(self.trackdata[0])
+            #if self.ac == 0 and len(self.trackdata) > 0:
+            #   self.Disp_track_name.set(self.trackdata[0])
 
         self.ac = 0
         self.bc = 0
         self.Disp_artist_name.set(self.artist_name3)
+        self.Disp_album_name.set(self.album_name3)
         tpath = self.artist_name3 + "^" + self.album_name3 + "^" + self.track_name3
         if self.trace > 0:
             print ("album callback track",tpath)
@@ -1461,7 +2111,7 @@ class MP3Player(Frame):
                 stop = 1
                 self.track_no = k
             k +=1
-        self.Disp_track_no.config(text = self.track_no)
+        self.Disp_track_no.config(text = self.track_no + 1) ###
         self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
         if self.drive_name[-1] == "*":
             self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
@@ -1501,7 +2151,7 @@ class MP3Player(Frame):
                 pictures = glob.glob(path)
                 if self.trace > 0:
                     print(path)
-                    print(pictures)
+                    #print(pictures)
                 if len(pictures) > 0: 
                     if len(pictures) > 1:
                         r = random.randrange(len(pictures))
@@ -1509,7 +2159,10 @@ class MP3Player(Frame):
                     else:
                         self.image = pictures[0]
                     self.load = Image.open(self.image)
-                    self.load = self.load.resize((218, 218), Image.LANCZOS) 
+                    if self.cutdown != 2:
+                        self.load = self.load.resize((218, 218), Image.LANCZOS)
+                    else:
+                        self.load = self.load.resize((150, 150), Image.LANCZOS) 
                     self.render2 = ImageTk.PhotoImage(self.load)
                     if self.timer4 == 0:
                         self.img.config(image = self.render2)
@@ -1538,7 +2191,7 @@ class MP3Player(Frame):
               stop = 1
               self.track_no = k
            k +=1
-        self.Disp_track_no.config(text = self.track_no)
+        self.Disp_track_no.config(text = self.track_no + 1) ###
         self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
         if self.drive_name[-1] == "*":
             self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
@@ -1581,7 +2234,6 @@ class MP3Player(Frame):
                 self.artistdata.append(self.artist_name_1)
             self.artistdata = list(dict.fromkeys(self.artistdata))
             self.artistdata.sort()
-            #print(self.track_no,self.artistdata)
             self.Disp_artist_name["values"] = self.artistdata
             if self.auto_albums == 1 or self.reload == 1:
                 self.Disp_artist_name.set(self.artist_name)
@@ -1649,7 +2301,7 @@ class MP3Player(Frame):
                 stop = 1
                 self.track_no = k
             k +=1
-        self.Disp_track_no.config(text = self.track_no)
+        self.Disp_track_no.config(text = self.track_no + 1) ###
         self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
         if self.drive_name[-1] == "*":
             self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
@@ -1697,7 +2349,10 @@ class MP3Player(Frame):
                     else:
                         self.image = pictures[0]
                     self.load = Image.open(self.image)
-                    self.load = self.load.resize((218, 218), Image.LANCZOS) 
+                    if self.cutdown != 2:
+                        self.load = self.load.resize((218, 218), Image.LANCZOS)
+                    else:
+                        self.load = self.load.resize((150, 150), Image.LANCZOS)
                     self.render2 = ImageTk.PhotoImage(self.load)
                     if self.timer4 == 0:
                         self.img.config(image = self.render2)
@@ -1723,7 +2378,7 @@ class MP3Player(Frame):
               stop = 1
               self.track_no = k
            k +=1
-        self.Disp_track_no.config(text = self.track_no)
+        self.Disp_track_no.config(text = self.track_no + 1) ###
         self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
         if self.drive_name[-1] == "*":
             self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
@@ -1755,34 +2410,14 @@ class MP3Player(Frame):
             self.track_no -=1
             self.Next_Track()
 
-    def check_buttons(self):
-        # check the external switches
-        if self.rotary == 0:
-            if self.button_volup.is_pressed:
-                self.volume_UP()
-            elif self.button_voldn.is_pressed:
-                self.volume_DN()
-            elif self.button_mute.is_pressed:
-                self.Mute()
-        if self.gpio_enable == 2 and self.Radio_ON == 0 and self.button_start_album.is_pressed:
-            self.Play_Album()
-        elif self.gpio_enable == 2 and self.Radio_ON == 1 and self.button_start_album.is_pressed:
-            self.RadioX()
-        elif self.gpio_enable == 2 and self.rotary == 1 and self.album_start == 0 and self.button_next.is_pressed:
-            self.Next_Artist()
-        elif self.gpio_enable == 2 and self.rotary == 1 and self.album_start == 1 and self.button_next.is_pressed:
-            self.sleep()
-        elif self.gpio_enable == 2 and self.rotary == 0 and self.button_start_play.is_pressed:
-            self.Play()
-        self.after(500, self.check_buttons) # set for 500mS
-   
+  
     def Show_Track(self):
         if self.trace > 0:
             print ("Show Track", self.track_no,self.play)
         if len(self.tunes) > 0:
             if self.album_start == 0:
                 self.Disp_Total_tunes.config(text =len(self.tunes))
-                self.Disp_track_no.config(text =self.track_no+1)
+                self.Disp_track_no.config(text =self.track_no + 1)
             self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
             if self.drive_name[-1] == "*":
                 self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
@@ -1823,7 +2458,10 @@ class MP3Player(Frame):
                     else:
                         self.image = pictures[0]
                     self.load = Image.open(self.image)
-                    self.load = self.load.resize((218, 218), Image.LANCZOS) 
+                    if self.cutdown != 2:
+                        self.load = self.load.resize((218, 218), Image.LANCZOS)
+                    else:
+                        self.load = self.load.resize((150, 150), Image.LANCZOS)
                     self.render2 = ImageTk.PhotoImage(self.load)
                     if self.timer4 == 0:
                         self.img.config(image = self.render2)
@@ -1988,7 +2626,7 @@ class MP3Player(Frame):
                         self.Disp_track_name9.config(fg = "black",bg = "#ddd",text = " ", borderwidth=0)
                             
             elif self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 3:
-                self.Disp_Drive.config(fg = 'red')
+                self.Disp_Drive.config(bg = 'red')
                 if self.m3u_no != 0:
                     self.Disp_Drive.config(text = "MISSING")
             else:
@@ -2057,11 +2695,11 @@ class MP3Player(Frame):
                 if self.repeat == 0 and self.repeat_album == 0:
                     self.Button_Radio.config(bg = "light blue", fg = "black", text = "Repeat")
                 elif self.repeat == 1 and self.repeat_album == 0:
-                    self.Button_Radio.config(bg = "green", fg = "white", text = "Repeat")
+                    self.Button_Radio.config(bg = "green", fg = "black", text = "Repeat")
                 elif self.repeat == 1 and self.repeat_album == 1:
-                    self.Button_Radio.config(bg = "green", fg = "white", text = "Repeat Album")
+                    self.Button_Radio.config(bg = "green", fg = "black", text = "Repeat Album")
             else:
-                self.Button_Radio.config(bg = "light grey", fg = "white") 
+                self.Button_Radio.config(bg = "light grey", fg = "black") 
             self.auto_play = 1
             with open('Lasttrack3.txt', 'w') as f:
                 f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
@@ -2143,23 +2781,29 @@ class MP3Player(Frame):
                         time.sleep(2)
                 if self.Radio_Stns[self.Radio + 2] == 1 and self.record == 1:
                     self.Button_Pause.config(fg = "black", bg = "light blue", text = "RECORD")
-                    if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6:
+                    if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                         self.L8.config(text = ".mp3")
                 else:
-                    self.Button_Pause.config(fg = "white", bg = "light grey", text = "Pause")
-                    if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6:
+                    self.Button_Pause.config(fg = "black", bg = "light grey", text = "Pause")
+                    if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                         self.L8.config(text = "")
                 self.Name = self.Radio_Stns[self.Radio]
                 self.Disp_artist_name.config(text = self.Name)
                 if self.cutdown != 4 and self.cutdown !=5 and self.cutdown !=1:
                     if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
                         self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
-                        self.load = self.load.resize((218, 218), Image.LANCZOS) 
+                        if self.cutdown != 2:
+                            self.load = self.load.resize((218, 218), Image.LANCZOS)
+                        else:
+                            self.load = self.load.resize((150, 150), Image.LANCZOS)
                         self.render2 = ImageTk.PhotoImage(self.load)
                         self.img.config(image = self.render2)
                     elif os.path.exists(self.radio_jpg):
                         self.load = Image.open(self.radio_jpg)
-                        self.load = self.load.resize((218, 218), Image.LANCZOS) 
+                        if self.cutdown != 2:
+                            self.load = self.load.resize((218, 218), Image.LANCZOS)
+                        else:
+                            self.load = self.load.resize((150, 150), Image.LANCZOS)
                         self.render3 = ImageTk.PhotoImage(self.load)
                         self.img.config(image = self.render3)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
@@ -2167,7 +2811,8 @@ class MP3Player(Frame):
                     f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
                 self.Check_Record()
                 if len(track) == 0  and self.Radio_Stns[self.Radio + 2] == 1:
-                    messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
+                    if self.rotary == 0:
+                        messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
             else:
                 if cutdown == 0 or cutdown == 2 or self.cutdown == 7:
                     x2 = abs_x - 107
@@ -2215,17 +2860,17 @@ class MP3Player(Frame):
             if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 3 or self.cutdown == 2:
                 self.Button_Next_AZ.config(fg = "black")
             if self.cutdown == 4:
-                self.Button_Track_m3u.config(bg = "light grey", fg = "white")
-                self.Button_Artist_m3u.config(bg = "light grey", fg = "white")
-                self.Button_Album_m3u.config(bg = "light grey", fg = "white")
-                self.Button_PList_m3u.config(bg = "light grey", fg = "white")
+                self.Button_Track_m3u.config(bg = "light grey", fg = "black")
+                self.Button_Artist_m3u.config(bg = "light grey", fg = "black")
+                self.Button_Album_m3u.config(bg = "light grey", fg = "black")
+                self.Button_PList_m3u.config(bg = "light grey", fg = "black")
              
         if len(self.tunes) > 0 and self.play == 0 and self.paused == 0 and self.Radio_ON == 0:
           if self.trace > 0:
               print ("Start_Play",self.track_no)
           with open('Lasttrack3.txt', 'w') as f:
               f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
-          self.Disp_track_no.config(text =self.track_no+1)
+          self.Disp_track_no.config(text =self.track_no + 1)
           if self.cutdown != 7:
               self.Show_Track()
           self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
@@ -2252,11 +2897,18 @@ class MP3Player(Frame):
                 if self.trace > 0:
                     print ("Start_Play - Track exists", self.track)
                 if self.cutdown == 4:
-                    self.Button_Next_AZ.config(text = "NextAZ", bg = "light grey", fg = "white")
-                if self.version == 2: 
-                    self.Button_Reload.config(bg = "light blue", fg = "black", text = "Skip Fwd")
+                    self.Button_Next_AZ.config(text = "NextAZ", bg = "light grey", fg = "black")
+                if self.version == 2:
+                    if self.rotary == 0:
+                        self.Button_Reload.config(bg = "light blue", fg = "black", text = "Skip Fwd")
+                    else:
+                        if self.rot_pos == 11:
+                            self.Button_Reload.config(bg = "yellow", fg = "black", text = "Skip Fwd")
+                        else:
+                            self.Button_Reload.config(bg = "light blue", fg = "black", text = "Skip Fwd")
+                            
                 else:
-                    self.Button_Reload.config(bg = "light grey", fg = "white")
+                    self.Button_Reload.config(bg = "light grey", fg = "black", text = "Skip Fwd")
                 if self.version == 2:
                     player.loadfile(self.track)
                     player.time_pos = 0
@@ -2285,11 +2937,21 @@ class MP3Player(Frame):
                 self.play = 1
                 self.start = time.monotonic()
                 if self.album_start == 1:
-                    self.Button_TAlbum.config(bg = "red",fg = "white",text = "STOP")
-                    self.Button_Start.config(bg = "light gray",fg = "white",text = "PLAY Playlist")
+                    if self.rotary == 0:
+                        self.Button_TAlbum.config(bg = "red",fg = "black",text = "STOP")
+                    elif self.rotary == 1 and self.rot_pos == 4:
+                        self.Button_TAlbum.config(bg = "yellow",fg = "black",text = "STOP")
+                    else:
+                        self.Button_TAlbum.config(bg = "blue",fg = "black",text = "STOP")
+                    self.Button_Start.config(bg = "light gray",fg = "black",text = "PLAY Playlist")
                 else:
-                    self.Button_Start.config(bg = "red",fg = "white",text = "STOP")
-                    self.Button_TAlbum.config(bg = "light gray",fg = "white",text = "PLAY Album")
+                    if self.rotary == 0:
+                        self.Button_Start.config(bg = "red",fg = "black",text = "STOP")
+                    elif rotary == 1 and self.rot_pos == 3:
+                        self.Button_Start.config(bg = "yellow",fg = "black",text = "STOP")
+                    elif self.rotary == 1 :
+                        self.Button_Start.config(bg = "green",fg = "black",text = "STOP")
+                    self.Button_TAlbum.config(bg = "light gray",fg = "black",text = "PLAY Album")
                 self.Start_Play2()
             else:
                 if self.trace > 0:
@@ -2298,7 +2960,7 @@ class MP3Player(Frame):
                 self.Disp_album_name.config(fg = "red",text =self.album_name)
                 self.Disp_track_name.config(fg = "red",text =self.track_name[:-4])
                 if self.cutdown == 0 or self.cutdown == 3 or self.cutdown == 7:
-                    self.Disp_Drive.config(fg = 'red')
+                    self.Disp_Drive.config(bg = 'red')
                     self.Disp_Drive.config(text = "MISSING")
                 stop = 0
                 while (self.tunes[self.track_no].split('^')[3]) == self.drive_name and stop == 0:
@@ -2332,7 +2994,7 @@ class MP3Player(Frame):
               print("No track")
               self.album_start = 0
               self.stopstart = 0
-              self.Button_TAlbum.config(bg = "blue",fg = "white",text = "PLAY Album")
+              self.Button_TAlbum.config(bg = "blue",fg = "black",text = "PLAY Album")
               self.Show_Track()
                     
         elif self.album_start == 1 and self.Radio_ON == 0:
@@ -2443,7 +3105,10 @@ class MP3Player(Frame):
                 else:
                    self.image = pictures[0]
                 self.load = Image.open(self.image)
-                self.load = self.load.resize((218, 218), Image.LANCZOS) 
+                if self.cutdown != 2:
+                    self.load = self.load.resize((218, 218), Image.LANCZOS)
+                else:
+                    self.load = self.load.resize((150, 150), Image.LANCZOS)
                 self.render2 = ImageTk.PhotoImage(self.load)
                 self.img.config(image = self.render2)
             elif self.gapless == 0:
@@ -2537,6 +3202,8 @@ class MP3Player(Frame):
                     
         # backlight off
         if time.monotonic() - self.light_on > self.light and (self.HP4_backlight == 1 or self.LCD_backlight == 1 or self.Pi7_backlight == 1):
+            if self.trace > 0:
+                print ("backlight off")
             if self.HP4_backlight == 1 or self.LCD_backlight == 1:
                 self.LCD_pwm.value = self.dim
             if self.Pi7_backlight == 1:
@@ -2633,8 +3300,8 @@ class MP3Player(Frame):
                 self.wheel_opt   = 0
                 self.album_start = 0
                 self.album_time  = 0 
-                self.Button_Start.config(bg = "green",fg = "white",text = "PLAY Playlist")
-                self.Button_TAlbum.config(bg = "blue", fg = "white", text = "PLAY Album")
+                self.Button_Start.config(bg = "green",fg = "black",text = "PLAY Playlist")
+                self.Button_TAlbum.config(bg = "blue", fg = "black", text = "PLAY Album")
                 self.Button_Shuffle.config(bg = "light blue",fg = "black",text = "Shuffle")
                 self.Button_Radio.config(bg = "light blue", fg = "black", text = "Radio")
                 self.gapless = 0
@@ -2665,6 +3332,8 @@ class MP3Player(Frame):
         if os.path.exists(self.track):
             # fade out track if using Bluetooth
             if time.monotonic() - self.start > (self.track_len - self.gapless) - 4 and self.play == 1 and self.paused == 0 and self.BT == 1:
+                if self.trace > 0:
+                    print ("3")
                 self.Fade()
             # stop track (early if using Bluetooth)
             if (((time.monotonic() - self.start > (self.track_len - self.gapless) - self.BT) or self.xxx == 1) and self.play == 1 and self.paused == 0) or self.stop7 == 1:
@@ -2726,8 +3395,8 @@ class MP3Player(Frame):
                     if self.cutdown == 6:
                         self.Button_Pause.config(text = "NextAZ")
                     self.Button_Reload.config(bg = "#c5c", fg = "black", text = "RELOAD")
-                    self.Button_Start.config(bg = "green",fg = "white",text = "PLAY Playlist")
-                    self.Button_TAlbum.config(bg = "blue", fg = "white", text = "PLAY Album")
+                    self.Button_Start.config(bg = "green",fg = "black",text = "PLAY Playlist")
+                    self.Button_TAlbum.config(bg = "blue", fg = "black", text = "PLAY Album")
                     self.Button_Radio.config(bg = "light blue", fg = "black", text = "Radio")
                     self.gapless = 0
                     self.track_no -=1
@@ -2754,8 +3423,12 @@ class MP3Player(Frame):
                         self.restart = 1
                         self.Stop_Play()
                     else:
+                        if self.trace > 0:
+                           print ("1")
                         self.Start_Play()
                 else:
+                    if self.trace > 0:
+                        print ("2")
                     self.Start_Play()
 
             # display times (and bar charts if applicable)
@@ -2832,24 +3505,24 @@ class MP3Player(Frame):
                 os.remove(self.rems2[x])
             self.rems2 = glob.glob("/run/shm/music/*/*/*.mp3")
             for x in range(0,len(self.rems2)):
-                os.remove(self.rems2[x])
+                if os.path.exists(self.rems2[x]):
+                    os.remove(self.rems2[x])
             self.rems3 = glob.glob("/run/shm/music/*/*/*.cue")
             for x in range(0,len(self.rems3)):
                 os.remove(self.rems3[x])
             self.Name = ""
             if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 5:
                 self.L1.config(text = "RAM: ")
-                if self.cutdown == 0 or self.cutdown == 7:
-                    self.Button_Info.config(fg="black",bg="light blue")
                 if self.cutdown == 7:
                     self.artistdata = []
                     self.Disp_artist_name["values"] = self.artistdata
             if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6:
-                self.L8.config(text = ".mp3")
+                if self.touchscreen == 1:
+                    self.L8.config(text = ".mp3")
                 self.Disp_Name_m3u.config(background="light gray", foreground="black")
                 self.Name = str(self.Disp_Name_m3u.get('1.0','20.0')).strip()
-            self.Button_Reload.config(text = "RELOAD", bg = "light grey", fg = "white")
-            self.Button_Shuffle.config(text = "CLR RAM",bg = "light grey", fg = "white")
+            self.Button_Reload.config(text = "RELOAD", bg = "light grey", fg = "black")
+            self.Button_Shuffle.config(text = "CLR RAM",bg = "light grey", fg = "black")
             if len(self.Name) == 0 or self.Name == "Name ?":
                 now = datetime.datetime.now()
                 self.Name = now.strftime("%y%m%d_%H%M%S")
@@ -2881,8 +3554,8 @@ class MP3Player(Frame):
                 self.Disp_track_name7.config(fg = "#777",bg = "#ddd")
                 self.Disp_track_name8.config(fg = "#777",bg = "#ddd")
                 self.Disp_track_name9.config(fg = "#777",bg = "#ddd")
-            self.Button_Prev_Artist.config(fg = "white", bg = "light grey")
-            self.Button_Next_Artist.config(fg = "white", bg = "light grey")
+            self.Button_Prev_Artist.config(fg = "black", bg = "light grey")
+            self.Button_Next_Artist.config(fg = "black", bg = "light grey")
             if self.imgxon == 0:
                 self.Disp_album_name.config(text = "Radio")
             self.Disp_track_name.config(text = self.Name)
@@ -2893,16 +3566,19 @@ class MP3Player(Frame):
             self.total_record = self.record_time * 60
             self.record_time_min = self.record_time * 60
             self.Disp_track_len.config(text ="010:00")
-            if self.cutdown == 6 or self.cutdown == 4 or self.cutdown == 2:
+            if self.cutdown == 6 or self.cutdown == 4 or self.cutdown == 2 or self.cutdown == 0 or self.cutdown == 7:
                 self.Button_Next_AZ.config(text = "Info", bg = "light blue", fg = "black")
             self.L4.config(text="/")
             self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
-            if cutdown == 7 and self.synced == 1:
+            if (self.cutdown == 7 or self.cutdown == 0) and self.synced == 1:
                 self.L6.config(text = "(" + str(self.stop_record)[11:16] + ")")
             if self.cutdown != 1:
-                self.Button_Radio.config(bg = "red",fg = "white", text = "STOP RECORD")
+                if self.rotary == 0:
+                    self.Button_Radio.config(bg = "red",fg = "black", text = "STOP RECORD")
+                else:
+                    self.Button_Radio.config(bg = "light blue",fg = "black", text = "STOP RECORD")
             else:
-                self.Button_Radio.config(bg = "red",fg = "white", text = "STOP R")
+                self.Button_Radio.config(bg = "red",fg = "black", text = "STOP R")
             track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
             counter = 0
             track_name = [" - .mp3"]
@@ -2936,6 +3612,8 @@ class MP3Player(Frame):
             self.ramtest = 1
 
         elif self.Radio_ON == 1 and self.Radio_RON == 1 and self.Radio_Stns[self.Radio + 2] == 1 and self.record == 1:
+            if self.trace > 0:
+                print ("Increase Record Time")
             self.record_time = int(self.record_time + self.rec_step)
             self.old_rs = self.record_time
             self.total_record += self.rec_step * 60
@@ -2949,7 +3627,7 @@ class MP3Player(Frame):
             if self.record_time > self.max_record:
                 self.record_time = self.rec_step
                 self.total_record = self.record_time * 60
-            self.auto_rec_time = self.record_time
+            #self.auto_rec_time = self.record_time
             with open('Lasttrack3.txt', 'w') as f:
                 f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
             self.record_time_min = self.record_time * 60
@@ -2958,7 +3636,7 @@ class MP3Player(Frame):
             self.Disp_track_len.config(text ="%03d:%02d" % (t_minutes, t_seconds % 60))
             self.record_current = int((self.total_record - (time.monotonic() - self.rec_begin))/60)
             self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
-            if cutdown == 7 and self.synced == 1:
+            if (self.cutdown == 7 or self.cutdown == 0) and self.synced == 1:
                 self.L6.config(text = "(" + str(self.stop_record)[11:16] + ")")
             if self.Radio_ON == 1 and self.Radio_RON == 1 and self.shutdown == 1 and self.record_sleep == 1:
                 self.sleep_time_min = (self.record_current *60) + 60
@@ -3007,7 +3685,10 @@ class MP3Player(Frame):
                 self.time2 = time.monotonic()
                 self.start = self.start + (self.time2 - self.time1)
                 self.start2 = self.start2 + (self.time2 - self.time1)
-                self.Button_Pause.config(fg = "black",bg = "light blue", text ="Pause")
+                if rotary == 0:
+                    self.Button_Pause.config(fg = "black",bg = "light blue", text ="Pause")
+                elif rotary == 1 and self.rot_pos == 9:
+                    self.Button_Pause.config(fg = "black",bg = "yellow", text ="Pause")
                 if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 6 and self.album_start == 0:
                     self.Button_Gapless.config(fg = "black",bg = "light blue", text ="Gapless")
                 if self.cutdown == 6:
@@ -3017,6 +3698,8 @@ class MP3Player(Frame):
                 player.pause()
 
     def R_record(self):
+        if self.trace > 0:
+            print ("R_Record")
         if self.Radio_ON == 1 and self.Radio_RON == 1 and self.Radio_Stns[self.Radio + 2] == 1 and self.record == 1:
             self.record_time = int(self.record_time - self.rec_step)
             if self.record_time < self.rec_step:
@@ -3038,7 +3721,7 @@ class MP3Player(Frame):
             self.Disp_track_len.config(text ="%03d:%02d" % (t_minutes, t_seconds % 60))
             self.record_current = int((self.total_record - (time.monotonic() - self.rec_begin))/60)
             self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
-            if cutdown == 7 and self.synced == 1:
+            if (self.cutdown == 7 or self.cutdown == 0) and self.synced == 1:
                 self.L6.config(text = "(" + str(self.stop_record)[11:16] + ")")
             if self.Radio_ON == 1 and self.Radio_RON == 1 and self.shutdown == 1 and self.record_sleep == 1:
                 self.sleep_time_min = (self.record_current *60) + 60
@@ -3072,14 +3755,14 @@ class MP3Player(Frame):
                 self.Button_Pause.config(fg = "black",bg = "light blue", text ="Pause")
                 if self.album_start == 0:
                     if self.cutdown != 6 and self.cutdown != 5:
-                        self.Button_Gapless.config(fg = "black",bg = "light blue", text ="Gapless")
+                        self.Button_Gapless.config(fg = "black",bg = "light blue", text ="Gapped")
                     else:
-                        self.Button_Radio.config(fg = "black",bg = "light blue", text ="Gapless")
+                        self.Button_Radio.config(fg = "black",bg = "light blue", text ="Gapped")
                 else:
                     if self.cutdown != 6 and self.cutdown != 5:
-                        self.Button_Gapless.config(fg = "black",bg = "light blue", text ="Gapless")
+                        self.Button_Gapless.config(fg = "black",bg = "light blue", text ="Gapped")
                     else:
-                        self.Button_Radio.config(fg = "black",bg = "light blue", text ="Gapless")
+                        self.Button_Radio.config(fg = "black",bg = "light blue", text ="Gapped")
                 self.version = 2
                 if self.play == 1:
                     self.p.kill()
@@ -3098,6 +3781,8 @@ class MP3Player(Frame):
                     self.Button_Radio.config(fg = "black",bg = "orange", text ="Gapless")
                 if self.cutdown != 4 and self.cutdown != 5:
                     self.img.config(image = self.render)
+            if self.rotary == 1 and self.rot_pos == 13 :
+                self.Button_Gapless.config(bg = 'yellow')
 
     def Play_Album(self):
         if self.trace > 0:
@@ -3132,44 +3817,45 @@ class MP3Player(Frame):
             self.album_trig    = 0
             self.plist_trig    = 0
             if self.cutdown == 4:
-                self.Button_Next_AZ.config(text = "NextAZ", bg = "light grey", fg = "white")
-            if self.cutdown == 6:
+                self.Button_Next_AZ.config(text = "NextAZ", bg = "light grey", fg = "black")
+            if self.cutdown == 6 or self.cutdown == 5 or self.cutdown == 7 or self.cutdown == 0:
                 self.Button_Pause.config(text = "Pause", bg = "light blue", fg = "black")
                 self.Button_Next_AZ.config(text = "Info", bg = "light blue", fg = "black")
             else:
-                self.Button_Next_AZ.config(bg = "light grey", fg = "white")
+                self.Button_Next_AZ.config(bg = "light grey", fg = "black")
             if self.cutdown != 5 and self.cutdown != 6 :
-                self.Button_Prev_PList.config(bg  = "light grey", fg = "white")
-                self.Button_Next_PList.config(bg  = "light grey", fg = "white")
-            self.Button_Prev_Artist.config(bg  = "light grey", fg = "white")
-            self.Button_Next_Artist.config(bg  = "light grey", fg = "white")
-            self.Button_Prev_Album.config(bg  = "light grey", fg = "white")
-            self.Button_Next_Album.config(bg  = "light grey", fg = "white")
-            self.Button_Prev_Track.config(bg  = "light blue", fg = "black")
+                self.Button_Prev_PList.config(bg  = "light grey", fg = "black")
+                self.Button_Next_PList.config(bg  = "light grey", fg = "black")
+            self.Button_Prev_Artist.config(bg  = "light grey", fg = "black")
+            self.Button_Next_Artist.config(bg  = "light grey", fg = "black")
+            self.Button_Prev_Album.config(bg  = "light grey", fg = "black")
+            self.Button_Next_Album.config(bg  = "light grey", fg = "black")
+            if self.rotary == 0:
+                self.Button_Prev_Track.config(bg  = "light blue", fg = "black")
             self.Button_Next_Track.config(bg  = "light blue", fg = "black")
             if self.cutdown == 6 or self.cutdown == 4 or self.cutdown == 5:
                 if self.repeat == 0 and self.repeat_album == 0:
                     self.Button_Radio.config(bg = "light blue", fg = "black", text = "Repeat")
                 elif self.repeat == 1 and self.repeat_album == 0:
-                    self.Button_Radio.config(bg = "green", fg = "white", text = "Repeat")
+                    self.Button_Radio.config(bg = "green", fg = "black", text = "Repeat")
                 elif self.repeat == 1 and self.repeat_album == 1:
-                    self.Button_Radio.config(bg = "green", fg = "white", text = "Repeat Album")
+                    self.Button_Radio.config(bg = "green", fg = "black", text = "Repeat Album")
             else:
-                self.Button_Radio.config(bg = "light grey", fg = "white")
+                self.Button_Radio.config(bg = "light grey", fg = "black")
             if self.cutdown == 4:
-                self.Button_Track_m3u.config(bg = "light grey", fg = "white")
-                self.Button_Artist_m3u.config(bg = "light grey", fg = "white")
-                self.Button_Album_m3u.config(bg = "light grey", fg = "white")
-                self.Button_PList_m3u.config(bg = "light grey", fg = "white")
+                self.Button_Track_m3u.config(bg = "light grey", fg = "black")
+                self.Button_Artist_m3u.config(bg = "light grey", fg = "black")
+                self.Button_Album_m3u.config(bg = "light grey", fg = "black")
+                self.Button_PList_m3u.config(bg = "light grey", fg = "black")
             if self.cutdown == 0 or self.cutdown == 7:
                 self.L6.config(text= "Album :")
             if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 3:
-                self.Button_AZ_artists.config(fg = "white",bg = "light grey")
+                self.Button_AZ_artists.config(fg = "black",bg = "light grey")
                 self.Button_repeat.config(bg = "light blue",fg = "black",text = "Repeat Album")
-            self.Button_TAlbum.config(fg = "white",bg = "light grey")
+            self.Button_TAlbum.config(fg = "black",bg = "light grey")
             self.Button_Shuffle.config(bg = "light blue",fg = "black",text = "Shuffle")
-            if self.cutdown != 5 and self.cutdown != 6  and self.cutdown != 1 and self.gapless == 0:
-                self.Button_Gapless.config(fg = "white",bg = "light gray", text ="Gapless")
+            #if self.cutdown != 5 and self.cutdown != 6  and self.cutdown != 1:
+            #    self.Button_Gapless.config(fg = "black",bg = "light blue", text ="Gapless")
             self.repeat_count = 0
             self.repeat = 0
             self.repeat_track = 0
@@ -3258,8 +3944,8 @@ class MP3Player(Frame):
                     
                 self.Start_Play()
         elif self.album_start == 1:
-            if self.cutdown != 5 and self.cutdown != 6  and self.cutdown != 1:
-                self.Button_Gapless.config(fg = "black",bg = "light blue", text ="Gapless")
+            #if self.cutdown != 5 and self.cutdown != 6  and self.cutdown != 1 and self.gapless == 1:
+            #    self.Button_Gapless.config(fg = "black",bg = "light blue", text ="Gapless")
             self.auto_album = 0
             with open('Lasttrack3.txt', 'w') as f:
                 f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
@@ -3330,7 +4016,15 @@ class MP3Player(Frame):
             self.Button_Next_AZ.config(text = "Info", bg = "light blue", fg = "black")
         if self.cutdown == 4:
             self.Button_Next_AZ.config(text = "NextAZ", bg = "light blue", fg = "black")
-        self.Button_Prev_Artist.config(bg = "light blue", fg = "black")
+        if self.rotary == 0:
+            self.Button_Prev_Artist.config(bg = "light blue", fg = "black")
+            self.Button_Start.config(bg = "green",fg = "black",text = "PLAY Playlist")
+        else:
+            self.Button_Prev_Artist.config(bg = "light blue", fg = "black")
+            if self.rot_pos == 3:
+                self.Button_Start.config(bg = "yellow",text = "PLAY Playlist")
+            elif self.rot_pos == 4:
+                self.Button_TAlbum.config(bg = "yellow",text = "PLAY Album")
         self.Button_Next_Artist.config(bg = "light blue", fg = "black")
         self.Button_Prev_Album.config(bg = "light blue", fg = "black")
         self.Button_Next_Album.config(bg = "light blue", fg = "black")
@@ -3339,7 +4033,6 @@ class MP3Player(Frame):
             self.Button_Shuffle.config(bg = "light blue",fg = "black")
         self.gapless = 0
         self.Button_Radio.config(bg = "light blue", fg = "black", text = "Radio")
-        self.Button_Start.config(bg = "green",fg = "white",text = "PLAY Playlist")
         if self.cutdown == 4:
             self.Button_PList_m3u.config(bg = "light green", fg = "black")
             self.Button_Track_m3u.config(bg = "light green", fg = "black")
@@ -3362,7 +4055,7 @@ class MP3Player(Frame):
             self.Button_repeat.config(fg = "black",bg = "light blue", text = "Repeat")
         if self.cutdown == 0 or self.cutdown == 7:
             self.L6.config(text= "Playlist :")
-        self.Button_TAlbum.config(fg = "white",bg = "blue")
+        self.Button_TAlbum.config(fg = "black",bg = "blue")
         if self.album_start == 1 and self.shuffle_on == 1:
             self.shuffle_on = 0
             self.tunes[self.track_no - self.album_track + 1:self.tcount]=sorted(self.tunes[self.track_no  - self.album_track + 1:self.tcount])
@@ -3383,7 +4076,12 @@ class MP3Player(Frame):
             self.sleep_time_min = 0
             self.sleep_time = 0
             self.Button_Sleep.config(bg = "light blue", text = "SLEEP")
-            self.Button_TAlbum.config(bg = "blue", fg = "white", text = "PLAY Album")
+            if self.rot_pos == 3:
+                self.Button_Start.config(bg = "yellow",text = "PLAY Playlist")
+                self.Button_TAlbum.config(bg = "blue",text = "PLAY Album")
+            elif self.rot_pos == 4:
+                self.Button_TAlbum.config(bg = "yellow",text = "PLAY Album")
+                self.Button_Start.config(bg = "green",text = "PLAY Playlist")
             self.Disp_Total_tunes.config(text =len(self.tunes))
         if self.play == 1:
             if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2:
@@ -3402,7 +4100,6 @@ class MP3Player(Frame):
                 self.paused = 0
                 if self.BT == 0 and (self.cutdown == 0 or self.cutdown == 2):
                     self.Button_Pause.config(fg = "black",bg = "light blue", text ="Pause")
-            self.Button_Start.config(bg = "green",fg = "white",text = "PLAY Playlist")
             self.shutdown = 0
             self.sleep_time = 0
             self.sleep_time_min = 0
@@ -3449,7 +4146,7 @@ class MP3Player(Frame):
               if self.render2 != "":
                   self.img.config(image = self.render2)
                   self.timer4 = 0
-          if (self.album_start == 1 or self.stopstart == 1) and self.cutdown != 5 and self.cutdown != 1:
+          if self.cutdown != 5 and self.cutdown != 1: # (self.album_start == 1 or self.stopstart == 1) and :
             if self.cutdown == 0 or self.cutdown == 2 or self.cutdown == 7:
                 x2 = abs_x - 107
                 y2 = abs_y - 356
@@ -3652,7 +4349,7 @@ class MP3Player(Frame):
                     self.paused = 0
                     if self.BT == 0 and (self.cutdown == 0 or self.cutdown == 2 or self.cutdown == 3):
                         self.Button_Pause.config(fg = "black",bg = "light blue", text ="Pause")
-                self.Button_Start.config(bg = "green",fg = "white",text = "PLAY Playlist")
+                self.Button_Start.config(bg = "green",fg = "black",text = "PLAY Playlist")
             self.play = 0
             self.m3us = glob.glob(self.m3u_dir + "*.m3u")
             self.m3us.remove(self.m3u_dir + self.m3u_def + ".m3u")
@@ -3743,7 +4440,7 @@ class MP3Player(Frame):
                     self.paused = 0
                     if self.BT == 0 and (self.cutdown == 0 or self.cutdown == 2 or self.cutdown == 3):
                         self.Button_Pause.config(fg = "black",bg = "light blue", text ="Pause")
-                self.Button_Start.config(bg = "green",fg = "white",text = "PLAY Playlist")
+                self.Button_Start.config(bg = "green",fg = "black",text = "PLAY Playlist")
             self.play = 0
             self.m3u_no +=1
             if self.m3u_no > len(self.m3us)-1:
@@ -3810,8 +4507,10 @@ class MP3Player(Frame):
                 self.Disp_played.config(text = int((self.Radio)/3)+1)
             if self.Radio_Stns[self.Radio + 2] == 0:
                 self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                #print(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]])
             else:
                 self.r = subprocess.Popen(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
+                #print(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]])
                 time.sleep(1)
                 self.q = subprocess.Popen(["mplayer", "-nocache", "http://localhost:8000"] , shell=False)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
@@ -3819,11 +4518,11 @@ class MP3Player(Frame):
                     time.sleep(2)
             if self.Radio_Stns[self.Radio + 2] == 1 and self.record == 1:
                 self.Button_Pause.config(fg = "black", bg = "light blue", text = "RECORD")
-                if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6:
+                if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                     self.L8.config(text = ".mp3")
             else:
-                self.Button_Pause.config(fg = "white", bg = "light grey", text = "Pause")
-                if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6:
+                self.Button_Pause.config(fg = "black", bg = "light grey", text = "Pause")
+                if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                     self.L8.config(text = "")
             if self.cutdown == 1 or self.cutdown == 4 or self.cutdown == 5:
                 self.Disp_track_len.config(text = int(len(self.Radio_Stns)/3))
@@ -3892,12 +4591,18 @@ class MP3Player(Frame):
             if self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 1:
                 if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
                     self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
-                    self.load = self.load.resize((218, 218), Image.LANCZOS) 
+                    if self.cutdown != 2:
+                        self.load = self.load.resize((218, 218), Image.LANCZOS)
+                    else:
+                        self.load = self.load.resize((150, 150), Image.LANCZOS)
                     self.render2 = ImageTk.PhotoImage(self.load)
                     self.img.config(image = self.render2)
                 elif os.path.exists(self.radio_jpg):
                     self.load = Image.open(self.radio_jpg)
-                    self.load = self.load.resize((218, 218), Image.LANCZOS) 
+                    if self.cutdown != 2:
+                        self.load = self.load.resize((218, 218), Image.LANCZOS)
+                    else:
+                        self.load = self.load.resize((150, 150), Image.LANCZOS)
                     self.render3 = ImageTk.PhotoImage(self.load)
                     self.img.config(image = self.render3)
             track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
@@ -3912,7 +4617,8 @@ class MP3Player(Frame):
             self.ramtest = 1
             self.Check_Record()
             if len(track) == 0  and self.Radio_Stns[self.Radio + 2] == 1:
-                messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
+                if self.rotary == 0:
+                    messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
         # Previous Artist
         if self.paused == 0 and self.album_start == 0 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
             if self.imgxon == 1:
@@ -4005,8 +4711,11 @@ class MP3Player(Frame):
                 self.Disp_played.config(text = int((self.Radio)/3)+1)
             if self.Radio_Stns[self.Radio + 2] == 0:
                 self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                #print(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]])
             else:
                 self.r = subprocess.Popen(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
+                #print(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]])
+                
                 time.sleep(1)
                 self.q = subprocess.Popen(["mplayer", "-nocache", "http://localhost:8000"] , shell=False)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
@@ -4014,11 +4723,11 @@ class MP3Player(Frame):
                     time.sleep(2)
             if self.Radio_Stns[self.Radio + 2] == 1 and self.record == 1:
                 self.Button_Pause.config(fg = "black", bg = "light blue", text = "RECORD")
-                if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6:
+                if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                     self.L8.config(text = ".mp3")
             else:
-                self.Button_Pause.config(fg = "white", bg = "light grey", text = "Pause")
-                if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6:
+                self.Button_Pause.config(fg = "black", bg = "light grey", text = "Pause")
+                if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                     self.L8.config(text = "")
             if self.cutdown == 1 or self.cutdown == 4 or self.cutdown == 5:
                 self.Disp_track_len.config(text = int(len(self.Radio_Stns)/3))
@@ -4088,12 +4797,18 @@ class MP3Player(Frame):
             if self.cutdown != 4 and self.cutdown !=5 and self.cutdown !=1:
                 if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
                     self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
-                    self.load = self.load.resize((218, 218), Image.LANCZOS) 
+                    if self.cutdown != 2:
+                        self.load = self.load.resize((218, 218), Image.LANCZOS)
+                    else:
+                        self.load = self.load.resize((150, 150), Image.LANCZOS)
                     self.render2 = ImageTk.PhotoImage(self.load)
                     self.img.config(image = self.render2)
                 elif os.path.exists(self.radio_jpg):
                     self.load = Image.open(self.radio_jpg)
-                    self.load = self.load.resize((218, 218), Image.LANCZOS) 
+                    if self.cutdown != 2:
+                        self.load = self.load.resize((218, 218), Image.LANCZOS)
+                    else:
+                        self.load = self.load.resize((150, 150), Image.LANCZOS)
                     self.render3 = ImageTk.PhotoImage(self.load)
                     self.img.config(image = self.render3)
             track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
@@ -4108,7 +4823,8 @@ class MP3Player(Frame):
             self.ramtest = 1
             self.Check_Record()
             if len(track) == 0  and self.Radio_Stns[self.Radio + 2] == 1:
-                messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
+                if self.rotary == 0:
+                    messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
         # Next Artist
         if self.paused == 0 and self.album_start == 0 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
             if self.imgxon == 1:
@@ -4388,13 +5104,13 @@ class MP3Player(Frame):
                         self.track_no = len(self.tunes) - 1
                     self.count1 = 0
                     self.count2 = 0
-                    self.tracker = 1
+                    self.tracker = 0 ###
                     self.Time_Left_Play()
                     
 
     def Next_Track(self):
         if self.trace > 0:
-             print ("Next_Track")
+            print ("Next_Track",self.album_start)
         if (self.album_start == 0 and os.path.exists(self.que_dir)) or (self.album_start == 1 and self.track_no != self.tcount and os.path.exists(self.que_dir)):
             if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 3:
                 self.Disp_Name_m3u.config(background="light gray", foreground="black")
@@ -4458,7 +5174,7 @@ class MP3Player(Frame):
                         self.track_no = 0
                     self.count1  = 0
                     self.count2  = 0
-                    self.tracker = 1
+                    self.tracker = 0 ###
                     self.Time_Left_Play()
 
     def Time_Left_Play(self):
@@ -4529,8 +5245,9 @@ class MP3Player(Frame):
              self.Show_Track()
 
     def nextAZ(self):
-        if ((self.Radio_RON == 1 or self.album_start == 1) and (self.cutdown == 6 or self.cutdown == 5)) or (self.Radio_RON == 1 and (self.cutdown == 4 or  self.cutdown == 2)):
+        if (self.Radio_RON == 1 or self.album_start == 1 or self.stopstart == 1):
             self.PopupInfo()
+            self.Button_Next_AZ.config(bg = "yellow")
         elif self.album_start == 0 and self.stopstart == 0 and len(self.tunes) > 1 and self.Radio_ON == 0:
             stop = 0
             if self.wheel_opt == 0 or self.wheel_opt == 3:
@@ -4610,7 +5327,7 @@ class MP3Player(Frame):
                 self.play = 0
             if self.play > 0:
                 self.play = 0
-                self.Button_Start.config(bg = "green",fg = "white",text = "PLAY Playlist")
+                self.Button_Start.config(bg = "green",fg = "black",text = "PLAY Playlist")
                 if self.version == 1:
                     self.p.kill()
                 else:
@@ -4719,7 +5436,8 @@ class MP3Player(Frame):
                
             else:
                 self.Disp_artist_name.config(text =" NO TRACKS FOUND !")
-                messagebox.showinfo("WARNING!","No Tracks found!")
+                if self.rotary == 0:
+                    messagebox.showinfo("WARNING!","No Tracks found!")
 
     def RELOAD1_List(self):
          counter2 = self.Tracks[self.counter5].count('/')
@@ -4778,6 +5496,12 @@ class MP3Player(Frame):
                     print ("RELOAD2",len(self.tunes))
                 self.plist_callback()
             self.Time_Left_Play()
+        if self.rotary == 1:
+            self.rot_mode = 0
+            self.rot_pos = 3
+            self.rot_posp = 3
+            self.Button_Start.config(bg = "yellow",fg = "black")
+        
 
     def Repeat(self):
         if self.paused == 0 and self.album_start == 0 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
@@ -4787,11 +5511,11 @@ class MP3Player(Frame):
             if self.repeat_count == 1:
                 self.repeat_track = 1
                 self.repeat = 0
-                self.Button_repeat.config(bg = "green",fg = "white",text = "Repeat Track")
+                self.Button_repeat.config(bg = "green",fg = "black",text = "Repeat Track")
             elif self.repeat_count == 2:
                 self.repeat_track = 0
                 self.repeat = 1
-                self.Button_repeat.config(bg = "green",fg = "white",text = "Repeat P-List")
+                self.Button_repeat.config(bg = "green",fg = "black",text = "Repeat P-List")
             else:
                 self.repeat_count = 0
                 self.repeat = 0
@@ -4805,12 +5529,15 @@ class MP3Player(Frame):
             self.repeat_album = 1
             self.repeat = 0
             self.repeat_track = 0
-            self.Button_repeat.config(bg = "green",fg = "white",text = "Repeat Album")
+            self.Button_repeat.config(bg = "green",fg = "black",text = "Repeat Album")
         elif self.paused == 0 and self.album_start == 1 and self.repeat_album == 1:
             self.repeat_album = 0
             self.repeat = 0
             self.repeat_track = 0
             self.Button_repeat.config(bg = "light blue",fg = "black",text = "Repeat Album")
+        if self.rotary == 1:
+            self.Button_repeat.config(bg = "yellow")
+            
 
     def Shuffle_Tracks(self):
         # clear ram
@@ -4847,7 +5574,7 @@ class MP3Player(Frame):
                 shuffle(self.tunes)
                 with open('Lasttrack3.txt', 'w') as f:
                     f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
-                self.Button_Shuffle.config(bg = "green",fg = "white",text = "Shuffle")
+                self.Button_Shuffle.config(bg = "yellow",fg = "black",text = "Shuffled")
                 if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and self.cutdown != 6 :
                     self.Button_AZ_artists.config(bg = "light blue", fg = "black", text = "A-Z Sort")
                 if self.cutdown == 7:
@@ -4872,7 +5599,10 @@ class MP3Player(Frame):
                 if self.cutdown != 5 and self.cutdown != 6 and self.imgxon == 0 :
                     self.Disp_plist_name.config(text=" " + self.que_dir[len(self.m3u_dir):])
                 self.Disp_Total_tunes.config(text =len(self.tunes))
-                self.Button_Shuffle.config(bg = "light blue",fg = "black",text = "Shuffle")
+                if self.rotary == 0:
+                    self.Button_Shuffle.config(bg = "light blue",fg = "black",text = "Shuffle")
+                else:
+                    self.Button_Shuffle.config(bg = "yellow",fg = "black",text = "Shuffle")
                 if self.cutdown == 7:
                     self.Disp_artist_name.set(self.artist_name)
                     self.ac = 0
@@ -4892,7 +5622,7 @@ class MP3Player(Frame):
             if self.shuffle_on == 0 and self.track_no < self.tcount:
                 self.shuffle_on = 1
                 self.tunes[self.track_no + 1:self.tcount] = random.sample(self.tunes[self.track_no + 1:self.tcount], (self.tcount - (self.track_no + 1)))
-                self.Button_Shuffle.config(bg = "green",fg = "white",text = "Shuffle")
+                self.Button_Shuffle.config(bg = "yellow",fg = "black",text = "Shuffled")
                 if self.cutdown == 7:
                     self.Disp_artist_name.set(self.artist_name)
                     self.ac = 1
@@ -4904,7 +5634,10 @@ class MP3Player(Frame):
             else:
                 self.shuffle_on = 0
                 self.tunes[self.track_no + 1:self.tcount]=sorted(self.tunes[self.track_no + 1:self.tcount])
-                self.Button_Shuffle.config(bg = "light blue",fg = "black",text = "Shuffle")
+                if self.rotary == 0:
+                    self.Button_Shuffle.config(bg = "light blue",fg = "black",text = "Shuffle")
+                else:
+                    self.Button_Shuffle.config(bg = "yellow",fg = "black",text = "Shuffle")
                 if self.cutdown == 7:
                     self.Disp_artist_name.set(self.artist_name)
                     self.plist_callback()
@@ -4922,8 +5655,8 @@ class MP3Player(Frame):
                 self.play = 0
             if self.play == 1:
                self.play = 0
-               self.Button_Start.config(bg = "green",fg = "white",text = "PLAY Playlist")
-               self.Button_TAlbum.config(fg = "white",bg = "blue")
+               self.Button_Start.config(bg = "green",fg = "black",text = "PLAY Playlist")
+               self.Button_TAlbum.config(fg = "black",bg = "blue")
                if self.version == 1:
                    self.p.kill()
                else:
@@ -4931,10 +5664,10 @@ class MP3Player(Frame):
             if self.sort_no < 3:
                self.sort_no +=1  
                if self.sort_no == 1:
-                   self.Button_AZ_artists.config(bg = "green",fg = "white",text = "A-Z Artists ON")
+                   self.Button_AZ_artists.config(bg = "green",fg = "black",text = "A-Z Artists ON")
                    self.tunes.sort()
                if self.sort_no == 2:
-                   self.Button_AZ_artists.config(bg = "green",fg = "white",text = "A-Z Album ON")
+                   self.Button_AZ_artists.config(bg = "green",fg = "black",text = "A-Z Album ON")
                    self.tunes2 = []
                    for counter in range (0,len(self.tunes)):
                        self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[counter].split('^')
@@ -4945,7 +5678,7 @@ class MP3Player(Frame):
                        self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.artist_name,self.genre_name  = self.tunes2[counter].split('^')
                        self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
                if self.sort_no == 3:
-                   self.Button_AZ_artists.config(bg = "green",fg = "white",text = "A-Z Tracks ON")
+                   self.Button_AZ_artists.config(bg = "green",fg = "black",text = "A-Z Tracks ON")
                    num_list = ["0","1","2","3","4","5","6","7","8","9"]
                    self.tunes2 = []
                    L = 2
@@ -5001,7 +5734,9 @@ class MP3Player(Frame):
                self.track_no = 0
             self.Disp_Total_Plist.config(text = "       " )
             self.Time_Left_Play()
-
+        if self.rotary == 1 and self.rot_pos == 15:
+            self.Button_AZ_artists.config(bg = "yellow")
+            
     def Track_m3u(self):
         if (os.path.exists(self.que_dir) and self.cutdown != 4 and self.Radio_ON == 0) or (os.path.exists(self.que_dir) and self.cutdown == 4 and self.album_start == 0 and self.stopstart == 0 and self.Radio_ON == 0):
             if self.cutdown == 7:
@@ -5165,13 +5900,15 @@ class MP3Player(Frame):
             self.record_sleep = 0
             
         if self.sleep_time == 0:
-            self.Button_Sleep.config(bg = "light blue", text = "SLEEP")
-            if self.cutdown == 2:
-                self.Disp_sleep.config(fg = "black", bg = "light blue")
+            if self.rotary == 0:
+                self.Button_Sleep.config(bg = "light blue", text = "SLEEP")
+            elif self.rotary == 1 and self.rot_pos == 10:
+                self.Button_Sleep.config(bg = "yellow", text = "SLEEP")
         elif self.sleep_time > 0:
-            self.Button_Sleep.config(fg = "black", bg = "orange", text = str(self.sleep_time)  + " mins")
-            if self.cutdown == 2:
-                self.Disp_sleep.config(fg = "black", bg = "orange")
+            if self.rotary == 0:
+                self.Button_Sleep.config(fg = "black", bg = "orange", text = str(self.sleep_time)  + " mins")
+            elif self.rotary == 1 and self.rot_pos == 10:
+                self.Button_Sleep.config(fg = "black", bg = "yellow", text = str(self.sleep_time)  + " mins")
             
     def sleep_off(self):
         if self.cutdown != 1  and self.cutdown != 5 and self.cutdown != 6:
@@ -5183,7 +5920,6 @@ class MP3Player(Frame):
             self.sleep_time_min = 0
             self.album_sleep = 0
             self.Button_Sleep.config(bg = "light blue", text = "SLEEP")
-            self.Disp_sleep.config(fg = "black", bg = "light blue")
  
     def Check_Sleep(self):
         if self.trace > 0:
@@ -5194,7 +5930,10 @@ class MP3Player(Frame):
             else:            
                 self.sleep_current = int((self.sleep_time_min - (time.monotonic() - self.begin))/60)
             if self.sleep_current > 0:
-                self.Button_Sleep.config(fg = "black", bg = "orange", text = str(self.sleep_current + 1)  + " mins")
+                if self.rotary == 1 and self.rot_pos == 10:
+                    self.Button_Sleep.config(fg = "black", bg = "yellow", text = str(self.sleep_current + 1)  + " mins")
+                else:
+                    self.Button_Sleep.config(fg = "black", bg = "orange", text = str(self.sleep_current + 1)  + " mins")
             else:
                 self.Button_Sleep.config(fg = "yellow", bg = "red", text = str(int((self.sleep_time_min - (time.monotonic() - self.begin)))) + " s")
             if self.sleep_current < 1:
@@ -5240,7 +5979,7 @@ class MP3Player(Frame):
                     self.Button_Next_Track.config(fg = "black")
                     if self.BT == 0:
                         self.Button_Pause.config(fg = "black",bg = "light blue", text ="Pause")
-                    self.Button_Start.config(bg = "green",fg = "white",text = "PLAY Playlist")
+                    self.Button_Start.config(bg = "green",fg = "black",text = "PLAY Playlist")
                     self.play = 0
                     self.que_dir = self.m3us[self.m3u_no]
                     Tracks = []
@@ -5328,7 +6067,7 @@ class MP3Player(Frame):
                     self.paused = 0
                     if self.BT == 0:
                         self.Button_Pause.config(fg = "black",bg = "light blue", text ="Pause")
-                self.Button_Start.config(bg = "green",fg = "white",text = "PLAY Playlist")
+                self.Button_Start.config(bg = "green",fg = "black",text = "PLAY Playlist")
             self.play = 0
             for x in range(0,len(self.m3us)):
                  if self.m3us[x] == self.m3u_dir + self.Name + ".m3u":
@@ -5376,7 +6115,8 @@ class MP3Player(Frame):
             self.StillConnected()
             return True
         except OSError:
-            messagebox.showinfo("WARNING!","No Internet found!")
+            if self.rotary == 0:
+                messagebox.showinfo("WARNING!","No Internet found!")
         return False
 
     def StillConnected(self):
@@ -5390,6 +6130,8 @@ class MP3Player(Frame):
                 self.after(600000, self.StillConnected)
             return True
         except OSError:
+            if self.trace > 0:
+                print ("Connect ERROR")
             if self.Radio_ON == 1:
                 if self.Radio_Stns[self.Radio + 2] == 0:
                     self.q.kill()
@@ -5424,11 +6166,11 @@ class MP3Player(Frame):
                 if self.repeat_count == 1:
                     self.repeat_track = 1
                     self.repeat = 0
-                    self.Button_Radio.config(bg = "green", fg = "white", text = "Repeat Track")
+                    self.Button_Radio.config(bg = "green", fg = "black", text = "Repeat Track")
                 elif self.repeat_count == 2:
                     self.repeat_track = 0
                     self.repeat = 1
-                    self.Button_Radio.config(bg = "green",fg = "white",text = "Repeat P-List")
+                    self.Button_Radio.config(bg = "green",fg = "black",text = "Repeat P-List")
                 else:
                     self.repeat_count = 0
                     self.repeat = 0
@@ -5442,16 +6184,18 @@ class MP3Player(Frame):
                 self.repeat_album = 1
                 self.repeat = 0
                 self.repeat_track = 0
-                self.Button_Radio.config(bg = "green",fg = "white",text = "Repeat Album")
+                self.Button_Radio.config(bg = "green",fg = "black",text = "Repeat Album")
             elif self.paused == 0 and self.album_start == 1 and self.repeat_album == 1:
                 self.repeat_album = 0
                 self.repeat = 0
                 self.repeat_track = 0
                 self.Button_Radio.config(bg = "light blue",fg = "black",text = "Repeat Album")
+            if self.rotary == 1:
+                self.Button_Radio.config(bg = "yellow")
         # STOP RECORD BUTTON
         elif self.Radio_ON == 1 and self.Radio_RON == 1 and self.record == 1:
             if self.trace > 0:
-                print ("Start Record")
+                print ("Stop Record")
             self.Radio_RON    = 0
             self.auto_record  = 0
             self.auto_radio   = 1
@@ -5462,7 +6206,7 @@ class MP3Player(Frame):
             self.Disp_track_len.config(text ="     ")
             self.Disp_played.config(text ="     ")
             self.Disp_track_no.config(text = "")
-            self.Button_Reload.config(text = "CLR RAM", bg = "light blue", fg = "black")
+            self.Button_Reload.config( bg = "light gray", fg = "black")
             if self.imgxon == 1:
                 self.imgx.after(100, self.imgx.destroy())
                 self.imgxon = 0
@@ -5502,25 +6246,26 @@ class MP3Player(Frame):
                 self.Disp_track_name9.config(fg = "black",bg = "light grey",text = " ", borderwidth=2)
             if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6:
                 self.Disp_Total_Plist.config(text = "")
-                self.L8.config(text = "")
+                if self.touchscreen == 1:
+                    self.L8.config(text = "")
                 if self.cutdown != 3 and self.cutdown != 2:
                     self.L3.config(text = "")
                     self.L1.config(text = "RAM: ")
-                self.Button_Radio.config(bg = "orange",fg = "black", text = "STOP Radio")
+                self.Button_Radio.config(bg = "yellow",fg = "black", text = "STOP Radio")
             else:
-                self.Button_Radio.config(bg = "orange",fg = "black", text = "STOP")
+                self.Button_Radio.config(bg = "yellow",fg = "black", text = "STOP")
             if self.Radio_Stns[self.Radio + 2] == 1:
                 self.Button_Pause.config(fg = "black", bg = "light blue", text = "RECORD")
             else:
-                self.Button_Pause.config(fg = "white", bg = "light grey", text = "RECORD")
+                self.Button_Pause.config(fg = "black", bg = "light grey", text = "RECORD")
             if self.cutdown != 1:
-                self.Button_Radio.config(bg = "orange",fg = "black", text = "STOP Radio")
+                self.Button_Radio.config(bg = "yellow",fg = "black", text = "STOP Radio")
             if self.cutdown != 1  and self.cutdown != 5 and self.cutdown != 6 and self.model != 0:
                 if self.cutdown != 3:
                     self.L9.config(text= "   ")
                 self.s.configure("LabeledProgressbar", text="0 %      ", background='red')
                 self.progress['value'] = 0
-            if self.cutdown == 5 or self.cutdown == 4 or self.cutdown == 2:
+            if self.cutdown == 5 or self.cutdown == 4 or self.cutdown == 2 or self.cutdown == 7:
                 self.Button_Next_AZ.config(fg = "black", bg = "light blue", text = "NextAZ")
             self.Copy_Record()
         # STOP RADIO BUTTON
@@ -5533,8 +6278,9 @@ class MP3Player(Frame):
             with open('Lasttrack3.txt', 'w') as f:
                 f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
             if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and self.cutdown != 6 :
-                self.L8.config(text = ".m3u")
-                self.Button_DELETE_m3u.config(fg= "black")
+                if self.touchscreen == 1:
+                    self.L8.config(text = ".m3u")
+                    self.Button_DELETE_m3u.config(fg= "black")
                 self.Disp_Name_m3u.delete('1.0','20.0')
                 self.Disp_Total_Plist.config(text = "")
                 if self.cutdown != 2:
@@ -5543,7 +6289,7 @@ class MP3Player(Frame):
             if self.cutdown == 5 or self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 6:
                 self.L1.config(text="Track:")
                 self.L3.config(text="Played:")
-                if self.cutdown == 5:
+                if self.cutdown == 5 or self.cutdown == 7:
                     self.Button_Next_AZ.config(fg = "black", bg = "light blue", text = "NextAZ")
             self.Button_Radio.config(bg = "light blue",fg = "black", text = "Radio")
             if self.Radio_Stns[self.Radio + 2] == 0:
@@ -5581,32 +6327,43 @@ class MP3Player(Frame):
                     self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
                     self.Disp_track_name = tk.Label(self.Frame10, height=2, width=25,bg='white',font = self.helv01, anchor="w", borderwidth=2, relief="groove")
                     self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
-            if self.Button_info_on == 1 and self.cutdown == 0:
-                self.Button_Info.config(fg="black",bg="light blue")
             if self.cutdown != 5 and self.cutdown != 6 :
                 self.Button_Next_Artist.config(text="Artist >")
                 self.Button_Prev_Artist.config(text="< Artist")
                 if self.cutdown != 1:
-                    self.Button_PList_m3u.config(bg  = "light green", fg = "black")
-                    self.Button_Track_m3u.config(bg  = "light green", fg = "black")
-                    self.Button_Album_m3u.config(bg  = "light green", fg = "black")
-                    self.Button_Artist_m3u.config(bg = "light green", fg = "black")
-                self.Button_Start.config(bg = "green",fg = "white",text = "PLAY Playlist")
+                    if self.touchscreen == 1:
+                        self.Button_PList_m3u.config(bg  = "light green", fg = "black")
+                        self.Button_Track_m3u.config(bg  = "light green", fg = "black")
+                        self.Button_Album_m3u.config(bg  = "light green", fg = "black")
+                        self.Button_Artist_m3u.config(bg = "light green", fg = "black")
+                self.Button_Start.config(bg = "green",fg = "black",text = "PLAY Playlist")
                 self.Disp_plist_name.config(text=" " + self.que_dir[len(self.m3u_dir):])
             else:
                 self.Button_Next_Artist.config(text="Artist >")
-                self.Button_Prev_Artist.config(text="< Artist")
+                if self.rotary == 0:
+                    self.Button_Prev_Artist.config(text="< Artist")
+                else:
+                    self.rot_pos = 3
+                    self.rot_posp = 3
+                    self.Button_Start.config(bg = "yellow",text="PLAY Playlist")
+                    self.Button_Prev_Artist.config(text="< Artist")
             self.Button_Shuffle.config(bg  = "light blue", fg = "black", text = "Shuffle")
-            if self.cutdown == 0 or self.cutdown == 7:
+            if (self.cutdown == 0 or self.cutdown == 7) and self.touchscreen == 1:
                 self.Button_Search_to_m3u.config(bg = "light green", fg = "black", text = "Search to .m3u")
-            if self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 1 and  self.cutdown != 6:
+            if self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 1 and  self.cutdown != 6 and self.touchscreen == 1:
                 self.Button_Add_to_FAV.config(bg = "light green", fg = "black",text = "Add track to FAV .m3u  ")
                 self.Button_PList_m3u.config(bg  = "light green", fg = "black",text = "ADD P-List to .m3u")
             self.Button_Reload.config(text = "RELOAD",bg  = "#c5c", fg = "black")
             if self.cutdown != 5 and self.cutdown != 6 :
                 self.Button_Prev_PList.config(fg = "black")
-            self.Button_Start.config(bg  = "green", fg = "white")
-            self.Button_Prev_Artist.config(bg = "light blue", fg = "black")
+            self.Button_Start.config(bg  = "green", fg = "black")
+            if self.rotary == 0:
+                self.Button_Prev_Artist.config(bg = "light blue", fg = "black")
+            else:
+                self.rot_pos = 3
+                self.rot_posp = 3
+                self.Button_Start.config(bg = "yellow",text="PLAY Playlist")
+                self.Button_Prev_Artist.config(text="< Artist")
             self.Button_Prev_Album.config(bg = "light blue", fg = "black")
             self.Button_Prev_Track.config(bg = "light blue", fg = "black")
             self.Button_Next_Artist.config(bg = "light blue", fg = "black")
@@ -5634,8 +6391,8 @@ class MP3Player(Frame):
                 self.Button_Pause.config(fg = "black",bg = "light blue", text = "Pause")
             if self.cutdown != 1 and self.cutdown != 5 and  self.cutdown != 6:
                 self.Button_Gapless.config(fg = "black",bg = "light blue")
-            self.Button_TAlbum.config(fg = "white",bg = "blue")
-            self.Disp_track_no.config(text = str(self.track_no))
+            self.Button_TAlbum.config(fg = "black",bg = "blue")
+            self.Disp_track_no.config(text = str(self.track_no + 1))
             if self.cutdown == 6:
                 self.Disp_track_name1.config(fg = "black",bg = "light grey",text = " ", borderwidth=2)
                 self.Disp_track_name2.config(fg = "black",bg = "light grey",text = " ", borderwidth=2)
@@ -5684,10 +6441,11 @@ class MP3Player(Frame):
                     self.Disp_played.config(text ="000:00")
                     if self.cutdown != 1 and self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 6  and self.cutdown != 3:
                         self.Button_Pause.config(fg = "black", bg = "light blue", text = "RECORD")
-                        self.L8.config(text = ".mp3")
+                        if self.touchscreen == 1:
+                            self.L8.config(text = ".mp3")
                         self.L6.config(text="")
                 else:
-                    if self.cutdown != 1 and self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 6 :
+                    if self.cutdown != 1 and self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 6 and self.touchscreen == 1:
                         self.L8.config(text = "")
                     self.Button_Pause.config(fg = "black", bg = "light blue", text = "Pause")
                     
@@ -5699,15 +6457,14 @@ class MP3Player(Frame):
                         self.L5.config(text="")
                     if self.cutdown != 5 and self.cutdown != 6 :
                         self.L6.config(text="")
-                        self.Button_DELETE_m3u.config(fg= "white")
-                        if self.cutdown != 2 and self.cutdown != 3:
-                            self.Button_Search_to_m3u.config(fg = "white", bg = "light grey", text = "Search to .m3u")
+                        if self.touchscreen == 1:
+                            self.Button_DELETE_m3u.config(fg= "white")
+                        if self.cutdown != 2 and self.cutdown != 3 and self.touchscreen == 1:
+                            self.Button_Search_to_m3u.config(fg = "black", bg = "light grey", text = "Search to .m3u")
                 if self.cutdown != 1:
-                    self.Button_Radio.config(bg = "orange",fg = "black", text = "STOP Radio")
+                    self.Button_Radio.config(bg = "yellow",fg = "black", text = "STOP Radio")
                 else:
-                    self.Button_Radio.config(bg = "orange",fg = "black", text = "STOP")
-                if self.Button_info_on == 1 and self.cutdown == 0:
-                    self.Button_Info.config(fg="white",bg="light grey")
+                    self.Button_Radio.config(bg = "yellow",fg = "black", text = "STOP")
                 self.L2.config(text="")
                 self.L4.config(text="")
                 if self.cutdown == 6:
@@ -5749,14 +6506,14 @@ class MP3Player(Frame):
                         self.Disp_track_name9.config(fg = "black",bg = "#ddd",text = " ", borderwidth=0)
  
                 if self.cutdown != 5 and self.cutdown != 6 :
-                    if self.cutdown != 1:
+                    if self.cutdown != 1 and self.touchscreen == 1:
                         self.Disp_Name_m3u.delete('1.0','20.0')
-                        self.Button_Gapless.config(bg  = "light grey", fg = "white")
-                        self.Button_Track_m3u.config(bg  = "light grey", fg = "white")
-                        self.Button_Artist_m3u.config(bg  = "light grey", fg = "white")
-                        self.Button_Album_m3u.config(bg  = "light grey", fg = "white")
-                    self.Button_Prev_Artist.config(bg  = "light grey", fg = "white")
-                    self.Button_Next_Artist.config(bg  = "light grey", fg = "white")
+                        self.Button_Gapless.config(bg  = "light grey", fg = "black")
+                        self.Button_Track_m3u.config(bg  = "light grey", fg = "black")
+                        self.Button_Artist_m3u.config(bg  = "light grey", fg = "black")
+                        self.Button_Album_m3u.config(bg  = "light grey", fg = "black")
+                    self.Button_Prev_Artist.config(bg  = "light grey", fg = "black")
+                    self.Button_Next_Artist.config(bg  = "light grey", fg = "black")
                     self.Button_Prev_Artist.config(text = " < Station", fg = "black", bg = "light blue")
                     self.Button_Next_Artist.config(text = " Station >", fg = "black", bg = "light blue")
                     if self.cutdown != 7:
@@ -5764,54 +6521,61 @@ class MP3Player(Frame):
                     else:
                         self.Disp_artist_name.set(self.Name)
                     self.Disp_plist_name.config(text = "")
-                    self.Button_Prev_PList.config(fg = "white", bg = "light gray")
-                    self.Button_Next_PList.config(fg = "white", bg = "light gray")
+                    self.Button_Prev_PList.config(fg = "black", bg = "light gray")
+                    self.Button_Next_PList.config(fg = "black", bg = "light gray")
                 else:
                     self.Button_Prev_Artist.config(text = " < Station", fg = "black")
                     self.Button_Next_Artist.config(text = " Station >", fg = "black")
                     self.Disp_artist_name.config(text = self.Name)
                     if self.cutdown != 5 and self.cutdown != 6 :
-                        self.Button_Prev_PList.config(fg = "white", bg = "light gray")
-                        self.Button_Next_PList.config(fg = "white", bg = "light gray")
-                self.Button_Start.config(bg  = "light grey", fg = "white")
-                self.Button_Prev_Album.config(bg  = "light grey", fg = "white")
-                self.Button_Next_Album.config(bg  = "light grey", fg = "white")
-                self.Button_Prev_Track.config(bg  = "light grey", fg = "white")
-                self.Button_Next_Track.config(bg = "light grey", fg = "white")
-                if self.cutdown == 5:
+                        self.Button_Prev_PList.config(fg = "black", bg = "light gray")
+                        self.Button_Next_PList.config(fg = "black", bg = "light gray")
+                self.Button_Start.config(bg  = "light grey", fg = "black")
+                self.Button_Prev_Album.config(bg  = "light grey", fg = "black")
+                self.Button_Next_Album.config(bg  = "light grey", fg = "black")
+                self.Button_Prev_Track.config(bg  = "light grey", fg = "black")
+                self.Button_Next_Track.config(bg = "light grey", fg = "black")
+                if self.cutdown == 5 or self.cutdown == 7:
                     self.Button_Next_AZ.config(bg = "light blue", fg = "black", text = "Info")
                 else:
-                    self.Button_Next_AZ.config(bg = "light grey", fg = "white")
-                self.Button_Shuffle.config(text = "CLR RAM", bg = "light blue", fg = "black")
-                if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 3 or self.cutdown == 2:
-                    self.Button_Add_to_FAV.config(bg = "light grey", fg = "white",text = "Add track to FAV .m3u  ")
-                if self.cutdown != 5 and self.cutdown != 1 and self.cutdown != 6 :
-                    self.Button_PList_m3u.config(bg  = "light grey", fg = "white")
+                    self.Button_Next_AZ.config(bg = "light grey", fg = "black")
+                self.Button_Shuffle.config(bg = "light gray", fg = "black")
+                if (self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 3 or self.cutdown == 2) and self.touchscreen == 1:
+                    self.Button_Add_to_FAV.config(bg = "light grey", fg = "black",text = "Add track to FAV .m3u  ")
+                if self.cutdown != 5 and self.cutdown != 1 and self.cutdown != 6 and self.touchscreen == 1 :
+                    self.Button_PList_m3u.config(bg  = "light grey", fg = "black")
                 if self.cutdown != 4 and self.cutdown !=5 and self.cutdown !=1:
-                    if self.cutdown != 6: 
-                        self.Button_Album_m3u.config(bg = "light grey", fg = "white")
-                        self.Button_AZ_artists.config(bg  = "light grey", fg = "white")
-                        self.Button_repeat.config(bg  = "light grey", fg = "white")
+                    if self.cutdown != 6:
+                        if self.touchscreen == 1:
+                           self.Button_Album_m3u.config(bg = "light grey", fg = "black")
+                        self.Button_AZ_artists.config(bg  = "light grey", fg = "black")
+                        self.Button_repeat.config(bg  = "light grey", fg = "black")
                         self.Disp_Total_Plist.config(text = "")
                     if self.cutdown == 0 or self.cutdown == 3 or self.cutdown == 7:
                         self.Disp_Drive.config(text = "")
                     if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
                         self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
-                        self.load = self.load.resize((218, 218), Image.LANCZOS) 
+                        if self.cutdown != 2:
+                            self.load = self.load.resize((218, 218), Image.LANCZOS)
+                        else:
+                            self.load = self.load.resize((150, 150), Image.LANCZOS)
                         self.render2 = ImageTk.PhotoImage(self.load)
                         self.img.config(image = self.render2)
                     elif os.path.exists(self.radio_jpg):
                         self.load = Image.open(self.radio_jpg)
-                        self.load = self.load.resize((218, 218), Image.LANCZOS) 
+                        if self.cutdown != 2:
+                            self.load = self.load.resize((218, 218), Image.LANCZOS)
+                        else:
+                            self.load = self.load.resize((150, 150), Image.LANCZOS)
                         self.render3 = ImageTk.PhotoImage(self.load)
                         self.img.config(image = self.render3)
                        
-                self.Button_TAlbum.config(bg  = "light grey", fg = "white")
+                self.Button_TAlbum.config(bg  = "light grey", fg = "black")
                 if self.Radio_Stns[self.Radio + 2] == 1 and self.record == 1:
                     self.Button_Pause.config(bg  = "light blue", fg = "black", text = "RECORD")
                 else:
-                    self.Button_Pause.config(fg = "white", bg = "light grey", text = "Pause")
-                self.Button_Reload.config(bg  = "light grey", fg = "white")
+                    self.Button_Pause.config(fg = "black", bg = "light grey", text = "Pause")
+                self.Button_Reload.config(bg  = "light grey", fg = "black")
                 self.Disp_album_name.config(text ="")
                 self.Disp_track_name.config(text ="")
                 self.Disp_track_no.config(text = "")
@@ -5872,7 +6636,8 @@ class MP3Player(Frame):
                        time.sleep(2)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
                 if len(track) == 0  and self.Radio_Stns[self.Radio + 2] == 1:
-                    messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
+                    if self.rotary == 0:
+                        messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
                 # check RAM space and set self.max_record
                 st = os.statvfs("/run/shm/")
                 self.freeram1 = (st.f_bavail * st.f_frsize)/1100000
@@ -5882,8 +6647,8 @@ class MP3Player(Frame):
                 self.ramtest = 1
                 
                 self.Check_Record()
-                if self.auto_radio == 1 and self.auto_record == 1 and self.Radio_Stns[self.Radio + 2] == 1:
-                    self.Pause()
+                #if self.auto_radio == 1 and self.auto_record == 1 and self.Radio_Stns[self.Radio + 2] == 1:
+                #    self.Pause()
 
     def Check_Record(self):
         if self.trace > 2:
@@ -5902,9 +6667,12 @@ class MP3Player(Frame):
             rec_stat = (os.stat("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".mp3").st_size)/1000000
             self.record_current = int((self.record_time_min - (time.monotonic() - self.rec_begin))/60)
             if self.record_current > 0:
-                self.Button_Pause.config(fg = "white", bg = "red", text = str(self.record_current + 1)  + " mins")
+                if self.rot_pos == 9:
+                    self.Button_Pause.config(fg = "black", bg = "yellow", text = str(self.record_current + 1)  + " mins")
+                else:
+                    self.Button_Pause.config(fg = "black", bg = "orange", text = str(self.record_current + 1)  + " mins")
             else:
-                self.Button_Pause.config(fg = "yellow", bg = "red", text = str(int((self.record_time_min - (time.monotonic() - self.rec_begin)))) + " s")
+                self.Button_Pause.config(fg = "black", bg = "orange", text = str(int((self.record_time_min - (time.monotonic() - self.rec_begin)))) + " s")
             if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 6 and self.model != 0:
                 if self.cutdown != 3:
                     self.L9.config(text= " R :")
@@ -6071,7 +6839,7 @@ class MP3Player(Frame):
         if self.trace > 2:
             print ("Get Track")
         # determine max recording time based on stream rate
-        if time.monotonic() - self.timer7 >= 30 and self.ramtest == 1:
+        if time.monotonic() - self.timer7 >= 30 and self.ramtest == 1 and self.Radio_RON == 1:
             self.ramtest = 0
             st = os.statvfs("/run/shm/")
             self.freeram2 = (st.f_bavail * st.f_frsize)/1100000
@@ -6088,7 +6856,7 @@ class MP3Player(Frame):
                 self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
                 now = datetime.datetime.now()
                 self.stop_record = now + timedelta(minutes=self.record_time)
-                if cutdown == 7 and self.synced == 1:
+                if (self.cutdown == 7 or self.cutdown == 0) and self.synced == 1:
                     self.L6.config(text = "(" + str(self.stop_record)[11:16] + ")")
             
         # backlight off
@@ -6161,7 +6929,16 @@ class MP3Player(Frame):
                 else:
                     self.Disp_track_name.config(text = self.tname)
         elif self.Radio_RON == 1 :
-            messagebox.showinfo("WARNING!","NOT RECORDING" + "\n" + "Check Recordable")
+            if self.rotary == 0:
+                messagebox.showinfo("WARNING!","NOT RECORDING" + "\n" + "Check Recordable")
+                self.Button_Pause.config(fg = "black",bg = "light blue",text = "RECORD")
+            else:
+                print("WARNING!","NOT RECORDING - Check Recordable")
+                print("x",self.rot_pos)
+                if self.rot_pos == 9:
+                    self.Button_Pause.config(fg = "black",bg = "yellow",text = "RECORD")
+                else:
+                    self.Button_Pause.config(fg = "black",bg = "light blue",text = "RECORD")
             self.rems = glob.glob("/run/shm/music/*/*/*.mp3")
             for x in range(0,len(self.rems)):
                 os.remove(self.rems[x])
@@ -6178,7 +6955,8 @@ class MP3Player(Frame):
                 self.Disp_played.config(text ="     ")
                 self.Disp_track_no.config(text = "")
                 if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5:
-                    self.L8.config(text = "")
+                    if self.touchscreen == 1:
+                        self.L8.config(text = "")
                     if self.cutdown != 3 and self.cutdown != 2:
                         self.L3.config(text = "")
                         self.L1.config(text = "")
@@ -6346,17 +7124,21 @@ class MP3Player(Frame):
                 elif self.cutdown == 2:
                     popup.geometry("640x480")
                     STxtBox = ScrolledText(popup, height=640, width=480)
+                elif self.cutdown == 1:
+                    popup.geometry("320x240")
+                    STxtBox = ScrolledText(popup, height=320, width=240)
                 STxtBox.pack(expand = 0,fill = BOTH)
                 popup.title(infofile)
                 with open(ipath + filename, "r", encoding="Latin-1") as f:
                     for line in f:
                         STxtBox.insert(END, line)
                 f.close()
-                if self.Radio_RON == 1:
-                    popup.after(10000, popup.destroy)
+                popup.after(10000, popup.destroy)
                     
     def Shutdown(self):
         if (self.shuffle_on == 1 and self.sleep_time > 0 and self.play == 0) or self.Shutdown_exit == 0:
+            if self.rotary == 1:
+                os.system("sudo shutdown -h now")
             self.exit()
             
 def main():
