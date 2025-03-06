@@ -5,22 +5,27 @@ Note this will work under BUSTER, BULLSEYE , OR BOOKWORM
 
 v17.77 version notes:
 
-    Set Variable rotary = 1 (line 31), set to 0 if you want to use the original external buttons.
+    Set Variable rotary = 1 (line 31), set to 0 if you want to use the
+    original external buttons.
     
     Rotary Encoder 1 (KY-040) will set volume, it's press button will MUTE
     
-    Rotary Encoder 2 (KY-040) will step through the onscreen buttons, press (goes red) and select Plist/Artist/Album/Track
-    press again (goes yellow) and choose Play Playlist / Play Album and press again.
+    Rotary Encoder 2 (KY-040) will step through the onscreen buttons,
+    press (goes red) and select Plist/Artist/Album/Track
+    press again (goes yellow) and 
+    choose Play Playlist / Play Album and press again.
     Will step through tracks whilst playing an Album. 
 
     see rotary_connections.jpg 
 
-    I would recommend cutdowns 0 or 5 with the rotary encoders. 7 has the drop downs which are no use with the rotary encoders 
+    I would recommend cutdowns 0 or 5 with the rotary encoders.
+    7 has the drop downs which are no use with the rotary encoders 
     and slow the system down, 0 is quicker and has the same options.
 
     Note:-
     Pressing RELOAD / Radio may take a while before you see anything happening.
-    Don't be tempted to press any screen buttons if using the rotary encoders, this will confuse the code !!
+    Don't be tempted to press any screen buttons if using the rotary encoders,
+    this will confuse the code !!
     Don't set rotary = 0 if you have the rotarys connected.
 
 Note tested on a Pi5 with bookworm but not with the PI 7" screens.
