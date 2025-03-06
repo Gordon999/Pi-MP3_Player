@@ -1,0 +1,102 @@
+#Angel Radio,http://s2.xrad.io:8522/listen.pls?sid=1
+#Bartók Rádió,http://mr-stream.mediaconnect.hu/4742/mr3hq.mp3
+BBC World Service,https://stream.live.vc.bbcmedia.co.uk/bbc_world_service,1
+#BBC World Service,http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_world_service/format/pls.pls
+BBC World Service,https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/ak/bbc_world_service.m3u8
+Capital UK,http://vis.media-ice.musicradio.com/CapitalUK
+Capital FM London,http://media-ice.musicradio.com/CapitalMP3,1
+Classic FM UK,http://media-the.musicradio.com/ClassicFM,1
+Classic FM,http://ice-sov.musicradio.com/ClassicFMMP3,1
+Classic FM UK,http://ice-the.musicradio.com/ClassicFMMP3
+Classic FM at the Movies,http://media-sov.musicradio.com/ClassicFM-M-Movies
+Classic FM Relax,http://media-the.musicradio.com/ClassicFM-M-Relax
+Celtic Music Radio,http://stream.celticmusicradio.net:8000/celticmusic.mp3,1
+Chill,http://media-ice.musicradio.com/ChillMP3.m3u,1
+#CRI,http://sk.cri.cn/915.m3u8
+#CRI News Plus AM1008,http://sk.cri.cn/am1008.m3u8
+Danubius Rádió,http://stream.danubiusradio.hu/danubius_128k
+Danubius Rádió,https://stream.danubiusradio.hu/danubius_320k
+Deep House Lounge,http://198.15.94.34:8006/stream
+Express FM 93.7 Portsmouth,http://london-ics01.broadcast.meteoric.net/expressfm.mp3?.mp3
+England – Heart London Radio,http://ice-the.musicradio.com/HeartLondonMP3,1
+Heart Dorset 102.3,http://ice-sov.musicradio.com/HeartDorsetMP3,1
+Heart South Coast 96.7 & 97.5,http://media-sov.musicradio.com/HeartHampshire,1
+Heart Sussex 102.4 &103.5,http://media-ice.musicradio.com/HeartSussexMP3?.mp3,1
+I Love Pécs Rádió,http://radio.ilovepecs.hu:8200/ilp.mp3,1
+JAZZ & CHILL,http://salalondon.ddns.net:8002/;.m3u
+Jazz London Radio,http://radio.canstream.co.uk:8075/live.mp3,1
+Joint Radio Reggae,http://star.jointil.net/proxy/jrn_reggae?mp=/stream
+KLASSIK 1,http://icepool.silvacast.com/KLASSIK1.mp3
+Klassikradio,http://stream.klassikradio.de/live/mp3-192/stream.klassikradio.de/
+Klassik Radio Barock,http://stream.klassikradio.de/barock/mp3-192
+Klassik Radio Friends@Home,http://stream.klassikradio.de/friendshome/mp3-128/
+Klassikradio Chor,http://stream.klassikradio.de/chor/mp3-192/www.klassikradio.de/
+Klassik Radio Healing,http://stream.klassikradio.de/healing/mp3-128/
+Klassik Radio Klassik Dreams,http://stream.klassikradio.de/dreams/mp3-128/
+Hirschmilch Radio Prog House,https://hirschmilch.de:7001/prog-house.mp3
+Klassik Radio Lounge,http://stream.klassikradio.de/lounge/mp3-128/www.klassikradio.de/
+Klassikradio Movie Channel,http://stream.klassikradio.de/movie/mp3-192/www.klassikradio.de/
+Klassik Radio Nature,http://stream.klassikradio.de/nature/mp3-128/www.klassikradio.de/
+Klassikradio New Classics,http://stream.klassikradio.de/newclassics/mp3-192/www.klassikradio.de/
+Klassik Radio Opera,http://stream.klassikradio.de/opera/mp3-128/www.klassikradio.de/
+Klassikradio Pure Bach,http://stream.klassikradio.de/purebach/mp3-192/www.klassikradio.de/
+Klassik Radio Smooth,http://stream.klassikradio.de/smooth/mp3-128/radiosure/play.m3u
+Laser Hot Hits,http://213.175.217.198:8000/laserhq,1
+LBC Radio,http://media-sov.musicradio.com/LBC973MP3Low,1
+LBC London (London stream) AAC,http://media-sov.musicradio.com/LBCLondon
+Linn Classical,http://radio.linn.co.uk:8004/autodj,1
+Linn Jazz,http://radio.linn.co.uk:8000/autodj,1
+Linn Radio,http://radio.linn.co.uk:8003/autodj,1
+Naim Classical [FLAC],https://mscp3.live-streams.nl:8252/class-flac.flac
+#Naim Classical [320k AAC],https://mscp3.live-streams.nl:8252/class-high.aac
+Naim Jazz [FLAC],https://mscp3.live-streams.nl:8342/jazz-flac.flac
+#Naim Jazz [320k AAC],https://mscp3.live-streams.nl:8342/jazz-high.aac
+Naim Radio [FLAC],https://mscp3.live-streams.nl:8362/flac.flac
+#Naim Radio [320k AAC],https://mscp3.live-streams.nl:8362/high.aac
+ORF Tirol http 1,http://orf-live.ors-shoutcast.at/tir-q1a,1
+ORF Tirol http 2,http://orf-live.ors-shoutcast.at/tir-q2a,1
+Point Blank FM 320KB,http://pointblankradio.co.uk:9002/stream,1
+Radio Alfa 3 latin hits,http://stream.zeno.fm/pexep60uhnruv
+Radio Caroline AAC 96 kbps,http://78.129.202.200:8030/;
+Radio Caroline,http://sc6.radiocaroline.net:8040/stream.mp3
+Radio Caroline,http://78.129.202.200:8040/
+Radio Caroline Flashback,http://sc2.radiocaroline.net:10558/listen.pls
+Radio Northsea International,http://radionorthsea.zapto.org:8008/listen.pls
+Radio Paradise (320k),http://stream-uk1.radioparadise.com/aac-320
+Radio Osttirol,http://streamplus20.leonex.de:28768/;
+Radio Seagull,http://stream.radioseagull.net:8000/seagull
+Radio Tirol,http://str2.creacast.com/radiotirol_a,1
+RAI Südtirol,http://radiobzlive.rai.it/RAIBZ_Livestream
+#Reggae Radio Rastamusic.com,http://ais.rastamusic.com/rastamusic.mp3.m3u
+RFI Anglais nglish,http://live02.rfi.fr/rfienanglais-64.mp3,1
+Rock Antenne Heavy Metal,http://mp3channels.webradio.rockantenne.de/heavy-metal,1
+RTL,http://streaming.radio.rtl.fr/rtl-1-44-128
+Soma FM - Groove Salad,http://ice.somafm.com/groovesalad
+Soma FM - Drone Zone,http://ice.somafm.com/dronezone
+Soma FM - Indie Pop Rocks!,http://ice.somafm.com/indiepop
+Soma FM - Space Station Soma,http://ice.somafm.com/spacestation
+Soma FM - Secret Agent,http://ice.somafm.com/secretagent
+Soma FM - Deep Space One,http://ice.somafm.com/deepspaceone
+Soma FM - Groove Salad Classic,http://ice.somafm.com/gsclassic
+Soma FM - Lush,http://ice.somafm.com/lush
+Soma FM - Underground 80s,http://ice.somafm.com/u80s
+Soma FM - BAGeL Radio,http://ice.somafm.com/bagel
+Soma FM - Left Coast 70s,http://ice.somafm.com/seventies
+Soma FM - DEF CON Radio,http://ice.somafm.com/defcon
+Soma FM - Folk Forward,http://ice.somafm.com/folkfwd
+Soma FM - Suburbs of Goa,http://ice.somafm.com/suburbsofgoa
+Soma FM - ThistleRadio,http://ice.somafm.com/thistle
+Soma FM - The Trip,http://ice.somafm.com/thetrip
+SomaFM Beat Blender AAC 128k,https://somafm.com/beatblender130.pls
+SomaFM Beat Blender MP3,https://somafm.com/beatblender.pls
+Südtirol 1,http://players.creacast.com/creacast/sudtirol1a/playlist.pls,1
+talkRADIO,http://radio.talkradio.co.uk/stream,1
+The English Connection Media,http://s30.myradiostream.com:19108/listen.mp3
+Unity 101 Community Radio,http://live.canstream.co.uk:8000/unity24.mp3
+Virgin Radio Chilled,https://radio.virginradio.co.uk/stream-chilled
+VOA1 – The Hits,http://voa-22.akacast.akamaistream.net/7/48/322034/v1/ibb.akacast.akamaistream.net/voa-22,1
+VOA Voice of America Global English,http://voa-28.akacast.akamaistream.net/7/54/322040/v1/ibb.akacast.akamaistream.net/voa-28,1
+VOA Chinese,http://voa-11.akacast.akamaistream.net/7/317/322023/v1/ibb.akacast.akamaistream.net/voa-11,1
+VOA-Voice of America African Service (English),http://voa-17.akacast.akamaistream.net/7/315/322029/v1/ibb.akacast.akamaistream.net/voa-17,1
+KEXP-Seattle,http://live-mp3-128.kexp.org
+KSPC Claremont 88.7,http://andromeda.shoutca.st:8419/stream192
