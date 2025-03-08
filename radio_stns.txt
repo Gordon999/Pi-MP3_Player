@@ -1,12 +1,18 @@
 100% Radio - Carcassonne,http://100radio-carcassonne.ice.infomaniak.ch/100radio-carcassonne-128.mp3,0
+80s Rhythm,http://stream.mybroadbandradio.com:80/80srhythmhq,0
+Absolute Radio 60s,http://edge-bauerall-01-gos2.sharp-stream.com/absolute60s.mp3?aw_0_1st.skey=1741266860&aw_0_1st.playerid=BMUK_RPi,1
+Absolute Radio 70s,http://edge-bauerall-01-gos2.sharp-stream.com/absolute70s.mp3?aw_0_1st.skey=1741266854&aw_0_1st.playerid=BMUK_RPi,1
+Absolute 80s,http://edge-bauerall-01-gos2.sharp-stream.com/absolute80s.mp3?aw_0_1st.skey=1741266858&aw_0_1st.playerid=BMUK_RPi,1
+Absolute Radio 90s,http://edge-bauerall-01-gos2.sharp-stream.com/absolute90s.mp3?aw_0_1st.skey=1741336509&aw_0_1st.playerid=BMUK_RPi,1
 BBC World Service,https://stream.live.vc.bbcmedia.co.uk/bbc_world_service,1
 BBC World Service,https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/ak/bbc_world_service.m3u8,0
-Capital FM London,http://media-ice.musicradio.com/CapitalMP3,1
+Capital FM London,http://media-ice.musicradio.com/CapitalMP3,2
 Capital UK,http://vis.media-ice.musicradio.com/CapitalUK,0
-Celtic Music Radio,http://stream.celticmusicradio.net:8000/celticmusic.mp3,1
-Chill,http://media-ice.musicradio.com/ChillMP3.m3u,1
+Celtic Music Radio,http://stream.celticmusicradio.net:8000/celticmusic.mp3,4
+CFM,http://edge-bauerall-01-gos2.sharp-stream.com/cfm.mp3?aw_0_1st.skey=1741267161,3
+Chill,http://media-ice.musicradio.com/ChillMP3.m3u,2
 Chill In Zone - Hi On Line ,http://mscp2.live-streams.nl:8100/flac.flac,0
-Classic FM,http://ice-sov.musicradio.com/ClassicFMMP3,1
+Classic FM,http://ice-sov.musicradio.com/ClassicFMMP3,2
 Classic FM at the Movies,http://media-sov.musicradio.com/ClassicFM-M-Movies,0
 Classic FM Relax,http://media-the.musicradio.com/ClassicFM-M-Relax,0
 Classic FM UK,http://media-the.musicradio.com/ClassicFM,0
@@ -22,14 +28,20 @@ Express FM 93.7 Portsmouth,http://london-ics01.broadcast.meteoric.net/expressfm.
 France Bleu Périgord,http://direct.francebleu.fr/live/fbperigord-midfi.mp3,0
 Fréquence 3 (Rock/Electronic Dance Music) ,http://master.net-radio.fr/frequence3.flac,0
 Fréquence 3 Urban (Hip Hop Rap and R’n’B) ,http://ice1.ikoula.net-radio.fr/frequence3urban.flac,0
-Heart Dorset 102.3,http://ice-sov.musicradio.com/HeartDorsetMP3,1
-Heart South Coast 96.7 & 97.5,http://media-sov.musicradio.com/HeartHampshire,1
-Heart Sussex 102.4 &103.5,http://media-ice.musicradio.com/HeartSussexMP3?.mp3,1
+GHR,http://edge-bauerall-01-gos2.sharp-stream.com/net2london.mp3?aw_0_1st.skey=1741443910,3
+GHR 60s,http://edge-baueral-05-gos2.sharp-stream.com/ghr60s.mp3?aw_0_1st.skey=1741336309,1
+Heart 70s,https://icecast.thisisdax.com/Heart70sMP3,2
+Heart 80s,https://icecast.thisisdax.com/Heart80sMP3,2
+Heart 90s,https://icecast.thisisdax.com/Heart90sMP3,2
+Heart 00s,https://icecast.thisisdax.com/Heart00sMP3,2
+Heart Dorset 102.3,http://ice-sov.musicradio.com/HeartDorsetMP3,2
+Heart South Coast 96.7 & 97.5,http://media-sov.musicradio.com/HeartHampshire,2
+Heart Sussex 102.4 &103.5,http://media-ice.musicradio.com/HeartSussexMP3?.mp3,2
 Hirschmilch Radio Prog House,https://hirschmilch.de:7001/prog-house.mp3,0
-I Love Pécs Rádió,http://radio.ilovepecs.hu:8200/ilp.mp3,1
+I Love Pécs Rádió,http://radio.ilovepecs.hu:8200/ilp.mp3,2
 Intense Radio (Dance) ,https://secure.live-streams.nl/flac.flac,0
 JAZZ & CHILL,http://salalondon.ddns.net:8002/;.m3u,0
-Jazz London Radio,http://radio.canstream.co.uk:8075/live.mp3,1
+Jazz London Radio,http://radio.canstream.co.uk:8075/live.mp3,2
 Joint Radio Reggae,http://star.jointil.net/proxy/jrn_reggae?mp=/stream,0
 KEXP-Seattle,http://live-mp3-128.kexp.org,0
 KLASSIK 1,http://icepool.silvacast.com/KLASSIK1.mp3,0
@@ -50,11 +62,11 @@ KSPC Claremont 88.7,http://andromeda.shoutca.st:8419/stream192,0
 Laser Hot Hits,http://213.175.217.198:8000/laserhq,1
 LBC London (London stream) AAC,http://media-sov.musicradio.com/LBCLondon,0
 LBC Radio,http://media-sov.musicradio.com/LBC973MP3Low,1
-Linn Classical,http://radio.linn.co.uk:8004/autodj,1
+Linn Classical,http://radio.linn.co.uk:8004/autodj,2
 Linn Classical,http://89.16.185.174:8004/stream,0
-Linn Jazz,http://radio.linn.co.uk:8000/autodj,1
+Linn Jazz,http://radio.linn.co.uk:8000/autodj,2
 Linn Jazz,http://89.16.185.174:8000/stream,0
-Linn Radio,http://radio.linn.co.uk:8003/autodj,1
+Linn Radio,http://radio.linn.co.uk:8003/autodj,2
 Linn Radio,http://89.16.185.174:8003/stream,0
 Magic Radio (Oldies Hits) ,http://mp3.magic-radio.net/flac,0
 Magic-Radio ,http://mp3.magic-radio.net/flac,0
@@ -65,8 +77,8 @@ Naim Jazz ,http://mscp3.live-streams.nl:8340/jazz-flac.flac,0
 Naim Jazz [FLAC],https://mscp3.live-streams.nl:8342/jazz-flac.flac,0
 Naim Radio ,http://mscp3.live-streams.nl:8360/flac.flac,0
 Naim Radio [FLAC],https://mscp3.live-streams.nl:8362/flac.flac,0
-ORF Tirol http 1,http://orf-live.ors-shoutcast.at/tir-q1a,1
-ORF Tirol http 2,http://orf-live.ors-shoutcast.at/tir-q2a,1
+ORF Tirol http 1,http://orf-live.ors-shoutcast.at/tir-q1a,2
+ORF Tirol http 2,http://orf-live.ors-shoutcast.at/tir-q2a,2
 Point Blank FM 320KB,http://pointblankradio.co.uk:9002/stream,1
 PureClassix (Netherlands) (flac 16/48),http://mscp4.live-streams.nl:8140/flac.ogg,0
 Radio Alfa 3 latin hits,http://stream.zeno.fm/pexep60uhnruv,0
@@ -88,7 +100,7 @@ Radio Tirol,http://str2.creacast.com/radiotirol_a,1
 RadioBlues ,https://streams.radiomast.io/radioblues-flac,0
 RAI Südtirol,http://radiobzlive.rai.it/RAIBZ_Livestream,0
 RFI Anglais English,http://live02.rfi.fr/rfienanglais-64.mp3,0
-Rock Antenne Heavy Metal,http://mp3channels.webradio.rockantenne.de/heavy-metal,1
+Rock Antenne Heavy Metal,http://mp3channels.webradio.rockantenne.de/heavy-metal,2
 RTL,http://streaming.radio.rtl.fr/rtl-1-44-128,0
 Sector Radio 10s (10s) ,http://stream.sectorradio.ru:8000/zed-flac,0
 Sector Radio 80s (80s) ,http://89.223.45.5:8000/geny-flac,0
@@ -112,12 +124,11 @@ Soma FM - Suburbs of Goa,http://ice.somafm.com/suburbsofgoa,0
 Soma FM - The Trip,http://ice.somafm.com/thetrip,0
 Soma FM - ThistleRadio,http://ice.somafm.com/thistle,0
 Soma FM - Underground 80s,http://ice.somafm.com/u80s,0
-SomaFM Beat Blender AAC 128k,https://somafm.com/beatblender130.pls,0
-SomaFM Beat Blender MP3,https://somafm.com/beatblender.pls,0
-Südtirol 1,http://players.creacast.com/creacast/sudtirol1a/playlist.pls,1
+Südtirol 1,http://players.creacast.com/creacast/sudtirol1a/playlist.pls,2
 talkRADIO,http://radio.talkradio.co.uk/stream,1
 The English Connection Media,http://s30.myradiostream.com:19108/listen.mp3,0
 Unity 101 Community Radio,http://live.canstream.co.uk:8000/unity24.mp3,0
+Virgin Radio Brit Pop,http://radio.virginradio.co.uk/stream-britpop?ref=RF,0
 Virgin Radio Chilled,https://radio.virginradio.co.uk/stream-chilled,0
 VOA Chinese,http://voa-11.akacast.akamaistream.net/7/317/322023/v1/ibb.akacast.akamaistream.net/voa-11,1
 VOA Voice of America Global English,http://voa-28.akacast.akamaistream.net/7/54/322040/v1/ibb.akacast.akamaistream.net/voa-28,1
