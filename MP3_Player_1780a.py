@@ -4530,7 +4530,7 @@ class MP3Player(Frame):
                 self.Radio = len(self.Radio_Stns) - 3
             if cutdown == 1:
                 self.Disp_played.config(text = int((self.Radio)/3)+1)
-            self.playlist = ""
+            self.playlist = "-nocache"
             if "pls" in self.Radio_Stns[self.Radio + 1]:
                     self.playlist = "-playlist"
             if self.Radio_Stns[self.Radio + 2] == 0:
@@ -4742,7 +4742,7 @@ class MP3Player(Frame):
                 self.Radio = 0
             if cutdown == 1:
                 self.Disp_played.config(text = int((self.Radio)/3)+1)
-            self.playlist = ""
+            self.playlist = "-nocache"
             if "pls" in self.Radio_Stns[self.Radio + 1]:
                     self.playlist = "-playlist"
             if self.Radio_Stns[self.Radio + 2] == 0:
@@ -6985,7 +6985,7 @@ class MP3Player(Frame):
                 rems = glob.glob("/run/shm/music/*/*/*.cue")
                 for x in range(0,len(rems)):
                     os.remove(rems[x])
-                self.playlist =""
+                self.playlist = "-nocache"
                 if "pls" in self.Radio_Stns[self.Radio + 1]:
                     self.playlist = "-playlist"
                 if self.Radio_Stns[self.Radio + 2] == 0:
