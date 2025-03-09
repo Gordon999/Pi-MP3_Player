@@ -82,6 +82,7 @@ Radio Alfa 3 latin hits,http://stream.zeno.fm/pexep60uhnruv,0
 Radio Caroline,http://sc6.radiocaroline.net:8040/stream.mp3,0
 Radio Caroline,http://78.129.202.200:8040/,0
 Radio Caroline AAC 96 kbps,http://78.129.202.200:8030/;,0
+Radio Caroline,http://sc6.radiocaroline.net:10558/listen.pls,0
 Radio Caroline Flashback,http://sc2.radiocaroline.net:10558/listen.pls,0
 Radio Northsea International,http://radionorthsea.zapto.org:8008/listen.pls,0
 Radio Osttirol,http://streamplus20.leonex.de:28768/;,0
