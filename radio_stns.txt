@@ -5,7 +5,6 @@ Absolute Radio 70s,http://edge-bauerall-01-gos2.sharp-stream.com/absolute70s.mp3
 Absolute 80s,http://edge-bauerall-01-gos2.sharp-stream.com/absolute80s.mp3?aw_0_1st.skey=1741266858&aw_0_1st.playerid=BMUK_RPi,1
 Absolute Radio 90s,http://edge-bauerall-01-gos2.sharp-stream.com/absolute90s.mp3?aw_0_1st.skey=1741336509&aw_0_1st.playerid=BMUK_RPi,1
 BBC World Service,https://stream.live.vc.bbcmedia.co.uk/bbc_world_service,1
-BBC World Service,https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/ak/bbc_world_service.m3u8,0
 Capital London,http://media-ice.musicradio.com/CapitalMP3,2
 Capital UK,http://vis.media-ice.musicradio.com/CapitalUK,0
 Celtic Music Radio,http://stream.celticmusicradio.net:8000/celticmusic.mp3,4
@@ -39,7 +38,6 @@ I Love Pécs Rádió,http://radio.ilovepecs.hu:8200/ilp.mp3,2
 Intense Radio (Dance) ,https://secure.live-streams.nl/flac.flac,0
 JAZZ & CHILL,http://salalondon.ddns.net:8002/;.m3u,0
 Jazz London Radio,http://radio.canstream.co.uk:8075/live.mp3,2
-Joint Radio Reggae,http://star.jointil.net/proxy/jrn_reggae?mp=/stream,0
 KEXP-Seattle,http://live-mp3-128.kexp.org,0
 KLASSIK 1,http://icepool.silvacast.com/KLASSIK1.mp3,0
 Klassik Radio Barock,http://stream.klassikradio.de/barock/mp3-192,0
@@ -76,6 +74,7 @@ Naim Radio ,http://mscp3.live-streams.nl:8360/flac.flac,0
 Naim Radio [FLAC],https://mscp3.live-streams.nl:8362/flac.flac,0
 ORF Tirol http 1,http://orf-live.ors-shoutcast.at/tir-q1a,2
 ORF Tirol http 2,http://orf-live.ors-shoutcast.at/tir-q2a,2
+Planet Rock,http://edge-bauerall-01-gos2.sharp-stream.com/planetrock.mp3?aw_0_1st.skey=1741513491,3
 Point Blank FM,http://pointblankradio.co.uk:9002/stream,1
 PureClassix (Netherlands) (flac 16/48),http://mscp4.live-streams.nl:8140/flac.ogg,0
 Radio Alfa 3 latin hits,http://stream.zeno.fm/pexep60uhnruv,0
@@ -94,8 +93,8 @@ Radio Paradise Rock Mix FLAC,http://stream.radioparadise.com/rock-flacm,0
 Radio Paradise World/Etc Mix FLAC,http://stream.radioparadise.com/world-etc-flacm,0
 Radio Seagull,http://stream.radioseagull.net:8000/seagull,0
 Radio Sputnik (Underground House) ,http://radiosputnik.nl:8002/flac,0
-Radio Tirol,http://str2.creacast.com/radiotirol_a,1
-RadioBlues ,https://streams.radiomast.io/radioblues-flac,0
+Radio Tirol,http://str2.creacast.com/radiotirol_a,2
+Radio Blues ,https://streams.radiomast.io/radioblues-flac,0
 RAI Südtirol,http://radiobzlive.rai.it/RAIBZ_Livestream,0
 RFI Anglais English,http://live02.rfi.fr/rfienanglais-64.mp3,0
 Rock Antenne Heavy Metal,http://mp3channels.webradio.rockantenne.de/heavy-metal,2
@@ -126,7 +125,7 @@ Südtirol 1,http://players.creacast.com/creacast/sudtirol1a/playlist.pls,2
 talkRADIO,http://radio.talkradio.co.uk/stream,1
 The English Connection Media,http://s30.myradiostream.com:19108/listen.mp3,0
 Unity 101 Community Radio,http://live.canstream.co.uk:8000/unity24.mp3,0
-Virgin Radio Brit Pop,http://radio.virginradio.co.uk/stream-britpop?ref=RF,0
+Virgin Radio Brit Pop,http://radio.virginradio.co.uk/stream-britpop,0
 Virgin Radio Chilled,https://radio.virginradio.co.uk/stream-chilled,0
 VOA Chinese,http://voa-11.akacast.akamaistream.net/7/317/322023/v1/ibb.akacast.akamaistream.net/voa-11,1
 VOA Voice of America Global English,http://voa-28.akacast.akamaistream.net/7/54/322040/v1/ibb.akacast.akamaistream.net/voa-28,1
