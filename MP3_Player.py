@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.79
+# Pi_MP3_Player v17.80
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,8 +26,8 @@ global fullscreen
 global cutdown
 global rotary
 global touchscreen
-cutdown     = 7 # set the format required
-fullscreen  = 0 # set to 1 for fullscreen
+cutdown     = 0 # set the format required
+fullscreen  = 1 # set to 1 for fullscreen
 rotary      = 0 # set to 1 if using rotary encoders (see rotary_connections.jpg for wiring details)
 touchscreen = 1 # if using the rotary encoders and a non-touchscreen set to 0
 
@@ -4530,12 +4530,14 @@ class MP3Player(Frame):
                 self.Radio = len(self.Radio_Stns) - 3
             if cutdown == 1:
                 self.Disp_played.config(text = int((self.Radio)/3)+1)
+            self.playlist = "-nocache"
+            if ".pls" in self.Radio_Stns[self.Radio + 1]  or ".m3u"  in self.Radio_Stns[self.Radio + 1]  :
+                    self.playlist = "-playlist"
+                    self.Radio_Stns[self.Radio + 2] = 0
             if self.Radio_Stns[self.Radio + 2] == 0:
-                self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
-                #print(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]])
+                self.q = subprocess.Popen(["mplayer",self.playlist, self.Radio_Stns[self.Radio + 1]] , shell=False)
             else:
                 self.r = subprocess.Popen(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
-                #print(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]])
                 time.sleep(1)
                 self.q = subprocess.Popen(["mplayer", "-nocache", "http://localhost:8000"] , shell=False)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
@@ -4741,8 +4743,12 @@ class MP3Player(Frame):
                 self.Radio = 0
             if cutdown == 1:
                 self.Disp_played.config(text = int((self.Radio)/3)+1)
+            self.playlist = "-nocache"
+            if ".pls" in self.Radio_Stns[self.Radio + 1]  or ".m3u"  in self.Radio_Stns[self.Radio + 1]  :
+                    self.playlist = "-playlist"
+                    self.Radio_Stns[self.Radio + 2] = 0
             if self.Radio_Stns[self.Radio + 2] == 0:
-                self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                self.q = subprocess.Popen(["mplayer",self.playlist, self.Radio_Stns[self.Radio + 1]] , shell=False)
                 #print(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]])
             else:
                 self.r = subprocess.Popen(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
@@ -6981,8 +6987,12 @@ class MP3Player(Frame):
                 rems = glob.glob("/run/shm/music/*/*/*.cue")
                 for x in range(0,len(rems)):
                     os.remove(rems[x])
+                self.playlist ="-nocache"
+                if ".pls" in self.Radio_Stns[self.Radio + 1]  or ".m3u"  in self.Radio_Stns[self.Radio + 1]  :
+                    self.playlist = "-playlist"
+                    self.Radio_Stns[self.Radio + 2] = 0
                 if self.Radio_Stns[self.Radio + 2] == 0:
-                    self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                    self.q = subprocess.Popen(["mplayer",self.playlist, self.Radio_Stns[self.Radio + 1]] , shell=False)
                 else:
                     self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-7000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
                     time.sleep(1)
