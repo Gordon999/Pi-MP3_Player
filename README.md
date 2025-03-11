@@ -82,7 +82,7 @@ add @/usr/bin/python3 /home/pi/MP3_Player.py to the end of /etc/xdg/lxsession/LX
 - For boot to Play ALBUM   : Choose track, then press PLAY ALBUM, then SHUTDOWN.
 - For boot to Radio        : Choose Radio Station then press SHUTDOWN.
 
-  to EXIT script without shutting down, click SHUFFLE, click SLEEP, click SHUTDOWN.
+  to EXIT script without shutting down, right click on shutdown..
   
 # File structure
 
