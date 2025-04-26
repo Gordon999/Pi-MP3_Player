@@ -28,7 +28,7 @@ global rotary
 global touchscreen
 cutdown     = 7 # set the format required
 fullscreen  = 0 # set to 1 for fullscreen
-rotary      = 0 # set to 1 if using rotary encoders (see rotary_connections.jpg for wiring details)
+rotary      = 1 # set to 1 if using rotary encoders (see rotary_connections.jpg for wiring details)
 touchscreen = 1 # if using the rotary encoders and a non-touchscreen set to 0
 
 import tkinter as tk
@@ -203,7 +203,7 @@ class MP3Player(Frame):
         self.auto_radio     = 0
         self.auto_record    = 0
         self.auto_rec_time  = 10
-        self.usave          = 1
+        self.usave          = 0
         self.minutes        = 0
         self.seconds        = 10
         self.old_tname      = "x"
@@ -1430,7 +1430,7 @@ class MP3Player(Frame):
                     if self.stopstart == 1 and self.album_start == 0 and self.rot_posp == 4:
                         self.rot_posp = 3
                     if self.Radio_ON == 1 and self.rot_posp == 0:
-                        self.rot_posp = 10
+                        self.rot_posp = 11
                     if self.cutdown == 1 or self.cutdown == 4:
                         if self.album_start == 1:
                             if self.rot_posp == 3:
@@ -1464,8 +1464,8 @@ class MP3Player(Frame):
                             elif self.rot_posp == 13:
                                 self.rot_posp = 12
                         if self.Radio_ON == 1:
-                            if self.rot_posp == 11:
-                                self.rot_posp = 10
+                            #if self.rot_posp == 11:
+                            #    self.rot_posp = 10
                             if self.rot_posp == 6 and self.Radio_Stns[self.Radio + 2]  > 0:
                                 self.rot_posp = 5
                             if self.rot_posp == 6:
@@ -1474,7 +1474,7 @@ class MP3Player(Frame):
                                 self.rot_posp = 1
                         if self.Radio_RON == 1:
                             if self.rot_posp == 1:
-                                self.rot_posp = 10
+                                self.rot_posp = 11
                             
                     self.rot_pos = self.order[self.rot_posp]
                     if self.album_start == 0:
@@ -1520,6 +1520,10 @@ class MP3Player(Frame):
                         self.Button_Prev_Track.config(bg = 'light gray')
                         self.Button_Prev_Album.config(bg = 'light gray')
                         self.Button_Reload.config(bg = 'light gray')
+                        if self.bt_on == 0:
+                            self.Button_Bluetooth.config(bg = 'light blue')
+                        else:
+                            self.Button_Bluetooth.config(bg = 'red')
                         if (self.cutdown < 5 or self.cutdown > 6):
                             self.Button_Prev_PList.config(bg = 'light gray')
                         if (self.cutdown < 5 or self.cutdown > 6) and self.cutdown != 1:
@@ -1652,7 +1656,7 @@ class MP3Player(Frame):
                             elif self.rot_posp == 13:
                                 self.rot_posp = 14
                         elif self.Radio_ON == 1:
-                            if self.rot_posp == 11:
+                            if self.rot_posp == 12:
                                 self.rot_posp = 1
                             if self.rot_posp == 2 and self.Radio_Stns[self.Radio + 2] == 0:
                                 self.rot_posp = 7
@@ -1664,7 +1668,6 @@ class MP3Player(Frame):
                                 if self.rot_posp == 1:
                                     self.rot_posp = 5
                     self.rot_pos = self.order[self.rot_posp]
-                    #print(self.rot_posp,self.rot_pos)
                     if self.album_start == 0:
                         if self.Radio_RON == 0:
                             self.Button_Prev_Artist.config(bg = 'light blue')
@@ -1711,6 +1714,10 @@ class MP3Player(Frame):
                             self.Button_repeat.config(bg = 'light blue')
                             self.Button_AZ_artists.config(bg = 'light gray')
                     elif self.Radio_ON == 1:
+                        if self.bt_on == 0:
+                            self.Button_Bluetooth.config(bg = 'light blue')
+                        else:
+                            self.Button_Bluetooth.config(bg = 'red')
                         if self.Radio_RON == 0:
                             self.Button_Prev_Artist.config(bg = 'light blue')
                             self.Button_Prev_Album.config(bg = 'light gray')
