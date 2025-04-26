@@ -110,7 +110,7 @@ class MP3Player(Frame):
         self.mp3c_jpg       = "mp3c.jpg"                      # blue logo including the 'wheel', when active
         self.radio_jpg      = "radio.jpg"                     # radio logo, shown if no jpg in /home/USERNAME/Documents for Radio Station
         self.Disp_max_time  = 120  # in minutes. Limits time taken to determine playlist length.
-        self.volume         = 60   # range 0 - 100. Will be overridden by saved volume in saved config file
+        self.volume         = 30   # range 0 - 100. Will be overridden by saved volume in saved config file
         self.gapless_time   = 2    # in seconds. Defines length of track overlap.
         self.scroll_rate    = 3    # scroll rate 1 (slow) to 10 (fast)
         self.Pi7_backlight  = 1    # Pi 7" inch v1 display backlight control (pip3 install rpi_backlight)
@@ -1522,10 +1522,11 @@ class MP3Player(Frame):
                         self.Button_Prev_Track.config(bg = 'light gray')
                         self.Button_Prev_Album.config(bg = 'light gray')
                         self.Button_Reload.config(bg = 'light gray')
-                        if self.bt_on == 0:
-                            self.Button_Bluetooth.config(bg = 'light gray')
-                        else:
-                            self.Button_Bluetooth.config(bg = 'red')
+                        if self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 0:
+                            if self.bt_on == 0:
+                                self.Button_Bluetooth.config(bg = 'light gray')
+                            else:
+                                self.Button_Bluetooth.config(bg = 'red')
                         if (self.cutdown < 5 or self.cutdown > 6):
                             self.Button_Prev_PList.config(bg = 'light gray')
                         if (self.cutdown < 5 or self.cutdown > 6) and self.cutdown != 1:
@@ -1539,10 +1540,11 @@ class MP3Player(Frame):
                             self.Button_Pause.config(bg = 'light gray')
                     if self.Radio_ON == 0:
                         self.Button_Pause.config(bg = 'light blue')
-                        if self.bt_on == 0:
-                            self.Button_Bluetooth.config(bg = 'light blue')
-                        else:
-                            self.Button_Bluetooth.config(bg = 'red')
+                        if self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 0:
+                            if self.bt_on == 0:
+                                self.Button_Bluetooth.config(bg = 'light blue')
+                            else:
+                                self.Button_Bluetooth.config(bg = 'red')
                         self.Button_Shuffle.config(bg = 'light blue')
                         self.Button_Prev_Track.config(bg = 'light blue')
                         if self.bt_on == 1:
@@ -1687,10 +1689,11 @@ class MP3Player(Frame):
                                 self.Button_Reload.config(bg = "light gray")
                         self.Button_Next_AZ.config(bg = 'light blue')
                         self.Button_Pause.config(bg = 'light blue')
-                        if self.bt_on == 0:
-                            self.Button_Bluetooth.config(bg = 'light blue')
-                        else:
-                            self.Button_Bluetooth.config(bg = 'red')
+                        if self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 0:
+                            if self.bt_on == 0:
+                                self.Button_Bluetooth.config(bg = 'light blue')
+                            else:
+                                self.Button_Bluetooth.config(bg = 'red')
                         if (self.cutdown < 5 or self.cutdown > 6):
                             self.Button_Prev_PList.config(bg = 'light blue')
                         if (self.cutdown < 5 or self.cutdown > 6) and self.cutdown != 1:
@@ -1716,10 +1719,11 @@ class MP3Player(Frame):
                             self.Button_repeat.config(bg = 'light blue')
                             self.Button_AZ_artists.config(bg = 'light gray')
                     elif self.Radio_ON == 1:
-                        if self.bt_on == 0:
-                            self.Button_Bluetooth.config(bg = 'light gray')
-                        else:
-                            self.Button_Bluetooth.config(bg = 'red')
+                        if self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 0:
+                            if self.bt_on == 0:
+                                self.Button_Bluetooth.config(bg = 'light gray')
+                            else:
+                                self.Button_Bluetooth.config(bg = 'red')
                         if self.Radio_RON == 0:
                             self.Button_Prev_Artist.config(bg = 'light blue')
                             self.Button_Prev_Album.config(bg = 'light gray')
@@ -1745,6 +1749,11 @@ class MP3Player(Frame):
                             self.Button_Start.config(bg = 'light gray')
                         elif self.album_start == 0:
                             self.Button_Start.config(bg = 'green')
+                        if self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 0:
+                            if self.bt_on == 0:
+                                self.Button_Bluetooth.config(bg = 'light gray')
+                            else:
+                                self.Button_Bluetooth.config(bg = 'red')
                         if self.stopstart == 1 or self.bt_on == 1:
                             self.Button_TAlbum.config(bg = 'light gray')
                         else:
