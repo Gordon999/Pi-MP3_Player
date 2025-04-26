@@ -2905,25 +2905,26 @@ class MP3Player(Frame):
 
 
     def Bluetooth(self):
-        if self.bt_on == 0:
-            os.system("bluetoothctl power on")
-            self.Button_Bluetooth.config(bg = "red")
-            self.Button_Start.config(bg  = "light grey", fg = "black")
-            self.Button_TAlbum.config(bg  = "light grey", fg = "black")
-            if self.Button_Radi_on == 1:
-                self.Button_Radio.config(bg  = "light grey", fg = "black")
-            self.bt_on = 1
-        else:
-            os.system("bluetoothctl power off")
-            if self.rotary == 0:
-                self.Button_Bluetooth.config(bg = "light blue")
-            else:
-                self.Button_Bluetooth.config(bg = "yellow")
-            self.Button_Start.config(bg  = "green", fg = "black")
-            self.Button_TAlbum.config(bg  = "blue", fg = "black")
-            if self.Button_Radi_on == 1:
-                self.Button_Radio.config(bg  = "light blue", fg = "black")
-            self.bt_on = 0
+      if self.Radio_ON == 0 and self.album_start == 0 and self.stopstart != 1: 
+          if self.bt_on == 0:
+              os.system("bluetoothctl power on")
+              self.Button_Bluetooth.config(bg = "red")
+              self.Button_Start.config(bg  = "light grey", fg = "black")
+              self.Button_TAlbum.config(bg  = "light grey", fg = "black")
+              if self.Button_Radi_on == 1:
+                  self.Button_Radio.config(bg  = "light grey", fg = "black")
+              self.bt_on = 1
+          else:
+              os.system("bluetoothctl power off")
+              if self.rotary == 0:
+                  self.Button_Bluetooth.config(bg = "light blue")
+              else:
+                  self.Button_Bluetooth.config(bg = "yellow")
+              self.Button_Start.config(bg  = "green", fg = "black")
+              self.Button_TAlbum.config(bg  = "blue", fg = "black")
+              if self.Button_Radi_on == 1:
+                  self.Button_Radio.config(bg  = "light blue", fg = "black")
+              self.bt_on = 0
 
         
     def Start_Play(self):
