@@ -1462,7 +1462,7 @@ class MP3Player(Frame):
                     if self.cutdown == 7 or self.cutdown == 0 or self.cutdown == 2:
                         if self.album_start == 1:
                             if self.rot_posp == 3:
-                                self.rot_posp = 15
+                                self.rot_posp = 16
                             elif self.rot_posp == 13:
                                 self.rot_posp = 12
                         if self.Radio_ON == 1:
@@ -1503,6 +1503,11 @@ class MP3Player(Frame):
                             self.Button_repeat.config(bg = 'light blue')
                             self.Button_AZ_artists.config(bg = 'light blue')
                     if self.album_start == 1:
+                        if self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 0:
+                            if self.bt_on == 0:
+                                self.Button_Bluetooth.config(bg = 'light gray')
+                            else:
+                                self.Button_Bluetooth.config(bg = 'red')
                         self.Button_Prev_Artist.config(bg = 'light gray')
                         self.Button_Prev_Album.config(bg = 'light gray')
                         if self.gapless == 0:
@@ -1540,11 +1545,6 @@ class MP3Player(Frame):
                             self.Button_Pause.config(bg = 'light gray')
                     if self.Radio_ON == 0:
                         self.Button_Pause.config(bg = 'light blue')
-                        if self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 0:
-                            if self.bt_on == 0:
-                                self.Button_Bluetooth.config(bg = 'light blue')
-                            else:
-                                self.Button_Bluetooth.config(bg = 'red')
                         self.Button_Shuffle.config(bg = 'light blue')
                         self.Button_Prev_Track.config(bg = 'light blue')
                         if self.bt_on == 1:
@@ -1622,9 +1622,9 @@ class MP3Player(Frame):
                         self.rot_posp = 0
                     if self.stopstart == 1 and self.album_start == 0 and self.rot_posp == 4:
                         self.rot_posp = 5
-                    if self.album_start == 1 and self.rot_posp == 1:
+                    if self.album_start == 1 and self.rot_posp == 1: ###
                         self.rot_posp = 4
-                    if self.album_start == 1 and self.rot_posp > 15:
+                    if self.album_start == 1 and self.rot_posp > 16:
                         self.rot_posp = 0
                     if self.cutdown == 1 or self.cutdown == 4:
                         if self.album_start == 1:
@@ -1673,6 +1673,11 @@ class MP3Player(Frame):
                                     self.rot_posp = 5
                     self.rot_pos = self.order[self.rot_posp]
                     if self.album_start == 0:
+                        if self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 0:
+                            if self.bt_on == 0:
+                                self.Button_Bluetooth.config(bg = 'light blue')
+                            else:
+                                self.Button_Bluetooth.config(bg = 'red')
                         if self.Radio_RON == 0:
                             self.Button_Prev_Artist.config(bg = 'light blue')
                             self.Button_Prev_Album.config(bg = 'light blue')
@@ -1705,6 +1710,11 @@ class MP3Player(Frame):
                     if self.album_start == 1:
                         self.Button_Prev_Artist.config(bg = 'light gray')
                         self.Button_Prev_Album.config(bg = 'light gray')
+                        if self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 0:
+                            if self.bt_on == 0:
+                                self.Button_Bluetooth.config(bg = 'light gray')
+                            else:
+                                self.Button_Bluetooth.config(bg = 'red')
                         if self.gapless == 0:
                             self.Button_Reload.config(bg = 'light blue')
                         else:
@@ -1718,7 +1728,7 @@ class MP3Player(Frame):
                         if (self.cutdown < 4 or self.cutdown > 6) and self.cutdown != 1:
                             self.Button_repeat.config(bg = 'light blue')
                             self.Button_AZ_artists.config(bg = 'light gray')
-                    elif self.Radio_ON == 1:
+                    if self.Radio_ON == 1:
                         if self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 0:
                             if self.bt_on == 0:
                                 self.Button_Bluetooth.config(bg = 'light gray')
