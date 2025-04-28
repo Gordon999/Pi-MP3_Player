@@ -5,6 +5,7 @@ Note this will work under BUSTER, BULLSEYE , OR BOOKWORM
 
 v17.85 Bluetooth IN. Pair your cell phone etc with the Pi. Run MP3_Player.py, click on Bluebooth ,
 reconnect your cell phone, play your music on your cell phone. click on Bluetooth button to stop.
+Only available on cudowns 0,2 and 7.
 
 v17.80 version notes:
 
