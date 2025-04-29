@@ -76,6 +76,8 @@ To run python3 MP3_Player.py
 
 To run at boot (assuming booting to GUI) if using Buster, Bullseye or Bookworm using X11. ..
 
+Or read https://forums.raspberrypi.com/viewtopic.php?t=314455 if using latest bookworm. 
+
 add @/usr/bin/python3 /home/pi/MP3_Player.py to the end of /etc/xdg/lxsession/LXDE-pi/autostart
 
 ( replace pi with your login username)
