@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.85
+# Pi_MP3_Player v17.87
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,6 +30,7 @@ cutdown     = 0 # set the format required
 fullscreen  = 0 # set to 1 for fullscreen
 rotary      = 0 # set to 1 if using rotary encoders (see rotary_connections.jpg for wiring details)
 touchscreen = 1 # if using the rotary encoders and a non-touchscreen set to 0
+ext_buttons = 0 # set to 1 if using external buttons for volume, play and mute (set to 0 if using rotary)
 
 import tkinter as tk
 from tkinter import *
@@ -373,7 +374,7 @@ class MP3Player(Frame):
         self.counter5 = 0
        
         # check for HyperPixel4 LCD and if so disable GPIO controls.
-        if os.path.exists ('/sys/devices/platform/i2c@0'): 
+        if os.path.exists ('/sys/devices/platform/i2c@0') and ext_buttons == 1: 
             self.gpio_enable = 0
             from gpiozero import PWMLED
             self.pwm_pin = 19
@@ -382,7 +383,7 @@ class MP3Player(Frame):
             self.bright  = 0.8  # Backlight bright , 1 full brightness
             self.LCD_pwm.value = self.bright
         # enable buttons on Waveshare LCD (A)
-        elif self.waveshare == 1 and self.cutdown == 4:
+        elif self.waveshare == 1 and self.cutdown == 4 and ext_buttons == 1:
             self.gpio_enable = 1
             self.voldn           = 23 # external volume down gpio input
             self.volup           = 24 # external volume up gpio input
@@ -393,7 +394,7 @@ class MP3Player(Frame):
         # enable buttons on other displays and cutdowns
         else:
             self.gpio_enable = 2
-            if self.rotary == 0:
+            if self.rotary == 0 and ext_buttons == 1:
                 self.voldn              = 16 # external volume down gpio input
                 self.volup              = 12 # external volume up gpio input
                 self.mute               = 13 # external mute gpio input
@@ -565,7 +566,7 @@ class MP3Player(Frame):
             self.Disp_played.grid(row = 6, column = 2, sticky = E)
             self.Disp_track_len = tk.Label(self.Frame10, height=1, width = 5)
             self.Disp_track_len.grid(row = 6, column = 3, sticky = E)
-            self.Disp_Drive = tk.Label(self.Frame10, height=1, width=17)
+            self.Disp_Drive = tk.Label(self.Frame10, height=1, width=22)
             self.Disp_Drive.grid(row = 5, column = 4, columnspan = 3, sticky = E)
             self.Disp_Name_m3u = tk.Text(self.Frame10,height = 1, width=13)
             self.Disp_Name_m3u.grid(row = 8, column = 3, sticky = N, pady = 10)
@@ -766,7 +767,7 @@ class MP3Player(Frame):
             self.Disp_played.grid(row = 6, column = 2, sticky = E)
             self.Disp_track_len = tk.Label(self.Frame10, height=1, width = 5,font = self.helv03)
             self.Disp_track_len.grid(row = 6, column = 3, sticky = E)
-            self.Disp_Drive = tk.Label(self.Frame10, height=1, width=17,font = self.helv03)
+            self.Disp_Drive = tk.Label(self.Frame10, height=1, width=22,font = self.helv03)
             self.Disp_Drive.grid(row = 5, column = 4, columnspan = 3, sticky = E)
             self.Disp_Name_m3u = tk.Text(self.Frame10,height = 1, width=13,font = self.helv03)
             self.Disp_Name_m3u.grid(row = 8, column = 3, sticky = N, pady = 5)
@@ -1268,7 +1269,7 @@ class MP3Player(Frame):
             self.Disp_played.grid(row = 6, column = 2, sticky = E)
             self.Disp_track_len = tk.Label(self.Frame10, height=1, width=5)
             self.Disp_track_len.grid(row = 6, column = 3, sticky = E)
-            self.Disp_Drive = tk.Label(self.Frame10, height=1, width=17)
+            self.Disp_Drive = tk.Label(self.Frame10, height=1, width=21)
             self.Disp_Drive.grid(row = 5, column = 4, columnspan = 3, sticky = E)
             self.Disp_Name_m3u = tk.Text(self.Frame10,height = 1, width=13)
             self.Disp_Name_m3u.grid(row = 8, column = 3, sticky = N, pady = 10)
@@ -1852,7 +1853,7 @@ class MP3Player(Frame):
 
     def Check_buttons(self):
         # check the external switches
-        if self.rotary == 0:
+        if self.rotary == 0 and ext_buttons == 1:
             if self.trace > 1:
                 print("check buttons")
             if self.button_volup.is_pressed:
@@ -2128,15 +2129,17 @@ class MP3Player(Frame):
             self.Button_TAlbum.config(bg = 'yellow')
             self.Button_Next_AZ.config(bg = 'light blue', text = "NextAZ")
             self.Play_Album()
-        elif self.gpio_enable == 2 and self.rotary == 0 and self.button_start_play.is_pressed:
-            self.light_on = time.monotonic()
-            if self.Pi7_backlight == 1:
-                os.system("rpi-backlight -b 100")
-            self.Play()
+        elif ext_buttons == 1:
+            if self.gpio_enable == 2 and self.rotary == 0 and self.button_start_play.is_pressed :
+                self.light_on = time.monotonic()
+                if self.Pi7_backlight == 1:
+                    os.system("rpi-backlight -b 100")
+                self.Play()
 
         self.after(500, self.Check_buttons) # set for 500mS
         
     def plist_callback(self):
+      if len(self.tunes) > 0:
         if self.trace > 0:
             print ("plist callback",self.track_no,len(self.tunes))
         self.artistdata = []
@@ -2191,6 +2194,7 @@ class MP3Player(Frame):
             self.album_callback(0)
 
     def album_callback(self,a):
+      if len(self.tunes) > 0:
         if self.trace > 0:
             print ("album callback",self.track_no)
         self.trackdata = []
@@ -2288,6 +2292,7 @@ class MP3Player(Frame):
                 print (self.track_no)
 
     def callback(self,a):
+      if len(self.tunes) > 0:
         if self.trace > 0:
             print ("callback",self.track_no)
         tpath = self.Disp_artist_name.get() + "^" + self.Disp_album_name.get() + "^" + self.Disp_track_name.get()
@@ -2334,6 +2339,7 @@ class MP3Player(Frame):
             self.Next_Track()
 
     def plist_callback2(self):
+      if len(self.tunes) > 0:
         if self.trace > 0:
             print ("plist callback",self.track_no,len(self.tunes))
         self.artistdata = []
@@ -2357,6 +2363,7 @@ class MP3Player(Frame):
         self.tracker = 0
 
     def artist_callback2(self,a):
+      if len(self.tunes) > 0:
         if self.trace > 0:
             print ("artist callback2",self.track_no,self.ac)
         self.albumdata = []
@@ -2384,6 +2391,7 @@ class MP3Player(Frame):
             self.album_callback2(0)
 
     def album_callback2(self,a):
+      if len(self.tunes) > 0:
         if self.trace > 0:
             print ("album callback2",self.track_no)
         self.trackdata = []
@@ -2475,6 +2483,7 @@ class MP3Player(Frame):
 
 
     def callback2(self,a):
+      if len(self.tunes) > 0:
         if self.trace > 0:
             print ("callback2",self.track_no)
         tpath = self.Disp_artist_name.get() + "^" + self.Disp_album_name.get() + "^" + self.Disp_track_name.get()
@@ -2543,7 +2552,7 @@ class MP3Player(Frame):
                 elif self.track[-4:] == "flac":
                     self.Disp_track_name.config(fg = "black",text =self.track_name[:-5])
             self.Disp_played.config(fg = "black",text ="000:00")
-            if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 3:
+            if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 3 or self.cutdown == 2:
                 self.Disp_Drive.config(fg = 'black')
                 if self.drive_name1 == "run":
                     self.Disp_Drive.config(text = "RAM")
@@ -2736,7 +2745,6 @@ class MP3Player(Frame):
                         self.Disp_track_name9.config(fg = "black",bg = "#ddd",text = " ", borderwidth=0)
                             
             elif self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 3:
-                self.Disp_Drive.config(bg = 'red')
                 if self.m3u_no != 0:
                     self.Disp_Drive.config(text = "MISSING")
             else:
@@ -3097,7 +3105,7 @@ class MP3Player(Frame):
                 self.Disp_album_name.config(fg = "red",text =self.album_name)
                 self.Disp_track_name.config(fg = "red",text =self.track_name[:-4])
                 if self.cutdown == 0 or self.cutdown == 3 or self.cutdown == 7:
-                    self.Disp_Drive.config(bg = 'red')
+                    #self.Disp_Drive.config(bg = 'red')
                     self.Disp_Drive.config(text = "MISSING")
                 stop = 0
                 while (self.tunes[self.track_no].split('^')[3]) == self.drive_name and stop == 0:
