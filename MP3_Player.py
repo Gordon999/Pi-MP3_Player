@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Pi_MP3_Player v17.87
+# Pi_MP3_Player v17.88
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -2557,7 +2557,7 @@ class MP3Player(Frame):
                 if self.drive_name1 == "run":
                     self.Disp_Drive.config(text = "RAM")
                 else:
-                    self.Disp_Drive.config(text = "/" + self.drive_name1 + "/" + self.drive_name2  + "/" + self.drive_name[:-1])
+                    self.Disp_Drive.config(text = "/" + self.drive_name1 + "/" + self.drive_name2  + "/" + self.drive_name) #[:-1])
             if self.cutdown == 0 or self.cutdown == 7 or self.cutdown == 2 or self.cutdown == 3 or self.cutdown == 6:
                 self.render2 = ""
                 if self.drive_name[-1] == "*":
@@ -3035,7 +3035,7 @@ class MP3Player(Frame):
                 if self.drive_name1 == "run":
                     self.Disp_Drive.config(text = "RAM")
                 else:
-                    self.Disp_Drive.config(text = "/" + self.drive_name1 + "/" + self.drive_name2  + "/" + self.drive_name[:-1])
+                    self.Disp_Drive.config(text = "/" + self.drive_name1 + "/" + self.drive_name2  + "/" + self.drive_name) #[:-1])
                 self.Disp_Name_m3u.config(background="light gray", foreground="black")
                 self.Disp_Name_m3u.delete('1.0','20.0')
             if os.path.exists(self.track):
