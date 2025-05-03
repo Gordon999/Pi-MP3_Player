@@ -1,6 +1,8 @@
 # Pi-MP3 and Radio Stream Player
 Pi-MP3_Player
 
+![screenshot](screenshot.jpg)
+
 Note this will work under BUSTER, BULLSEYE , OR BOOKWORM 
 
 v17.85 Bluetooth IN. Pair your cell phone etc with the Pi. Run MP3_Player.py, click on Bluebooth ,
