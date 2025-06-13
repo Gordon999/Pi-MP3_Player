@@ -318,7 +318,7 @@ then sudo apt-get install python3-pil.imagetk
 
 To run python3 MP3_Player.py
 
-To get the script to run at boot, assuming you are booting to the GUI
+To get the script to run at boot, assuming you are booting to the GUI in X11
 
 add the following line to /etc/xdg/lxsession/LXDE-pi/autostart
 
