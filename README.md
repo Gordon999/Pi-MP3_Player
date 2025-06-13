@@ -6,7 +6,8 @@ Pi-MP3_Player
 Note this will work under BUSTER, BULLSEYE , OR BOOKWORM 
 
 v17.90 Cutdown 8 added for Pi Touch 2 Display.
- Note there is a conflict with the Innomaker Pi DAC HAT, 25W Amp works OK. Pi DACPro HAT also works OK
+
+Note there is a conflict with the rotary encoders and the Innomaker Pi DAC HAT (gpio6), the Innomaker 25W Amp should work OK. Pi DACPro HAT works OK
 
 v17.85 Bluetooth IN. Pair your cell phone etc with the Pi. Run MP3_Player.py, click on Bluebooth ,
 reconnect your cell phone, play your music on your cell phone. click on Bluetooth button to stop.
