@@ -5,7 +5,7 @@ Pi-MP3_Player
 
 Note this will work under BUSTER, BULLSEYE , OR BOOKWORM 
 
-v17.90 Cutdown 8 added for Pi Touch 2 Display.
+v17.90 Cutdown 8 added for Pi Touch 2 Display. 1280x720. Similar layout to cutdown 7.
 
 Note there is a conflict with the rotary encoders and the Innomaker Pi DAC HAT (gpio6), the Innomaker 25W Amp should work OK. Pi DACPro HAT works OK
 
