@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 17.90
+version = 17.91
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -4453,6 +4453,7 @@ class MP3Player(Frame):
         y = self.master.winfo_pointery()
         abs_x = self.master.winfo_pointerx() - self.master.winfo_rootx()
         abs_y = self.master.winfo_pointery() - self.master.winfo_rooty()
+        #print(abs_x,abs_y)
         
         # switch backlight on (if enabled)
         if (self.LCD_backlight == 1 or self.HP4_backlight == 1 or self.Pi7_backlight == 1) and (self.old_abs_x != abs_x or self.old_abs_y != abs_y) :
@@ -4479,18 +4480,31 @@ class MP3Player(Frame):
                   self.img.config(image = self.render2)
                   self.timer4 = 0
           if self.cutdown != 5 and self.cutdown != 1:
-            if self.cutdown == 0 or self.cutdown == 2 or self.cutdown == 7:
+            if self.cutdown == 0 or self.cutdown == 7:
                 x2 = abs_x - 107
                 y2 = abs_y - 356
+                c_min = 40
+                c_max = 100
             elif cutdown == 8:
                 x2 = abs_x - 171
                 y2 = abs_y - 546
+                c_min = 50
+                c_max = 140
             elif cutdown == 6:
-                x2 = abs_x - 147
-                y2 = abs_y - 259
+                x2 = abs_x - 160
+                y2 = abs_y - 280
+                c_min = 40
+                c_max = 100
+            elif cutdown == 2:
+                x2 = abs_x - 78
+                y2 = abs_y - 294
+                c_min = 24
+                c_max = 67
             else:
                 x2 = abs_x - 142
                 y2 = abs_y - 494
+                c_min = 40
+                c_max = 100
             if x2 >= 0 and y2 < 0:
                 self.t = (0 - math.atan(x2/y2))
                 self.t = int(self.t * 4)
@@ -4503,9 +4517,9 @@ class MP3Player(Frame):
             elif x2 <= 0 and y2 < 0:
                 self.t = (6.12 - math.atan(x2/y2))
                 self.t = int(self.t * 4)
-                
+            #print(math.sqrt((x2*x2)+ (y2*y2)))    
             # if cursor on the wheel position
-            if math.sqrt((x2*x2)+ (y2*y2)) > 40 and math.sqrt((x2*x2)+ (y2*y2)) < 100 :
+            if math.sqrt((x2*x2)+ (y2*y2)) > c_min and math.sqrt((x2*x2)+ (y2*y2)) < c_max :
                 if self.gpio_enable == 0 and (self.HP4_backlight == 1 or self.LCD_backlight == 1):
                     self.LCD_pwm.value = self.bright
                     self.light_on = time.monotonic()
