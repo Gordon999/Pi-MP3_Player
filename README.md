@@ -5,7 +5,7 @@ Pi-MP3_Player
 
 Note this will work under BUSTER, BULLSEYE , OR BOOKWORM 
 
-v17.95 Volume and/or Position rotary encoders can be added seperately. So you could have a touchscreen (or mouse) and a volume pot.
+v17.95 Volume and/or Position rotary encoders can be added seperately. e.g. You could have a touchscreen (or mouse) and a volume pot.
 
 v17.94 some minor fixes to work with labwc, and reduce cpu load after playing multiple tracks.
 
