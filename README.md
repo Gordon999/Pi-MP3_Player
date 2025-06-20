@@ -12,7 +12,8 @@ v17.94 some minor fixes to work with labwc, and reduce cpu load after playing mu
 v17.90 Cutdown 8 added for Pi Touch 2 Display. 1280x720. Similar layout to cutdown 7.
 
 Note there is a conflict with the rotary encoders and the Innomaker Pi DAC HAT (gpio6), the Innomaker 25W Amp should work OK. Pi DACPro HAT works OK
-f
+
+
 v17.85 Bluetooth IN. Pair your cell phone etc with the Pi. Run MP3_Player.py, click on Bluebooth ,
 reconnect your cell phone, play your music on your cell phone. click on Bluetooth button to stop.
 Only available on cutdowns 0,2,7 and 8.
