@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 17.94
+version = 17.95
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,19 +21,24 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE."""
 
+global fullscreen
+global cutdown
+global rotary_vol
+global rotary_pos
+global touchscreen
+global ext_buttons
+
 # set display cutdown format
 # 0:800x480, 1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist
 # 6:800x480 List 10 tracks, 7:800x480 with scrollbars, 8:1280x720 with scrollbars
-global fullscreen
-global cutdown
-global rotary
-global touchscreen
-global ext_buttons
-cutdown     = 7 # set the format required
+cutdown     = 8 # set the format required
 fullscreen  = 0 # set to 1 for fullscreen
-rotary      = 0 # set to 1 if using rotary encoders (see rotary_connections.jpg for wiring details)
-touchscreen = 1 # set to 0 if using the rotary encoders and a non-touchscreen
+rotary_vol  = 0 # set to 1 if using VOLUME   rotary encoder 1 (see rotary_connections.jpg for wiring details)
+rotary_pos  = 0 # set to 1 if using POSITION rotary encoder 2 (see rotary_connections.jpg for wiring details)
 ext_buttons = 0 # set to 1 if using external buttons for volume, play and mute (set to 0 if using rotary)
+touchscreen = 1 # set to 0 if using the rotary encoders and a non-touchscreen
+
+# Note you can only have rotary OR ext_Buttons NOT BOTH.
 
 import tkinter as tk
 from tkinter import *
@@ -199,7 +204,8 @@ class MP3Player(Frame):
         self.Radio_ON       = 0
         self.Radio_RON      = 0
         self.cutdown        = cutdown
-        self.rotary         = rotary
+        self.rotary_pos     = rotary_pos
+        self.rotary_vol     = rotary_vol
         self.touchscreen    = touchscreen
         self.ext_buttons    = ext_buttons
         self.tname          = "Unknown"
@@ -248,7 +254,7 @@ class MP3Player(Frame):
             self.order = [0,1,2,3,4,5,6,7,8,9,10,11]
         self.rot_pos  = self.order[self.rot_posp]
         self.rot_mode = 0
-        if self.rotary == 1:
+        if self.rotary_pos == 1:
             self.ext_buttons = 0
 
         # check if clock synchronised
@@ -398,10 +404,10 @@ class MP3Player(Frame):
             self.button_voldn    = Button(self.voldn)
             self.button_mute     = Button(self.mute)
             self.button_volup    = Button(self.volup)
-        # enable buttons on other displays and cutdowns
+        # enable buttons or rotary on other displays and cutdowns
         else:
             self.gpio_enable = 2
-            if self.rotary == 0 and self.ext_buttons == 1:
+            if self.rotary_pos == 0 and self.rotary_vol == 0 and self.ext_buttons == 1:
                 self.voldn              = 16 # external volume down gpio input
                 self.volup              = 12 # external volume up gpio input
                 self.mute               = 13 # external mute gpio input
@@ -412,12 +418,15 @@ class MP3Player(Frame):
                 self.start_play         = 5  # external start/stop playlist gpio input
                 self.button_start_album = Button(self.start_album)
                 self.button_start_play  = Button(self.start_play)
-            elif self.rotary == 1:
+            if self.rotary_vol == 1:
                 from gpiozero import RotaryEncoder
                 self.rotor1 = RotaryEncoder(12,16, wrap=True, max_steps=99)
-                self.rotor2 = RotaryEncoder(13, 5, wrap=True, max_steps=99)
                 self.mute               = 6  # external mute
                 self.button_mute        = Button(self.mute)
+            if self.rotary_pos == 1:
+                if self.rotary_vol == 0:
+                    from gpiozero import RotaryEncoder
+                self.rotor2 = RotaryEncoder(13, 5, wrap=True, max_steps=99)
                 self.next               = 20  # external next action
                 self.button_next        = Button(self.next)
         # enable LCD backlight (not Pi 7" screen)
@@ -428,7 +437,7 @@ class MP3Player(Frame):
             self.dim     = 0.0  # Backlight dim 
             self.bright  = 0.8  # Backlight bright , 1 full brightness
             self.LCD_pwm.value = self.bright
-        # Pi v1 7" screen backlight
+        # Pi 7" screen backlight
         if self.Pi7_backlight == 1:
             os.system("rpi-backlight -b 100")
         
@@ -1513,7 +1522,7 @@ class MP3Player(Frame):
                 self.Disp_artist_name["values"] = self.Artist_options
             if  self.shuffle_on == 1:
                 shuffle(self.tunes)
-                if self.rotary == 0:
+                if self.rotary_pos== 0:
                     self.Button_Shuffle.config(bg = "orange",fg = "black",text = "Shuffled")
                 else:
                     self.Button_Shuffle.config(bg = "orange",fg = "black",text = "Shuffled")
@@ -1538,16 +1547,18 @@ class MP3Player(Frame):
             self.Time_Left_Play()
             
         # start Rotary
-        if self.rotary == 1:
-            self.Read_Rotary()
-        if self.rotary == 1 and self.rot_mode == 0:
+        if self.rotary_vol == 1:
+            self.Read_Rotary_VOL()
+        if self.rotary_pos == 1:
+            self.Read_Rotary_POS()
+        if self.rotary_pos == 1 and self.rot_mode == 0:
             if self.rot_posp == 3:
                 self.Button_Start.config(bg = 'yellow')
             elif self.rot_posp == 4:
                 self.Button_TAlbum.config(bg = 'yellow')
 
 
-    def Read_Rotary(self):
+    def Read_Rotary_VOL(self):
         if self.old_rotor1 != self.rotor1.value:
             self.light_on = time.monotonic()
             if self.Pi7_backlight == 1:
@@ -1572,6 +1583,9 @@ class MP3Player(Frame):
             with open('Lasttrack3.txt', 'w') as f:
                 f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
             time.sleep(.2)
+        self.after(250, self.Read_Rotary_VOL)
+
+    def Read_Rotary_POS(self):
         if self.old_rotor2 != self.rotor2.value:
             self.light_on = time.monotonic()
             if self.Pi7_backlight == 1:
@@ -2013,11 +2027,11 @@ class MP3Player(Frame):
                     self.nextAZ()
                 elif self.rot_mode == 1 and self.rot_pos == 12:
                     self.Next_m3u()
-        self.after(250, self.Read_Rotary)
+        self.after(250, self.Read_Rotary_POS)
 
     def Check_buttons(self):
         # check the external switches
-        if self.rotary == 0 and self.ext_buttons == 1:
+        if self.rotary_vol == 0 and self.ext_buttons == 1:
             if self.trace > 1:
                 print("check buttons")
             if self.button_volup.is_pressed:
@@ -2035,11 +2049,11 @@ class MP3Player(Frame):
                 if self.Pi7_backlight == 1:
                     os.system("rpi-backlight -b 100")
                 self.Mute()
-        if self.gpio_enable == 2  and self.rotary == 1 and self.button_mute.is_pressed:
+        if self.gpio_enable == 2  and self.rotary_vol == 1 and self.button_mute.is_pressed:
             self.light_on = time.monotonic()
             self.rot_mode = 0
             self.Mute()
-        if self.gpio_enable == 2 and self.rotary == 1 and self.album_start == 0 and self.button_next.is_pressed and self.rot_mode == 0 and (self.rot_pos < 3 or self.rot_pos > 4) and self.rot_pos < 16 and self.stopstart == 0:
+        if self.gpio_enable == 2 and self.rotary_pos == 1 and self.album_start == 0 and self.button_next.is_pressed and self.rot_mode == 0 and (self.rot_pos < 3 or self.rot_pos > 4) and self.rot_pos < 16 and self.stopstart == 0:
             # not playing mp3
             self.light_on = time.monotonic()
             if self.Pi7_backlight == 1:
@@ -2121,7 +2135,7 @@ class MP3Player(Frame):
                 self.AZ_Tracks()
  
             
-        elif self.gpio_enable == 2 and self.rotary == 1 and self.button_next.is_pressed and self.rot_mode == 0 and (self.rot_pos < 3 or self.rot_pos > 4)  and self.rot_pos < 16 and (self.stopstart == 1 or self.album_start == 1):
+        elif self.gpio_enable == 2 and self.rotary_pos == 1 and self.button_next.is_pressed and self.rot_mode == 0 and (self.rot_pos < 3 or self.rot_pos > 4)  and self.rot_pos < 16 and (self.stopstart == 1 or self.album_start == 1):
             # playing mp3
             self.light_on = time.monotonic()
             if self.Pi7_backlight == 1:
@@ -2184,7 +2198,7 @@ class MP3Player(Frame):
                 self.rot_mode = 0
                 self.AZ_Tracks()
 
-        elif self.gpio_enable == 2 and self.rotary == 1 and self.button_next.is_pressed and self.rot_mode == 1 and self.rot_pos == 2 and self.stopstart == 0 and self.album_start == 0: # and self.Radio_ON == 0:
+        elif self.gpio_enable == 2 and self.rotary_pos == 1 and self.button_next.is_pressed and self.rot_mode == 1 and self.rot_pos == 2 and self.stopstart == 0 and self.album_start == 0: # and self.Radio_ON == 0:
             # Next Artist mode
             self.rot_mode = 2
             self.light_on = time.monotonic()
@@ -2192,7 +2206,7 @@ class MP3Player(Frame):
                 os.system("rpi-backlight -b 100")
             self.Button_Prev_Artist.config(bg = 'red')
 
-        elif self.gpio_enable == 2 and self.rotary == 1 and self.button_next.is_pressed and self.rot_mode == 2 and self.rot_pos == 2 and self.stopstart == 0 and self.album_start == 0: # and self.Radio_ON == 0:
+        elif self.gpio_enable == 2 and self.rotary_pos == 1 and self.button_next.is_pressed and self.rot_mode == 2 and self.rot_pos == 2 and self.stopstart == 0 and self.album_start == 0: # and self.Radio_ON == 0:
             # Exit Artist mode
             self.rot_mode = 0
             self.light_on = time.monotonic()
@@ -2200,7 +2214,7 @@ class MP3Player(Frame):
                 os.system("rpi-backlight -b 100")
             self.Button_Prev_Artist.config(bg = 'yellow')
                  
-        elif self.gpio_enable == 2 and self.rotary == 1 and self.button_next.is_pressed and self.rot_mode > 0 and (self.rot_pos < 3 or self.rot_pos > 4)   and self.rot_pos < 16 and self.stopstart == 0 and self.album_start == 0 :
+        elif self.gpio_enable == 2 and self.rotary_pos == 1 and self.button_next.is_pressed and self.rot_mode > 0 and (self.rot_pos < 3 or self.rot_pos > 4)   and self.rot_pos < 16 and self.stopstart == 0 and self.album_start == 0 :
             self.rot_mode = 0
             self.light_on = time.monotonic()
             if self.Pi7_backlight == 1:
@@ -2229,7 +2243,7 @@ class MP3Player(Frame):
             elif self.rot_pos == 12:
                 self.Button_Prev_PList.config(bg = 'yellow')
                 
-        elif self.gpio_enable == 2 and self.rotary == 1 and self.button_next.is_pressed and self.rot_mode == 1 and (self.rot_pos < 3 or self.rot_pos > 4) and self.rot_pos < 16 and (self.stopstart == 1 or self.album_start == 1):
+        elif self.gpio_enable == 2 and self.rotary_pos == 1 and self.button_next.is_pressed and self.rot_mode == 1 and (self.rot_pos < 3 or self.rot_pos > 4) and self.rot_pos < 16 and (self.stopstart == 1 or self.album_start == 1):
             self.rot_mode = 0
             self.light_on = time.monotonic()
             if self.Pi7_backlight == 1:
@@ -2252,14 +2266,14 @@ class MP3Player(Frame):
                 self.Button_Next_AZ.config(bg = 'yellow')
             elif self.rot_pos == 12:
                 self.Button_Prev_PList.config(bg = 'yellow')
-        elif self.gpio_enable == 2 and self.rotary == 1 and self.button_next.is_pressed and self.Radio_ON == 0 and self.rot_posp == 8 and self.album_start == 0:
+        elif self.gpio_enable == 2 and self.rotary_pos == 1 and self.button_next.is_pressed and self.Radio_ON == 0 and self.rot_posp == 8 and self.album_start == 0:
             # Bluetooth
             self.light_on = time.monotonic()
             if self.Pi7_backlight == 1:
                 os.system("rpi-backlight -b 100")
             self.Bluetooth()
             
-        elif self.gpio_enable == 2 and self.rotary == 1 and self.button_next.is_pressed and self.Radio_ON == 0 and self.rot_pos == 3 and self.stopstart == 0 and self.album_start == 0:
+        elif self.gpio_enable == 2 and self.rotary_pos == 1 and self.button_next.is_pressed and self.Radio_ON == 0 and self.rot_pos == 3 and self.stopstart == 0 and self.album_start == 0:
             self.rot_mode = 0
             self.light_on = time.monotonic()
             if self.Pi7_backlight == 1:
@@ -2268,7 +2282,7 @@ class MP3Player(Frame):
             self.rot_posp = 3
             self.Button_Start.config(bg = 'yellow')
             self.Play()
-        elif self.gpio_enable == 2 and self.rotary == 1 and self.button_next.is_pressed and self.Radio_ON == 0 and self.rot_pos == 3 and self.stopstart == 1 and self.album_start == 0:
+        elif self.gpio_enable == 2 and self.rotary_pos == 1 and self.button_next.is_pressed and self.Radio_ON == 0 and self.rot_pos == 3 and self.stopstart == 1 and self.album_start == 0:
             self.rot_mode = 0
             self.light_on = time.monotonic()
             if self.Pi7_backlight == 1:
@@ -2276,7 +2290,7 @@ class MP3Player(Frame):
             self.rot_pos = 3
             self.rot_posp = 3
             self.Play()
-        elif self.gpio_enable == 2 and self.rotary == 1 and self.button_next.is_pressed and self.Radio_ON == 0 and self.rot_pos == 4 and self.album_start == 0:
+        elif self.gpio_enable == 2 and self.rotary_pos == 1 and self.button_next.is_pressed and self.Radio_ON == 0 and self.rot_pos == 4 and self.album_start == 0:
             self.rot_mode = 0
             self.light_on = time.monotonic()
             if self.Pi7_backlight == 1:
@@ -2284,7 +2298,7 @@ class MP3Player(Frame):
             self.rot_pos = 4
             self.Button_Next_AZ.config(bg = 'light blue', text = "Info")
             self.Play_Album()
-        elif self.gpio_enable == 2 and self.rotary == 1 and self.button_next.is_pressed and self.Radio_ON == 0 and self.rot_pos == 4 and self.album_start == 1:
+        elif self.gpio_enable == 2 and self.rotary_pos == 1 and self.button_next.is_pressed and self.Radio_ON == 0 and self.rot_pos == 4 and self.album_start == 1:
             self.rot_mode = 0
             self.light_on = time.monotonic()
             if self.Pi7_backlight == 1:
@@ -2294,7 +2308,7 @@ class MP3Player(Frame):
             self.Button_Next_AZ.config(bg = 'light blue', text = "NextAZ")
             self.Play_Album()
         elif self.ext_buttons == 1:
-            if self.gpio_enable == 2 and self.rotary == 0 and self.button_start_play.is_pressed :
+            if self.gpio_enable == 2 and self.rotary_pos== 0 and self.button_start_play.is_pressed :
                 self.light_on = time.monotonic()
                 if self.Pi7_backlight == 1:
                     os.system("rpi-backlight -b 100")
@@ -3112,7 +3126,7 @@ class MP3Player(Frame):
                     f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
                 self.Check_Record()
                 if len(track) == 0  and self.Radio_Stns[self.Radio + 2]  > 0:
-                    if self.rotary == 0:
+                    if self.rotary_pos== 0:
                         messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
             else:
                 if cutdown == 0 or cutdown == 2 or self.cutdown == 7:
@@ -3164,7 +3178,7 @@ class MP3Player(Frame):
               self.bt_on = 1
           else:
               os.system("bluetoothctl power off")
-              if self.rotary == 0:
+              if self.rotary_pos== 0:
                   self.Button_Bluetooth.config(bg = "light blue")
               else:
                   self.Button_Bluetooth.config(bg = "yellow")
@@ -3226,7 +3240,7 @@ class MP3Player(Frame):
                 if self.cutdown == 4:
                     self.Button_Next_AZ.config(text = "NextAZ", bg = "light grey", fg = "black")
                 if self.version == 2:
-                    if self.rotary == 0:
+                    if self.rotary_pos== 0:
                         self.Button_Reload.config(bg = "light blue", fg = "black", text = "Skip Fwd")
                     else:
                         if self.rot_pos == 11:
@@ -3265,19 +3279,19 @@ class MP3Player(Frame):
                 self.start = time.monotonic()
                 self.pstart = time.monotonic()
                 if self.album_start == 1:
-                    if self.rotary == 0:
+                    if self.rotary_pos== 0:
                         self.Button_TAlbum.config(bg = "red",fg = "black",text = "STOP")
-                    elif self.rotary == 1 and self.rot_pos == 4:
+                    elif self.rotary_pos == 1 and self.rot_pos == 4:
                         self.Button_TAlbum.config(bg = "yellow",fg = "black",text = "STOP")
                     else:
                         self.Button_TAlbum.config(bg = "blue",fg = "black",text = "STOP")
                     self.Button_Start.config(bg = "light gray",fg = "black",text = "PLAY Playlist")
                 else:
-                    if self.rotary == 0:
+                    if self.rotary_pos== 0:
                         self.Button_Start.config(bg = "red",fg = "black",text = "STOP")
                     elif rotary == 1 and self.rot_pos == 3:
                         self.Button_Start.config(bg = "yellow",fg = "black",text = "STOP")
-                    elif self.rotary == 1 :
+                    elif self.rotary_pos == 1 :
                         self.Button_Start.config(bg = "green",fg = "black",text = "STOP")
                     self.Button_TAlbum.config(bg = "light gray",fg = "black",text = "PLAY Album")
                 self.Start_Play2()
@@ -3915,7 +3929,7 @@ class MP3Player(Frame):
             if (self.cutdown >= 7 or self.cutdown == 0) and self.synced == 1:
                 self.L6.config(text = "(" + str(self.stop_record)[11:16] + ")")
             if self.cutdown != 1:
-                if self.rotary == 0:
+                if self.rotary_pos== 0:
                     self.Button_Radio.config(bg = "red",fg = "black", text = "STOP RECORD")
                 else:
                     self.Button_Radio.config(bg = "light blue",fg = "black", text = "STOP RECORD")
@@ -4122,7 +4136,7 @@ class MP3Player(Frame):
                     self.Button_Radio.config(fg = "black",bg = "orange", text ="Gapless")
                 if self.cutdown != 4 and self.cutdown != 5:
                     self.img.config(image = self.render)
-            if self.rotary == 1 and self.rot_pos == 13 :
+            if self.rotary_pos == 1 and self.rot_pos == 13 :
                 self.Button_Gapless.config(bg = 'yellow')
 
     def Play_Album(self):
@@ -4174,7 +4188,7 @@ class MP3Player(Frame):
             self.Button_Next_Artist.config(bg  = "light grey", fg = "black")
             self.Button_Prev_Album.config(bg  = "light grey", fg = "black")
             self.Button_Next_Album.config(bg  = "light grey", fg = "black")
-            if self.rotary == 0:
+            if self.rotary_pos== 0:
                 self.Button_Prev_Track.config(bg  = "light blue", fg = "black")
             self.Button_Next_Track.config(bg  = "light blue", fg = "black")
             if self.cutdown == 6 or self.cutdown == 4 or self.cutdown == 5:
@@ -4359,12 +4373,12 @@ class MP3Player(Frame):
             self.Button_Next_AZ.config(text = "Info", bg = "light blue", fg = "black")
         if self.cutdown == 4:
             self.Button_Next_AZ.config(text = "NextAZ", bg = "light blue", fg = "black")
-        if self.rotary == 0:
+        if self.rotary_pos== 0:
             self.Button_Prev_Artist.config(bg = "light blue", fg = "black")
             self.Button_Start.config(bg = "green",fg = "black",text = "PLAY Playlist")
         else:
             self.Button_Prev_Artist.config(bg = "light blue", fg = "black")
-            if self.rot_pos == 3 and self.rotary == 1:
+            if self.rot_pos == 3 and self.rotary_pos == 1:
                 self.Button_Start.config(bg = "yellow",text = "PLAY Playlist")
             elif self.rot_pos == 4:
                 self.Button_TAlbum.config(bg = "yellow",text = "PLAY Album")
@@ -4419,7 +4433,7 @@ class MP3Player(Frame):
             self.sleep_time_min = 0
             self.sleep_time = 0
             self.Button_Sleep.config(bg = "light blue", text = "SLEEP")
-            if self.rot_pos == 3 and self.rotary == 1:
+            if self.rot_pos == 3 and self.rotary_pos == 1:
                 self.Button_Start.config(bg = "yellow",text = "PLAY Playlist")
                 self.Button_TAlbum.config(bg = "blue",text = "PLAY Album")
             elif self.rot_pos == 4:
@@ -4996,7 +5010,7 @@ class MP3Player(Frame):
             self.ramtest = 1
             self.Check_Record()
             if len(track) == 0  and self.Radio_Stns[self.Radio + 2]  > 0:
-                if self.rotary == 0:
+                if self.rotary_pos== 0:
                     messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
         # Previous Artist
         if self.paused == 0 and self.album_start == 0 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
@@ -5218,7 +5232,7 @@ class MP3Player(Frame):
             self.ramtest = 1
             self.Check_Record()
             if len(track) == 0  and self.Radio_Stns[self.Radio + 2]  > 0:
-                if self.rotary == 0:
+                if self.rotary_pos== 0:
                     messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
         # Next Artist
         if self.paused == 0 and self.album_start == 0 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
@@ -5660,10 +5674,8 @@ class MP3Player(Frame):
     def nextAZ(self):
         if (self.Radio_RON == 1 or self.album_start == 1 or self.stopstart == 1):
             self.PopupInfo()
-            if self.rotary == 1:
+            if self.rotary_pos == 1:
                 self.Button_Next_AZ.config(bg = "yellow")
-            #else:
-            #    self.Button_Next_AZ.config(bg = "orange")
             if self.Radio_RON == 1:
                 self.Button_Prev_Album.config(bg = 'light gray')
                 self.Button_Prev_Track.config(bg = 'light gray')
@@ -5835,13 +5847,13 @@ class MP3Player(Frame):
             self.ramtest = 1
             self.Check_Record()
             if len(track) == 0  and self.Radio_Stns[self.Radio + 2]  > 0:
-                if self.rotary == 0:
+                if self.rotary_pos== 0:
                     messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
 
     def prevAZ(self):
         if (self.Radio_RON == 1 or self.album_start == 1 or self.stopstart == 1):
             self.PopupInfo()
-            if self.rotary == 1:
+            if self.rotary_pos == 1:
                 self.Button_Next_AZ.config(bg = "yellow")
             #else:
             #    self.Button_Next_AZ.config(bg = "orange")
@@ -6013,7 +6025,7 @@ class MP3Player(Frame):
             self.ramtest = 1
             self.Check_Record()
             if len(track) == 0  and self.Radio_Stns[self.Radio + 2]  > 0:
-                if self.rotary == 0:
+                if self.rotary_pos== 0:
                     messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
 
     def RnextAZ(self):
@@ -6176,7 +6188,7 @@ class MP3Player(Frame):
                
             else:
                 self.Disp_artist_name.config(text =" NO TRACKS FOUND !")
-                if self.rotary == 0:
+                if self.rotary_pos== 0:
                     messagebox.showinfo("WARNING!","No Tracks found!")
 
     def RELOAD1_List(self):
@@ -6236,7 +6248,7 @@ class MP3Player(Frame):
                     print ("RELOAD2",len(self.tunes))
                 self.plist_callback()
             self.Time_Left_Play()
-        if self.rotary == 1:
+        if self.rotary_pos == 1:
             self.rot_mode = 0
             self.rot_pos = 3
             self.rot_posp = 3
@@ -6275,7 +6287,7 @@ class MP3Player(Frame):
             self.repeat = 0
             self.repeat_track = 0
             self.Button_repeat.config(bg = "light blue",fg = "black",text = "Repeat Album")
-        if self.rotary == 1:
+        if self.rotary_pos == 1:
             self.Button_repeat.config(bg = "yellow")
             
 
@@ -6314,7 +6326,7 @@ class MP3Player(Frame):
                 shuffle(self.tunes)
                 with open('Lasttrack3.txt', 'w') as f:
                     f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
-                if self.rotary == 1:
+                if self.rotary_pos == 1:
                     self.Button_Shuffle.config(bg = "yellow",fg = "black",text = "Shuffled")
                 else:
                     self.Button_Shuffle.config(bg = "orange",fg = "black",text = "Shuffled")
@@ -6342,7 +6354,7 @@ class MP3Player(Frame):
                 if self.cutdown != 5 and self.cutdown != 6 and self.imgxon == 0 :
                     self.Disp_plist_name.config(text=" " + self.que_dir[len(self.m3u_dir):])
                 self.Disp_Total_tunes.config(text =len(self.tunes))
-                if self.rotary == 0:
+                if self.rotary_pos== 0:
                     self.Button_Shuffle.config(bg = "light blue",fg = "black",text = "Shuffle")
                 else:
                     self.Button_Shuffle.config(bg = "yellow",fg = "black",text = "Shuffle")
@@ -6377,7 +6389,7 @@ class MP3Player(Frame):
             else:
                 self.shuffle_on = 0
                 self.tunes[self.track_no + 1:self.tcount]=sorted(self.tunes[self.track_no + 1:self.tcount])
-                if self.rotary == 0:
+                if self.rotary_pos== 0:
                     self.Button_Shuffle.config(bg = "light blue",fg = "black",text = "Shuffle")
                 else:
                     self.Button_Shuffle.config(bg = "yellow",fg = "black",text = "Shuffle")
@@ -6477,7 +6489,7 @@ class MP3Player(Frame):
                self.track_no = 0
             self.Disp_Total_Plist.config(text = "       " )
             self.Time_Left_Play()
-        if self.rotary == 1 and self.rot_pos == 15:
+        if self.rotary_pos == 1 and self.rot_pos == 15:
             self.Button_AZ_artists.config(bg = "yellow")
             
     def Track_m3u(self):
@@ -6643,14 +6655,14 @@ class MP3Player(Frame):
             self.record_sleep = 0
             
         if self.sleep_time == 0:
-            if self.rotary == 0:
+            if self.rotary_pos== 0:
                 self.Button_Sleep.config(bg = "light blue", text = "SLEEP")
-            elif self.rotary == 1 and self.rot_pos == 10:
+            elif self.rotary_pos == 1 and self.rot_pos == 10:
                 self.Button_Sleep.config(bg = "yellow", text = "SLEEP")
         elif self.sleep_time > 0:
-            if self.rotary == 0:
+            if self.rotary_pos== 0:
                 self.Button_Sleep.config(fg = "black", bg = "orange", text = str(self.sleep_time)  + " mins")
-            elif self.rotary == 1 and self.rot_pos == 10:
+            elif self.rotary_pos == 1 and self.rot_pos == 10:
                 self.Button_Sleep.config(fg = "black", bg = "yellow", text = str(self.sleep_time)  + " mins")
             
     def sleep_off(self):
@@ -6673,7 +6685,7 @@ class MP3Player(Frame):
             else:            
                 self.sleep_current = int((self.sleep_time_min - (time.monotonic() - self.begin))/60)
             if self.sleep_current > 0:
-                if self.rotary == 1 and self.rot_pos == 10:
+                if self.rotary_pos == 1 and self.rot_pos == 10:
                     self.Button_Sleep.config(fg = "black", bg = "yellow", text = str(self.sleep_current + 1)  + " mins")
                 else:
                     self.Button_Sleep.config(fg = "black", bg = "orange", text = str(self.sleep_current + 1)  + " mins")
@@ -6858,7 +6870,7 @@ class MP3Player(Frame):
             self.StillConnected()
             return True
         except OSError:
-            if self.rotary == 0:
+            if self.rotary_pos== 0:
                 messagebox.showinfo("WARNING!","No Internet found!")
         return False
 
@@ -6933,7 +6945,7 @@ class MP3Player(Frame):
                 self.repeat = 0
                 self.repeat_track = 0
                 self.Button_Radio.config(bg = "light blue",fg = "black",text = "Repeat Album")
-            if self.rotary == 1:
+            if self.rotary_pos == 1:
                 self.Button_Radio.config(bg = "yellow")
         # STOP RECORD BUTTON
         elif self.Radio_ON == 1 and self.Radio_RON == 1 and self.record == 1:
@@ -7085,7 +7097,7 @@ class MP3Player(Frame):
                 self.Disp_plist_name.config(text=" " + self.que_dir[len(self.m3u_dir):])
             else:
                 self.Button_Next_Artist.config(text="Artist >")
-                if self.rotary == 0:
+                if self.rotary_pos== 0:
                     self.Button_Prev_Artist.config(text="< Artist")
                 else:
                     self.rot_pos = 3
@@ -7102,7 +7114,7 @@ class MP3Player(Frame):
             if self.cutdown != 5 and self.cutdown != 6 :
                 self.Button_Prev_PList.config(fg = "black")
             self.Button_Start.config(bg  = "green", fg = "black")
-            if self.rotary == 0:
+            if self.rotary_pos== 0:
                 self.Button_Prev_Artist.config(bg = "light blue", fg = "black")
             else:
                 self.rot_pos = 3
@@ -7391,7 +7403,7 @@ class MP3Player(Frame):
                        time.sleep(2)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
                 if len(track) == 0  and self.Radio_Stns[self.Radio + 2]  > 0:
-                    if self.rotary == 0:
+                    if self.rotary_pos== 0:
                         messagebox.showinfo("WARNING!","Check Recordable entry set correctly for this stream")
                 # check RAM space and set self.max_record
                 st = os.statvfs("/run/shm/")
@@ -7681,7 +7693,7 @@ class MP3Player(Frame):
                 else:
                     self.Disp_track_name.config(text = self.tname)
         elif self.Radio_RON == 1 :
-            if self.rotary == 0:
+            if self.rotary_pos== 0:
                 messagebox.showinfo("WARNING!","NOT RECORDING" + "\n" + "Check Recordable")
                 self.Button_Pause.config(fg = "black",bg = "light blue",text = "RECORD")
             else:
@@ -7901,7 +7913,7 @@ class MP3Player(Frame):
                     
     def Shutdown(self):
         if (self.shuffle_on == 1 and self.sleep_time > 0 and self.play == 0) or self.Shutdown_exit == 0:
-            if self.rotary == 1:
+            if self.rotary_pos== 1 or self.rotary_vol == 1:
                 os.system("sudo shutdown -h now")
             self.exit()
             
