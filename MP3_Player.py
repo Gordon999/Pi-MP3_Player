@@ -31,7 +31,7 @@ global ext_buttons
 # set display cutdown format
 # 0:800x480, 1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist
 # 6:800x480 List 10 tracks, 7:800x480 with scrollbars, 8:1280x720 with scrollbars
-cutdown     = 8 # set the format required
+cutdown     = 7 # set the format required
 fullscreen  = 0 # set to 1 for fullscreen
 rotary_vol  = 0 # set to 1 if using VOLUME   rotary encoder 1 (see rotary_connections.jpg for wiring details)
 rotary_pos  = 0 # set to 1 if using POSITION rotary encoder 2 (see rotary_connections.jpg for wiring details)
