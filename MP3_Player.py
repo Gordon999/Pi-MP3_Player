@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 17.95
+version = 17.96
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -33,12 +33,10 @@ global ext_buttons
 # 6:800x480 List 10 tracks, 7:800x480 with scrollbars, 8:1280x720 with scrollbars
 cutdown     = 7 # set the format required
 fullscreen  = 0 # set to 1 for fullscreen
-rotary_vol  = 0 # set to 1 if using VOLUME   rotary encoder 1 (see rotary_connections.jpg for wiring details)
-rotary_pos  = 0 # set to 1 if using POSITION rotary encoder 2 (see rotary_connections.jpg for wiring details)
-ext_buttons = 0 # set to 1 if using external buttons for volume, play and mute (set to 0 if using rotary)
+rotary_vol  = 0 # set to 1 if using VOLUME   rotary encoder 1 (see connections.jpg for wiring details)
+rotary_pos  = 0 # set to 1 if using POSITION rotary encoder 2 (see connections.jpg for wiring details)
+ext_buttons = 0 # set to 1 if using external buttons (see connections.jpg for wiring details)
 touchscreen = 1 # set to 0 if using the rotary encoders and a non-touchscreen
-
-# Note you can only have rotary OR ext_Buttons NOT BOTH.
 
 import tkinter as tk
 from tkinter import *
@@ -410,25 +408,41 @@ class MP3Player(Frame):
             if self.rotary_pos == 0 and self.rotary_vol == 0 and self.ext_buttons == 1:
                 self.voldn              = 16 # external volume down gpio input
                 self.volup              = 12 # external volume up gpio input
-                self.mute               = 13 # external mute gpio input
+                self.mute               = 20  # external mute gpio input
                 self.button_voldn       = Button(self.voldn)
                 self.button_mute        = Button(self.mute)
                 self.button_volup       = Button(self.volup)
-                self.start_album        = 6  # external start/stop album gpio input
+                self.start_album        = 13 # external start/stop album gpio input
                 self.start_play         = 5  # external start/stop playlist gpio input
+                self.start_next         = 6  # external next album / track gpio input
                 self.button_start_album = Button(self.start_album)
                 self.button_start_play  = Button(self.start_play)
+                self.button_start_next  = Button(self.start_next)
             if self.rotary_vol == 1:
                 from gpiozero import RotaryEncoder
                 self.rotor1 = RotaryEncoder(12,16, wrap=True, max_steps=99)
-                self.mute               = 6  # external mute
+                self.mute               = 20  # external mute
                 self.button_mute        = Button(self.mute)
+                if self.ext_buttons == 1 and self.rotary_pos == 0:
+                    self.start_album        = 13 # external start/stop album gpio input
+                    self.start_play         = 5  # external start/stop playlist gpio input
+                    self.start_next         = 6  # external next album / track gpio input
+                    self.button_start_album = Button(self.start_album)
+                    self.button_start_play  = Button(self.start_play)
+                    self.button_start_next  = Button(self.start_next)
             if self.rotary_pos == 1:
                 if self.rotary_vol == 0:
                     from gpiozero import RotaryEncoder
                 self.rotor2 = RotaryEncoder(13, 5, wrap=True, max_steps=99)
-                self.next               = 20  # external next action
+                self.next               = 6  # external next action
                 self.button_next        = Button(self.next)
+                if self.ext_buttons == 1 and self.rotary_vol == 0:
+                    self.voldn              = 16 # external volume down gpio input
+                    self.volup              = 12 # external volume up gpio input
+                    self.mute               = 20 # external mute gpio input
+                    self.button_voldn       = Button(self.voldn)
+                    self.button_mute        = Button(self.mute)
+                    self.button_volup       = Button(self.volup)
         # enable LCD backlight (not Pi 7" screen)
         if self.LCD_backlight == 1:
             self.gpio_enable = 1
@@ -2308,11 +2322,26 @@ class MP3Player(Frame):
             self.Button_Next_AZ.config(bg = 'light blue', text = "NextAZ")
             self.Play_Album()
         elif self.ext_buttons == 1:
-            if self.gpio_enable == 2 and self.rotary_pos== 0 and self.button_start_play.is_pressed :
+            if self.gpio_enable == 2 and self.rotary_pos == 0 and self.button_start_play.is_pressed :
                 self.light_on = time.monotonic()
                 if self.Pi7_backlight == 1:
                     os.system("rpi-backlight -b 100")
                 self.Play()
+            if self.gpio_enable == 2 and self.rotary_pos == 0 and self.button_start_album.is_pressed :
+                self.light_on = time.monotonic()
+                if self.Pi7_backlight == 1:
+                    os.system("rpi-backlight -b 100")
+                self.Play_Album()
+            if self.gpio_enable == 2 and self.rotary_pos == 0 and self.button_start_next.is_pressed and self.play == 1:
+                self.light_on = time.monotonic()
+                if self.Pi7_backlight == 1:
+                    os.system("rpi-backlight -b 100")
+                self.Next_Track()
+            if self.gpio_enable == 2 and self.rotary_pos == 0 and self.button_start_next.is_pressed and self.play == 0:
+                self.light_on = time.monotonic()
+                if self.Pi7_backlight == 1:
+                    os.system("rpi-backlight -b 100")
+                self.Next_Album()
 
         self.after(500, self.Check_buttons) # set for 500mS
         
@@ -3279,7 +3308,7 @@ class MP3Player(Frame):
                 self.start = time.monotonic()
                 self.pstart = time.monotonic()
                 if self.album_start == 1:
-                    if self.rotary_pos== 0:
+                    if self.rotary_pos == 0:
                         self.Button_TAlbum.config(bg = "red",fg = "black",text = "STOP")
                     elif self.rotary_pos == 1 and self.rot_pos == 4:
                         self.Button_TAlbum.config(bg = "yellow",fg = "black",text = "STOP")
@@ -3287,9 +3316,9 @@ class MP3Player(Frame):
                         self.Button_TAlbum.config(bg = "blue",fg = "black",text = "STOP")
                     self.Button_Start.config(bg = "light gray",fg = "black",text = "PLAY Playlist")
                 else:
-                    if self.rotary_pos== 0:
+                    if self.rotary_pos == 0:
                         self.Button_Start.config(bg = "red",fg = "black",text = "STOP")
-                    elif rotary == 1 and self.rot_pos == 3:
+                    elif rotary_pos == 1 and self.rot_pos == 3:
                         self.Button_Start.config(bg = "yellow",fg = "black",text = "STOP")
                     elif self.rotary_pos == 1 :
                         self.Button_Start.config(bg = "green",fg = "black",text = "STOP")
