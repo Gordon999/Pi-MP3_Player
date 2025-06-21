@@ -4412,7 +4412,7 @@ class MP3Player(Frame):
             self.Button_repeat.config(fg = "black",bg = "light blue", text = "Repeat")
         if self.cutdown == 0 or self.cutdown >= 7:
             self.L6.config(text= "Playlist :")
-        self.Button_TAlbum.config(fg = "black",bg = "blue")
+        self.Button_TAlbum.config(fg = "black",bg = "blue",text = "PLAY Album")
         if self.album_start == 1 and self.shuffle_on == 1:
             self.shuffle_on = 0
             self.tunes[self.track_no - self.album_track + 1:self.tcount]=sorted(self.tunes[self.track_no  - self.album_track + 1:self.tcount])
