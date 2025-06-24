@@ -5,7 +5,7 @@ Pi-MP3_Player
 
 Note this will work under BUSTER, BULLSEYE , OR BOOKWORM 
 
-v17.96 CHANGED WIRING. Option to use a mixture of rotary encoder(s) and buttons see Connections.jpg
+v17.97 CHANGED WIRING. Option to use a mixture of rotary encoder(s) and buttons see Connections.jpg
 
 v17.95 Volume and/or Position rotary encoders can be added seperately. e.g. You could have a touchscreen (or mouse) and a volume pot.
 
