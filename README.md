@@ -20,10 +20,6 @@ v17.85 Bluetooth IN. Pair your cell phone etc with the Pi. Run MP3_Player.py, cl
 reconnect your cell phone, play your music on your cell phone. click on Bluetooth button to stop.
 Only available on cutdowns 0,2,7 and 8.
 
-v17.80 version notes:
-
-    Set Variable rotary = 1 (line 31), set to 0 if you want to use the
-    original external buttons.
     
     Rotary Encoder 1 (KY-040) will set volume, it's press button will MUTE
     
@@ -44,8 +40,6 @@ v17.80 version notes:
     Don't be tempted to press any screen buttons if using the rotary encoders,
     this will confuse the code !!
     Don't set rotary = 0 if you have the rotarys connected.
-
-Note tested on a Pi5 with bookworm but not with the PI 7" screens.
 
 Designed to be used with a Pi and the Pi 7" Touchscreen LCD, but will work on other monitors. Playing .mp3, .flac, .wav, .dsf, .m4a tracks from USB sticks (or HDD) under /media/pi/usb_stick_name/artist name/album_name/tracks.
 
