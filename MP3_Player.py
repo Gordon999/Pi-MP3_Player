@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 17.97
+version = 17.99
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -6722,6 +6722,8 @@ class MP3Player(Frame):
                 self.Button_Sleep.config(fg = "yellow", bg = "red", text = str(int((self.sleep_time_min - (time.monotonic() - self.begin)))) + " s")
             if self.sleep_current < 1:
                 self.Button_Sleep.config(bg = "red")
+        if (time.monotonic() - self.begin > self.sleep_time_min) and self.sleep_time > 0 and self.shutdown == 1 and self.Radio_RON == 0 and self.usave == 1:
+            os.system("sudo shutdown -h now")
         if (time.monotonic() - self.begin > self.sleep_time_min) and self.sleep_time > 0 and self.shutdown == 1 and self.Radio_RON == 0:
             if self.R_Stopped == 0:
                 os.system("sudo shutdown -h now")
@@ -7294,10 +7296,11 @@ class MP3Player(Frame):
                 if self.cutdown != 5 and self.cutdown != 6 :
                     if self.cutdown != 1 and self.touchscreen == 1:
                         self.Disp_Name_m3u.delete('1.0','20.0')
-                        self.Button_Gapless.config(bg  = "light grey", fg = "black")
                         self.Button_Track_m3u.config(bg  = "light grey", fg = "black")
                         self.Button_Artist_m3u.config(bg  = "light grey", fg = "black")
                         self.Button_Album_m3u.config(bg  = "light grey", fg = "black")
+                    if self.cutdown != 1:
+                        self.Button_Gapless.config(bg  = "light grey", fg = "black")
                     self.Button_Prev_Artist.config(bg  = "light grey", fg = "black")
                     self.Button_Next_Artist.config(bg  = "light grey", fg = "black")
                     self.Button_Prev_Artist.config(text = " < Station", fg = "black", bg = "light blue")
@@ -7822,11 +7825,12 @@ class MP3Player(Frame):
                     elif self.Radio_Stns[self.Radio + 2] == 3 or self.Radio_Stns[self.Radio + 2] == 4:
                         artist = names[count2][:-4]
                         track  = names[0]
-                        mp = track[-4:]
-                        track = track[:-4]
+                        mp = names[count2][-4:]
                     artist = re.sub("[^a-zA-Z0-9- &!()',.]+", '',artist)
                     track = re.sub("[^a-zA-Z0-9- &!()',.]+", '',track)
                     track += mp
+                    if self.trace > 0:
+                        print(track,mp)
                     stn1 = self.m_user + "/" + USB_Files[0] + "/" + artist
                     stn2 = self.m_user + "/" + USB_Files[0] + "/" + artist + "/Radio_Recordings/"
                     if track != ".mp3" and artist !="":
