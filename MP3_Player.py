@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 17.99
+version = 18.00
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -2433,7 +2433,7 @@ class MP3Player(Frame):
                 stop = 1
                 self.track_no = k
             k +=1
-        self.Disp_track_no.config(text = self.track_no + 1) ###
+        self.Disp_track_no.config(text = self.track_no + 1)
         self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
         if self.drive_name[-1] == "*":
             self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
@@ -3130,6 +3130,17 @@ class MP3Player(Frame):
                 if self.cutdown != 4 and self.cutdown !=5 and self.cutdown !=1:
                     if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
                         self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
+                        if self.cutdown != 2:
+                            if self.cutdown == 8:
+                                self.load = self.load.resize((320,320), Image.LANCZOS)
+                            else:
+                                self.load = self.load.resize((218, 218), Image.LANCZOS)
+                        else:
+                            self.load = self.load.resize((150, 150), Image.LANCZOS)
+                        self.render2 = ImageTk.PhotoImage(self.load)
+                        self.img.config(image = self.render2)
+                    elif os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
+                        self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".png")
                         if self.cutdown != 2:
                             if self.cutdown == 8:
                                 self.load = self.load.resize((320,320), Image.LANCZOS)
@@ -4951,7 +4962,7 @@ class MP3Player(Frame):
                 else:   
                     self.L3.config(text = "Stn:")
             self.Name = self.Radio_Stns[self.Radio]
-            if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
+            if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg") or os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
                 self.imgxon = 0
             if self.imgxon == 1:
                 self.imgx.after(100, self.imgx.destroy())
@@ -4998,6 +5009,24 @@ class MP3Player(Frame):
                             self.Disp_artist_name.after(100, self.Disp_artist_name.destroy())
                             self.Disp_album_name.after(100, self.Disp_album_name.destroy())
                         self.imgx.config(image = self.render2)
+                    elif os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
+                        self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".png")
+                        if self.cutdown == 1:
+                            self.load = self.load.resize((100, 100), Image.LANCZOS)
+                        elif self.cutdown == 4:
+                            self.load = self.load.resize((130, 130), Image.LANCZOS)
+                        else:
+                            self.load = self.load.resize((170, 170), Image.LANCZOS)
+                        self.render2 = ImageTk.PhotoImage(self.load)
+                        if self.imgxon == 0:
+                            self.imgx = tk.Label(self.Frame10, image = self.render2)
+                            self.imgx.grid(row = 1, column = 1, columnspan = 3, rowspan = 3, pady = 0)
+                            self.imgxon = 1
+                            if self.cutdown == 1 or self.cutdown == 4:
+                                self.Disp_plist_name.after(100, self.Disp_plist_name.destroy())
+                            self.Disp_artist_name.after(100, self.Disp_artist_name.destroy())
+                            self.Disp_album_name.after(100, self.Disp_album_name.destroy())
+                        self.imgx.config(image = self.render2)
             if( self.cutdown != 7 and self.cutdown != 8) and self.imgxon == 0:
                 self.Disp_artist_name.config(text = self.Name)
                 self.Disp_track_name.config(text = " ")
@@ -5007,6 +5036,17 @@ class MP3Player(Frame):
             if self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 1:
                 if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
                     self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
+                    if self.cutdown != 2:
+                        if self.cutdown == 8:
+                            self.load = self.load.resize((320,320), Image.LANCZOS)
+                        else:
+                            self.load = self.load.resize((218, 218), Image.LANCZOS)
+                    else:
+                        self.load = self.load.resize((150, 150), Image.LANCZOS)
+                    self.render2 = ImageTk.PhotoImage(self.load)
+                    self.img.config(image = self.render2)
+                elif os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
+                    self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".png")
                     if self.cutdown != 2:
                         if self.cutdown == 8:
                             self.load = self.load.resize((320,320), Image.LANCZOS)
@@ -5172,7 +5212,7 @@ class MP3Player(Frame):
                 else:   
                     self.L3.config(text = "Stn:")
             self.Name = self.Radio_Stns[self.Radio]
-            if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
+            if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg") or os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
                 self.imgxon = 0
             if self.imgxon == 1:
                 self.imgx.after(100, self.imgx.destroy())
@@ -5220,6 +5260,24 @@ class MP3Player(Frame):
                             self.Disp_artist_name.after(100, self.Disp_artist_name.destroy())
                             self.Disp_album_name.after(100, self.Disp_album_name.destroy())
                         self.imgx.config(image = self.render2)
+                    elif os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
+                        self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".png")
+                        if self.cutdown == 1:
+                            self.load = self.load.resize((100, 100), Image.LANCZOS)
+                        elif self.cutdown == 4:
+                            self.load = self.load.resize((130, 130), Image.LANCZOS)
+                        elif self.cutdown == 5:
+                            self.load = self.load.resize((170, 170), Image.LANCZOS)
+                        self.render2 = ImageTk.PhotoImage(self.load)
+                        if self.imgxon == 0:
+                            self.imgx = tk.Label(self.Frame10, image = self.render2)
+                            self.imgx.grid(row = 1, column = 1, columnspan = 3, rowspan = 3, pady = 0)
+                            self.imgxon = 1
+                            if self.cutdown == 1 or self.cutdown == 4:
+                                self.Disp_plist_name.after(100, self.Disp_plist_name.destroy())
+                            self.Disp_artist_name.after(100, self.Disp_artist_name.destroy())
+                            self.Disp_album_name.after(100, self.Disp_album_name.destroy())
+                        self.imgx.config(image = self.render2)
             if( self.cutdown != 7 and self.cutdown != 8) and self.imgxon == 0:
                 self.Disp_artist_name.config(text = self.Name)
                 self.Disp_track_name.config(text = " ")
@@ -5229,6 +5287,17 @@ class MP3Player(Frame):
             if self.cutdown != 4 and self.cutdown !=5 and self.cutdown !=1:
                 if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
                     self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
+                    if self.cutdown != 2:
+                        if self.cutdown == 8:
+                            self.load = self.load.resize((320,320), Image.LANCZOS)
+                        else:
+                            self.load = self.load.resize((218, 218), Image.LANCZOS)
+                    else:
+                        self.load = self.load.resize((150, 150), Image.LANCZOS)
+                    self.render2 = ImageTk.PhotoImage(self.load)
+                    self.img.config(image = self.render2)
+                elif os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
+                    self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".png")
                     if self.cutdown != 2:
                         if self.cutdown == 8:
                             self.load = self.load.resize((320,320), Image.LANCZOS)
@@ -5789,7 +5858,7 @@ class MP3Player(Frame):
                 else:   
                     self.L3.config(text = "Stn:")
             self.Name = self.Radio_Stns[self.Radio]
-            if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
+            if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg") or os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
                 self.imgxon = 0
             if self.imgxon == 1:
                 self.imgx.after(100, self.imgx.destroy())
@@ -5837,6 +5906,24 @@ class MP3Player(Frame):
                             self.Disp_artist_name.after(100, self.Disp_artist_name.destroy())
                             self.Disp_album_name.after(100, self.Disp_album_name.destroy())
                         self.imgx.config(image = self.render2)
+                    elif os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
+                        self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".png")
+                        if self.cutdown == 1:
+                            self.load = self.load.resize((100, 100), Image.LANCZOS)
+                        elif self.cutdown == 4:
+                            self.load = self.load.resize((130, 130), Image.LANCZOS)
+                        elif self.cutdown == 5:
+                            self.load = self.load.resize((170, 170), Image.LANCZOS)
+                        self.render2 = ImageTk.PhotoImage(self.load)
+                        if self.imgxon == 0:
+                            self.imgx = tk.Label(self.Frame10, image = self.render2)
+                            self.imgx.grid(row = 1, column = 1, columnspan = 3, rowspan = 3, pady = 0)
+                            self.imgxon = 1
+                            if self.cutdown == 1 or self.cutdown == 4:
+                                self.Disp_plist_name.after(100, self.Disp_plist_name.destroy())
+                            self.Disp_artist_name.after(100, self.Disp_artist_name.destroy())
+                            self.Disp_album_name.after(100, self.Disp_album_name.destroy())
+                        self.imgx.config(image = self.render2)
             if( self.cutdown != 7 and self.cutdown != 8) and self.imgxon == 0:
                 self.Disp_artist_name.config(text = self.Name)
             elif self.imgxon == 0:
@@ -5844,6 +5931,17 @@ class MP3Player(Frame):
             if self.cutdown != 4 and self.cutdown !=5 and self.cutdown !=1:
                 if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
                     self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
+                    if self.cutdown != 2:
+                        if self.cutdown == 8:
+                            self.load = self.load.resize((320,320), Image.LANCZOS)
+                        else:
+                            self.load = self.load.resize((218, 218), Image.LANCZOS)
+                    else:
+                        self.load = self.load.resize((150, 150), Image.LANCZOS)
+                    self.render2 = ImageTk.PhotoImage(self.load)
+                    self.img.config(image = self.render2)
+                elif os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
+                    self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".png")
                     if self.cutdown != 2:
                         if self.cutdown == 8:
                             self.load = self.load.resize((320,320), Image.LANCZOS)
@@ -5967,7 +6065,7 @@ class MP3Player(Frame):
                 else:   
                     self.L3.config(text = "Stn:")
             self.Name = self.Radio_Stns[self.Radio]
-            if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
+            if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg") or os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
                 self.imgxon = 0
             if self.imgxon == 1:
                 self.imgx.after(100, self.imgx.destroy())
@@ -6015,6 +6113,24 @@ class MP3Player(Frame):
                             self.Disp_artist_name.after(100, self.Disp_artist_name.destroy())
                             self.Disp_album_name.after(100, self.Disp_album_name.destroy())
                         self.imgx.config(image = self.render2)
+                    elif os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
+                        self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".png")
+                        if self.cutdown == 1:
+                            self.load = self.load.resize((100, 100), Image.LANCZOS)
+                        elif self.cutdown == 4:
+                            self.load = self.load.resize((130, 130), Image.LANCZOS)
+                        elif self.cutdown == 5:
+                            self.load = self.load.resize((170, 170), Image.LANCZOS)
+                        self.render2 = ImageTk.PhotoImage(self.load)
+                        if self.imgxon == 0:
+                            self.imgx = tk.Label(self.Frame10, image = self.render2)
+                            self.imgx.grid(row = 1, column = 1, columnspan = 3, rowspan = 3, pady = 0)
+                            self.imgxon = 1
+                            if self.cutdown == 1 or self.cutdown == 4:
+                                self.Disp_plist_name.after(100, self.Disp_plist_name.destroy())
+                            self.Disp_artist_name.after(100, self.Disp_artist_name.destroy())
+                            self.Disp_album_name.after(100, self.Disp_album_name.destroy())
+                        self.imgx.config(image = self.render2)
             if( self.cutdown != 7 and self.cutdown != 8) and self.imgxon == 0:
                 self.Disp_artist_name.config(text = self.Name)
             elif self.imgxon == 0:
@@ -6022,6 +6138,17 @@ class MP3Player(Frame):
             if self.cutdown != 4 and self.cutdown !=5 and self.cutdown !=1:
                 if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
                     self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
+                    if self.cutdown != 2:
+                        if self.cutdown == 8:
+                            self.load = self.load.resize((320,320), Image.LANCZOS)
+                        else:
+                            self.load = self.load.resize((218, 218), Image.LANCZOS)
+                    else:
+                        self.load = self.load.resize((150, 150), Image.LANCZOS)
+                    self.render2 = ImageTk.PhotoImage(self.load)
+                    self.img.config(image = self.render2)
+                elif os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
+                    self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".png")
                     if self.cutdown != 2:
                         if self.cutdown == 8:
                             self.load = self.load.resize((320,320), Image.LANCZOS)
@@ -7353,6 +7480,17 @@ class MP3Player(Frame):
                             self.load = self.load.resize((150, 150), Image.LANCZOS)
                         self.render2 = ImageTk.PhotoImage(self.load)
                         self.img.config(image = self.render2)
+                    elif os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
+                        self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".png")
+                        if self.cutdown != 2:
+                            if self.cutdown == 8:
+                                self.load = self.load.resize((320,320), Image.LANCZOS)
+                            else:
+                                self.load = self.load.resize((218, 218), Image.LANCZOS)
+                        else:
+                            self.load = self.load.resize((150, 150), Image.LANCZOS)
+                        self.render2 = ImageTk.PhotoImage(self.load)
+                        self.img.config(image = self.render2)
                     elif os.path.exists(self.radio_jpg):
                         self.load = Image.open(self.radio_jpg)
                         if self.cutdown != 2:
@@ -7390,6 +7528,24 @@ class MP3Player(Frame):
                         self.L3.config(text = "Stn:")
                     if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg"):
                         self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".jpg")
+                        if self.cutdown == 1:
+                           self.load = self.load.resize((100, 100), Image.LANCZOS)
+                        elif self.cutdown == 4:
+                           self.load = self.load.resize((130, 130), Image.LANCZOS)
+                        else:
+                           self.load = self.load.resize((170, 170), Image.LANCZOS)
+                        self.render2 = ImageTk.PhotoImage(self.load)
+                        if self.imgxon == 0:
+                            self.imgx = tk.Label(self.Frame10, image = self.render2)
+                            self.imgx.grid(row = 1, column = 1, columnspan = 3, rowspan = 3, pady = 0)
+                            self.imgxon = 1
+                            if self.cutdown == 1 or self.cutdown == 4:
+                                self.Disp_plist_name.after(100, self.Disp_plist_name.destroy())
+                            self.Disp_artist_name.after(100, self.Disp_artist_name.destroy())
+                            self.Disp_album_name.after(100, self.Disp_album_name.destroy())
+                        self.imgx.config(image = self.render2)
+                    elif os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
+                        self.load = Image.open(self.h_user + "/Documents/" + self.Name + ".png")
                         if self.cutdown == 1:
                            self.load = self.load.resize((100, 100), Image.LANCZOS)
                         elif self.cutdown == 4:
