@@ -4080,8 +4080,7 @@ class MP3Player(Frame):
                 self.time2 = time.monotonic()
                 self.start = self.start + (self.time2 - self.time1)
                 self.start2 = self.start2 + (self.time2 - self.time1)
-                if self.rotary_pos == 0:
-                    self.Button_Pause.config(fg = "black",bg = "light blue", text ="Pause")
+                self.Button_Pause.config(fg = "black",bg = "light blue", text ="Pause")
                 elif self.rotary_pos == 1 and self.rot_pos == 9:
                     self.Button_Pause.config(fg = "black",bg = "yellow", text ="Pause")
                 if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 6 and self.album_start == 0:
