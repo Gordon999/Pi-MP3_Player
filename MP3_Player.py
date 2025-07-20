@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.02
+version = 18.04
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -298,7 +298,7 @@ class MP3Player(Frame):
                             self.Radio_Stns.append(0)
                     line = textobj.readline()
         # read radio_stns.csv (Station Name,URL,X,)
-        if os.path.exists ("radio_stns.csv"): 
+        elif os.path.exists ("radio_stns.csv"): 
             with open("radio_stns.csv","r") as textobj:
                 line = textobj.readline()
                 while line:
@@ -310,16 +310,13 @@ class MP3Player(Frame):
                     line = textobj.readline()
                     
         # check Lasttrack3.txt exists, if not then write default values. Used for recalling last Radio Station ,volume etc, and restarting if using a Pi Zero.
-        track  = 0
-        radio  = 0
-        volume = 60
         if not os.path.exists('Lasttrack3.txt'):
             with open('Lasttrack3.txt', 'w') as f:
-                f.write(str(track) + "\n" + str(self.auto_play) + "\n" + str(radio) + "\n" + str(volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
+                f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
 
         # read Lasttrack3.txt
         with open("Lasttrack3.txt", "r") as file:
-           track     = int(file.readline())
+           self.track_no      = int(file.readline())
            self.auto_play     = int(file.readline())
            self.Radio         = int(file.readline())
            self.volume        = int(file.readline())
@@ -330,23 +327,21 @@ class MP3Player(Frame):
            self.auto_album    = int(file.readline())
         if self.auto_album == 1:
             self.auto_albums = 1
-            self.rot_posp = 4
-            self.rot_pos = 4
+            self.rot_posp    = 4
+            self.rot_pos     = 4
         else:
             self.auto_albums = 0
-        if self.auto_play == 1 or self.auto_album == 1:
-            self.track_no = track
         if self.Radio >= int(len(self.Radio_Stns)):
             self.Radio = 0
         if self.auto_play == 0:
             self.start = self.auto_play
         else:
-            self.start = 1
-            self.rot_posp = 3
-            self.rot_pos = 3
-        self.auto_rec_set = 0
-        self.f_volume     = self.volume
-        self.NewRadio     = -1
+            self.start     = 1
+            self.rot_posp  = 3
+            self.rot_pos   = 3
+        self.auto_rec_set  = 0
+        self.f_volume      = self.volume
+        self.NewRadio      = -1
         self.auto_rec_time = 0
         
         # wait for internet,if required for auto_radio
@@ -361,7 +356,7 @@ class MP3Player(Frame):
             rcount = 0
             for r in range(0,len(self.order)):
                 if self.order[r] == 8:
-                    self.rot_pos = r
+                    self.rot_pos  = r
                     self.rot_posp = r
                 rcount +=1
                         
@@ -1571,7 +1566,6 @@ class MP3Player(Frame):
             elif self.rot_posp == 4:
                 self.Button_TAlbum.config(bg = 'yellow')
 
-
     def Read_Rotary_VOL(self):
         if self.old_rotor1 != self.rotor1.value:
             self.light_on = time.monotonic()
@@ -1670,8 +1664,7 @@ class MP3Player(Frame):
                         if self.Radio_RON == 1:
                             if self.rot_posp == 1:
                                 self.rot_posp = 11
-
-                            
+                           
                     self.rot_pos = self.order[self.rot_posp]
                     if self.album_start == 0:
                         if self.cutdown >= 7 or self.cutdown == 2 or self.cutdown == 0:
@@ -1817,7 +1810,6 @@ class MP3Player(Frame):
                 self.old_rotor2 = self.rotor2.value
                 if self.rot_mode == 0:
                     self.rot_posp +=1
-                    #print(self.rot_posp)
                     if self.rot_posp > 16:
                         self.rot_posp = 0
                     if self.cutdown > 4 and self.cutdown < 7 and self.rot_posp > 11:
@@ -4081,7 +4073,7 @@ class MP3Player(Frame):
                 self.start = self.start + (self.time2 - self.time1)
                 self.start2 = self.start2 + (self.time2 - self.time1)
                 self.Button_Pause.config(fg = "black",bg = "light blue", text ="Pause")
-                elif self.rotary_pos == 1 and self.rot_pos == 9:
+                if self.rotary_pos == 1 and self.rot_pos == 9:
                     self.Button_Pause.config(fg = "black",bg = "yellow", text ="Pause")
                 if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 6 and self.album_start == 0:
                     self.Button_Gapless.config(fg = "black",bg = "light blue", text ="Gapless")
@@ -7825,6 +7817,8 @@ class MP3Player(Frame):
         self.counter = 0
         self.track_nameX = [" - .mp3"]
         self.tname = re.sub("[^a-zA-Z0-9- &!()',.]+", '',self.tname)
+        if self.tname == "":
+            self.tname= "Unknown"
         if self.Radio_ON == 1 and self.Radio_Stns[self.Radio + 2]  > 0:
             if self.cutdown >= 7:
                 self.Disp_track_name.set(self.tname)
@@ -7852,6 +7846,8 @@ class MP3Player(Frame):
                     self.oldtrack2 = self.tname
                     vv = 1
                 self.tname = re.sub("[^a-zA-Z0-9- &!()',.]+", '',self.tname)
+                if self.tname == "":
+                    self.tname= "Unknown"
                 if vv == 1 and self.trace == 2:
                     print("2",self.tname)
                 if self.cutdown >= 7:
@@ -7865,6 +7861,8 @@ class MP3Player(Frame):
             elif self.track_nameX[self.counter][0:3] == " - " and self.track_nameX[self.counter] != " - .mp3":
                 self.tname = self.track_nameX[self.counter][:-4]
                 self.tname = re.sub("[^a-zA-Z0-9- &!()',.]+", '',self.tname)
+                if self.tname == "":
+                    self.tname= "Unknown"
                 if self.cutdown >= 7:
                     self.Disp_track_name.set(self.tname[3:])
                 else:
@@ -7982,7 +7980,11 @@ class MP3Player(Frame):
                         track  = names[0]
                         mp = names[count2][-4:]
                     artist = re.sub("[^a-zA-Z0-9- &!()',.]+", '',artist)
+                    if artist == "":
+                        artist = "Unknown"
                     track = re.sub("[^a-zA-Z0-9- &!()',.]+", '',track)
+                    if track == "":
+                        track = "Unknown"
                     track += mp
                     if self.trace > 0:
                         print(track,mp)
