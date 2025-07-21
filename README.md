@@ -3,15 +3,9 @@ Pi-MP3_Player
 
 ![screenshot](screenshot.jpg)
 
-v18.02 various minor fixes
+v18.05 Various minor fixes. Skip FWD now includes skip to next 'event' if you have a .txt file, eg when recorded Radio with metadata titles.
 
 v17.97  # Onwards CHANGED WIRING for rotary encodersand buttons.  Option to use a mixture of rotary encoder(s) and buttons see Connections.jpg
-
-v17.95 Volume and/or Position rotary encoders can be added seperately. e.g. You could have a touchscreen (or mouse) and a volume pot.
-
-v17.94 some minor fixes to work with labwc, and reduce cpu load after playing multiple tracks.
-
-v17.90 Cutdown 8 added for Pi Touch 2 Display. 1280x720. Similar layout to cutdown 7.
 
 Note there is a conflict with the rotary encoders and the Innomaker Pi DAC HAT (gpio6), the Innomaker 25W Amp should work OK. Pi DACPro HAT works OK
 
