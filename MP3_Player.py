@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.04
+version = 18.05
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -3558,7 +3558,6 @@ class MP3Player(Frame):
             self.after(500, self.PStart)
 
     def playing(self):
-        #print(time.monotonic())
         if self.genre_name == "None":
             self.track2 = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name, self.artist_name, self.album_name, self.track_name[:-4] + ".txt")
         else:
@@ -3996,7 +3995,7 @@ class MP3Player(Frame):
             self.freeram1 = (st.f_bavail * st.f_frsize)/1100000
             self.timer7 = time.monotonic()
             free2 = int((self.freeram1 - self.ram_min)/10) * 10
-            self.max_record = min(free2,991)
+            self.max_record = min(free2,990)
             self.ramtest = 1
 
         elif self.Radio_ON == 1 and self.Radio_RON == 1 and self.Radio_Stns[self.Radio + 2]  > 0 and self.record == 1:
@@ -6188,8 +6187,30 @@ class MP3Player(Frame):
     def RELOAD_List(self):
         if self.trace > 0:
             print ("RELOAD_List")
+        # skip forward (next track if .txt file available, eg radio recording)
+        if os.path.exists(self.track2) and self.paused == 0 and (self.album_start == 1 or self.stopstart == 1) and self.Radio_ON == 0:
+           names = []
+           with open(self.track2, "r") as file:
+               line = file.readline()
+               while line:
+                   names.append(line.strip())
+                   line = file.readline()
+           x = 0
+           stop = 0
+           while x < len(names) and stop == 0:
+               dtime = names[x][0:6]
+               dname = names[x][7:]
+               pstime = int(dtime[0:3]) * 60 + int(dtime[4:6])
+               if (self.p_minutes * 60) + self.p_seconds < pstime and dtime != "000:00":
+                   #print("skip to ",pstime,self.start,self.total,self.played)
+                   player.time_pos = pstime
+                   self.start -= pstime - self.played
+                   self.total -= pstime - self.played
+                   stop = 1
+               x +=1
+            
         # skip forward (1/10 of track)
-        if self.paused == 0 and (self.album_start == 1 or self.stopstart == 1) and self.Radio_ON == 0:
+        elif self.paused == 0 and (self.album_start == 1 or self.stopstart == 1) and self.Radio_ON == 0:
                    if self.play == 1 and self.version == 2 and self.paused == 0:
                        self.skip = int(self.track_len/10)
                        if self.skip + self.played < self.track_len  - self.skip:
