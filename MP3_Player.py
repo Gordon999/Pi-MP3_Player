@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.05
+version = 18.07
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -4896,8 +4896,8 @@ class MP3Player(Frame):
             self.Time_Left_Play()
 
     def Prev_Artist(self):
-        if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 3:
-            self.Disp_Drive.config(bg = 'light gray')
+        #if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 3:
+        #    self.Disp_Drive.config(bg = 'light gray')
         # Previous Radio Station
         if self.Radio_ON == 1 and self.Radio_RON == 0:
             self.copy = 0
@@ -5142,8 +5142,8 @@ class MP3Player(Frame):
                 self.Time_Left_Play()
 
     def Next_Artist(self):
-        if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 3:
-            self.Disp_Drive.config(bg = 'light gray')
+        #if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 3:
+        #    self.Disp_Drive.config(bg = 'light gray')
         # Next Radio Station
         if self.Radio_ON == 1 and self.Radio_RON == 0:
             self.copy = 0
@@ -5384,8 +5384,8 @@ class MP3Player(Frame):
                 self.Time_Left_Play()
 
     def Prev_Album(self):
-        if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 3:
-            self.Disp_Drive.config(bg = 'light gray')
+        #if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 3:
+        #    self.Disp_Drive.config(bg = 'light gray')
         if self.paused == 0 and self.album_start == 0 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
             if self.imgxon == 1:
                 self.imgx.after(100, self.imgx.destroy())
@@ -5464,8 +5464,8 @@ class MP3Player(Frame):
     def Next_Album(self):
         if self.trace > 0:
             print ("Next Album entry ", self.track_no,self.play)
-        if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 3:
-            self.Disp_Drive.config(bg = 'light gray')
+        #if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 3:
+        #    self.Disp_Drive.config(bg = 'light gray')
         if self.paused == 0 and self.album_start == 0 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
             if self.imgxon == 1:
                 self.imgx.after(100, self.imgx.destroy())
@@ -5542,8 +5542,8 @@ class MP3Player(Frame):
             
     def Prev_Track(self):
         if self.album_track != 1 and os.path.exists(self.que_dir) and self.Radio_ON == 0:
-            if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 3:
-                self.Disp_Drive.config(bg = 'light gray')
+            #if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 3:
+            #    self.Disp_Drive.config(bg = 'light gray')
             if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 2 or self.cutdown == 3:
                 self.Disp_Name_m3u.config(background="light gray", foreground="black")
             if self.imgxon == 1:
@@ -5622,8 +5622,8 @@ class MP3Player(Frame):
     def Next_Track(self):
         if self.trace > 0:
             print ("Next_Track",self.album_start)
-        if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 3:
-            self.Disp_Drive.config(bg = 'light gray')
+        #if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 3:
+        #    self.Disp_Drive.config(bg = 'light gray')
         if (self.album_start == 0 and os.path.exists(self.que_dir)) or (self.album_start == 1 and self.track_no != self.tcount and os.path.exists(self.que_dir)):
             if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 2 or self.cutdown == 3:
                 self.Disp_Name_m3u.config(background="light gray", foreground="black")
@@ -7741,6 +7741,8 @@ class MP3Player(Frame):
         self.total_record = 0
         rems = glob.glob("/run/shm/music/*/*/*/*/*.mp3")
         for x in range(0,len(rems)):
+            if self.usave == 1:
+                shutil.copy(rems[x],self.h_user + "/Music/")
             os.remove(rems[x])
         rems = glob.glob("/run/shm/music/*/*/*.cue")
         for x in range(0,len(rems)):
@@ -7899,7 +7901,7 @@ class MP3Player(Frame):
                 else:
                     self.Disp_track_name.config(text = self.tname)
         elif self.Radio_RON == 1 :
-            if self.rotary_pos== 0:
+            if self.rotary_pos == 0:
                 messagebox.showinfo("WARNING!","NOT RECORDING" + "\n" + "Check Recordable")
                 self.Button_Pause.config(fg = "black",bg = "light blue",text = "RECORD")
             else:
@@ -8004,8 +8006,9 @@ class MP3Player(Frame):
                     if artist == "":
                         artist = "Unknown"
                     track = re.sub("[^a-zA-Z0-9- &!()',.]+", '',track)
-                    if track == "":
-                        track = "Unknown"
+                    if track == "" or track == "-" or track == " - ":
+                        now = datetime.datetime.now()
+                        track = now.strftime("%y%m%d_%H%M%S")
                     track += mp
                     if self.trace > 0:
                         print(track,mp)
@@ -8045,7 +8048,9 @@ class MP3Player(Frame):
                                 tags["TALB"] = TALB(encoding=1, text=u'Radio_Recordings')
                                 tags["TPE2"] = TPE2(encoding=1, text=artist)
                                 tags["TPE1"] = TPE1(encoding=1, text=artist)
-                                tags["TDRC"] = TDRC(encoding=1, text=u'2020')
+                                now = datetime.datetime.now()
+                                Year = now.strftime("%Y")
+                                tags["TDRC"] = TDRC(encoding=1, text=Year)
                                 tags["TENC"] = TDRC(encoding=1, text="")
                                 tags["TRCK"] = TRCK(encoding=1, text=str(tcount))
                                 tags["TXXX:Encoded by"] = TXXX(encoding=0, text="")
@@ -8126,7 +8131,7 @@ class MP3Player(Frame):
                     
     def Shutdown(self):
         if (self.shuffle_on == 1 and self.sleep_time > 0 and self.play == 0) or self.Shutdown_exit == 0:
-            if self.rotary_pos== 1 or self.rotary_vol == 1:
+            if self.rotary_pos == 1 or self.rotary_vol == 1:
                 os.system("sudo shutdown -h now")
             self.exit()
             
