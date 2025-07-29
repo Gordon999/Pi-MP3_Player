@@ -6199,7 +6199,7 @@ class MP3Player(Frame):
         if self.trace > 0:
             print ("RELOAD_List")
         # skip forward (next track if .txt file available, eg radio recording)
-        if os.path.exists(self.track2) and self.paused == 0 and (self.album_start == 1 or self.stopstart == 1) and self.Radio_ON == 0:
+        if os.path.exists(self.track) and self.paused == 0 and (self.album_start == 1 or self.stopstart == 1) and self.Radio_ON == 0:
            names = []
            with open(self.track2, "r") as file:
                line = file.readline()
