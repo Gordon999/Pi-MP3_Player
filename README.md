@@ -97,7 +97,7 @@ Reboot
 
 =====================================================================================================================
 
-- Can be configured to boot to PLAY, PLAY ALBUM, RADIO or RADIO RECORD.
+- Can be configured to boot to PLAY, PLAY ALBUM or RADIO.
 
 - For boot to Play         : Choose track, Click on SHUFFLE if required, then press PLAY PLAYLIST, then SHUTDOWN. 
 - For boot to Play ALBUM   : Choose track, then press PLAY ALBUM, then SHUTDOWN.
