@@ -23,7 +23,7 @@ Only available on cutdowns 0,2,7 and 8.
     choose Play Playlist / Play Album and press again.
     Will step through tracks whilst playing an Album. 
 
-    see rotary_connections.jpg upto v17.95, see Connections.jpg after v17.95
+    see rotary_connections_v1795.jpg upto v17.95, see Connections.jpg after v17.95
 
     I would recommend cutdowns 0 or 5 with the rotary encoders.
     7 has the drop downs which are no use with the rotary encoders 
