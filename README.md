@@ -5,7 +5,7 @@ Pi-MP3_Player
 
 v18.05 Various minor fixes. Skip FWD now includes skip to next 'event' if you have a .txt file, eg when recorded Radio with metadata titles.
 
-v17.97  # Onwards CHANGED WIRING for rotary encodersand buttons.  Option to use a mixture of rotary encoder(s) and buttons see Connections.jpg
+v17.97  # Onwards CHANGED WIRING for rotary encoders and buttons.  Option to use a mixture of rotary encoder(s) and buttons see Connections.jpg
 
 Note there is a conflict with the rotary encoders and the Innomaker Pi DAC HAT (gpio6), the Innomaker 25W Amp should work OK. Pi DACPro HAT works OK
 
