@@ -37,12 +37,12 @@ Only available on cutdowns 0,2,7 and 8.
 
 Designed to be used with a Pi and the Pi 7" Touchscreen LCD, but will work on other monitors. Playing .mp3, .flac, .wav, .dsf, .m4a tracks from USB sticks (or HDD) under /media/pi/usb_stick_name/artist name/album_name/tracks.
 
-You could put MP3 track files on the SD card under /home/USERNAME/Music, and put the tracks in an appropriate directory eg. /home/USERNAME/Music/Rolling Stones/Exile on Mainstreet/. NOTE MP3 ONLY (and your username may not be pi).
+You could put MP3 track files on the SD card under /home/USERNAME/Music, and put the tracks in an appropriate directory eg. /home/USERNAME/Music/Rolling Stones/Exile on Mainstreet/. NOTE MP3 ONLY.
 
 Default playlist name etc are definable in the script.
 Avoid any directory/track names with [ ] (square brackets) in.
 
-Tested on Pi 2 v1.1, 3A, 3B, 4B, Zero W, v1.2 & v1.3 , Pi400 and Pi4 with  32 and 64bit Pi OS, all using Buster.
+Tested on Pi 2 v1.1, 3A, 3B, 4B, 5B, Zero W, v1.2 & v1.3 , Pi400 and Pi4 with  32 and 64bit Pi OS.
 Also tested on a Pi4 4GB using FULL 32bit and 64bit BULLSEYE & BOOKWORM
 
 For Radio Stream use Pi3, Pi4, Pi5 or Pi400 recommended as it requires RAM space.
