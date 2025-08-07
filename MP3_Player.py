@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.08
+version = 18.10
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -3902,6 +3902,10 @@ class MP3Player(Frame):
                 self.synced = 1
             else:
                 self.synced = 0
+            USB_Files = []
+            USB_Files = (os.listdir(self.m_user + ""))
+            if self.trace > 0:
+                print("usbs",USB_Files)
             self.rems2 = glob.glob("/run/shm/music/*/*/*/*/*.mp3")
             for x in range(0,len(self.rems2)):
                 os.remove(self.rems2[x])
@@ -3912,6 +3916,9 @@ class MP3Player(Frame):
             self.rems3 = glob.glob("/run/shm/music/*/*/*.cue")
             for x in range(0,len(self.rems3)):
                 os.remove(self.rems3[x])
+            self.rems4 = glob.glob("/run/shm/music/*/*/*.txt")
+            for x in range(0,len(self.rems4)):
+                os.remove(self.rems4[x])
             self.Name = ""
             if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 5:
                 self.L1.config(text = "RAM: ")
@@ -3924,7 +3931,7 @@ class MP3Player(Frame):
                 self.Disp_Name_m3u.config(background="light gray", foreground="black")
                 self.Name = str(self.Disp_Name_m3u.get('1.0','20.0')).strip()
             self.Button_Reload.config(text = "RELOAD", bg = "light grey", fg = "black")
-            self.Button_Shuffle.config(text = "CLR RAM",bg = "light grey", fg = "black")
+            #self.Button_Shuffle.config(text = "CLR RAM",bg = "light grey", fg = "black")
             if len(self.Name) == 0 or self.Name == "Name ?":
                 now = datetime.datetime.now()
                 self.Name = now.strftime("%y%m%d_%H%M%S")
@@ -5038,6 +5045,9 @@ class MP3Player(Frame):
             if( self.cutdown != 7 and self.cutdown != 8) and self.imgxon == 0:
                 self.Disp_artist_name.config(text = self.Name)
                 self.Disp_track_name.config(text = " ")
+            elif self.cutdown == 7 or self.cutdown == 8: ####
+                self.Disp_artist_name.set(self.Name)
+                self.Disp_track_name.set(" ")
             elif self.imgxon == 0:
                 self.Disp_artist_name.set(self.Name)
                 self.Disp_track_name.set("  ")
@@ -5285,9 +5295,12 @@ class MP3Player(Frame):
                             self.Disp_artist_name.after(100, self.Disp_artist_name.destroy())
                             self.Disp_album_name.after(100, self.Disp_album_name.destroy())
                         self.imgx.config(image = self.render2)
-            if( self.cutdown != 7 and self.cutdown != 8) and self.imgxon == 0:
+            if (self.cutdown != 7 and self.cutdown != 8) and self.imgxon == 0:
                 self.Disp_artist_name.config(text = self.Name)
                 self.Disp_track_name.config(text = " ")
+            elif self.cutdown == 7 or self.cutdown == 8: ####
+                self.Disp_artist_name.set(self.Name)
+                self.Disp_track_name.set(" ")
             elif self.imgxon == 0:
                 self.Disp_artist_name.set(self.Name)
                 self.Disp_track_name.set("  ")
@@ -6199,7 +6212,7 @@ class MP3Player(Frame):
         if self.trace > 0:
             print ("RELOAD_List")
         # skip forward (next track if .txt file available, eg radio recording)
-        if os.path.exists(self.track) and self.paused == 0 and (self.album_start == 1 or self.stopstart == 1) and self.Radio_ON == 0:
+        if os.path.exists(self.track2) and self.paused == 0 and (self.album_start == 1 or self.stopstart == 1) and self.Radio_ON == 0:
            names = []
            with open(self.track2, "r") as file:
                line = file.readline()
@@ -7726,34 +7739,36 @@ class MP3Player(Frame):
                             del USB_Files[0]
             stn1 = self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio]
             stn2 = self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/"
-            if not os.path.exists(stn1):
-                os.system ("mkdir " + "'" + stn1 + "'")
-                time.sleep(1)
-            if not os.path.exists(stn2):
-                os.system ("mkdir " + "'" + stn2 + "'")
-                time.sleep(1)
-            vpath = self.Radio_Stns[self.Radio] + "^Radio_Recordings^" + self.Name + ".mp3^" + USB_Files[0] + "^media^" + os.getlogin() + "^" + self.genre_name 
-            if os.path.exists(self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/"):
-                if not os.path.exists(self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".mp3"):
-                    shutil.copy("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".mp3", self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".mp3")
-                    self.tunes.append(vpath)
-                    upath = self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".mp3"
-                    with open(self.m3u_dir + self.m3u_def + ".m3u", 'a') as f:
-                        f.write(upath + "\n")
-                    self.tunes.sort()
-                    self.tunes.append(vpath)
-                if os.path.exists("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt"):
-                    if not os.path.exists(self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt"):
-                        shutil.copy("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt", self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt")
-                time.sleep(1)
+            file_size = os.path.getsize("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".mp3")
+            if free * 1000000 > file_size:
+                if not os.path.exists(stn1):
+                    os.system ("mkdir " + "'" + stn1 + "'")
+                    time.sleep(1)
+                if not os.path.exists(stn2):
+                    os.system ("mkdir " + "'" + stn2 + "'")
+                    time.sleep(1)
+                vpath = self.Radio_Stns[self.Radio] + "^Radio_Recordings^" + self.Name + ".mp3^" + USB_Files[0] + "^media^" + os.getlogin() + "^" + self.genre_name 
+                if os.path.exists(self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/"):
+                    if not os.path.exists(self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".mp3"):
+                        shutil.copy("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".mp3", self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".mp3")
+                        self.tunes.append(vpath)
+                        upath = self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".mp3"
+                        with open(self.m3u_dir + self.m3u_def + ".m3u", 'a') as f:
+                            f.write(upath + "\n")
+                        self.tunes.sort()
+                        self.tunes.append(vpath)
+                    if os.path.exists("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt"):
+                        if not os.path.exists(self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt"):
+                            shutil.copy("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt", self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt")
+                    time.sleep(1)
         # ==============================================================================================================
         if self.trace > 0:
             print ("Copy Record")
         self.total_record = 0
         rems = glob.glob("/run/shm/music/*/*/*/*/*.mp3")
         for x in range(0,len(rems)):
-            if self.usave == 1:
-                shutil.copy(rems[x],self.h_user + "/Music/")
+            #if self.usave == 1:
+            #    shutil.copy(rems[x],self.h_user + "/Music/")
             os.remove(rems[x])
         rems = glob.glob("/run/shm/music/*/*/*.cue")
         for x in range(0,len(rems)):
@@ -7996,14 +8011,13 @@ class MP3Player(Frame):
                 trame = data[count]
                 if self.trace > 0:
                     print(trame)
-                if trame[0:10] != 'Commercial' and trame[0:6] != ' - AD ' and trame[0:8] != ' - STOP ' and trame[0:9] != ' - START ':
+                if trame[0:10] != 'Commercial' and trame[0:6] != ' - AD ' and trame[0:8] != ' - STOP ' and trame[0:9] != ' - START ' and trame[0:11] != 'BFBS - Edge':
                     if self.Radio_Stns[self.Radio + 2] == 2 or self.Radio_Stns[self.Radio + 2] == 3:
                         count2 = trame.count(' - ')
                         names = trame.split(' - ',count2)
                     elif self.Radio_Stns[self.Radio + 2] == 4:
                         count2 = trame.count(' by ')
                         names = trame.split(' by ',count2)
-                        
                     if self.Radio_Stns[self.Radio + 2] == 2 :
                         artist = names[0]
                         track  = names[count2]
@@ -8017,7 +8031,7 @@ class MP3Player(Frame):
                     if artist == "":
                         artist = "Unknown"
                     track = re.sub("[^a-zA-Z0-9- &!()',.]+", '',track)
-                    if track == "" or track == "-" or track == " - ":
+                    if track == "" or track == "-" or track == " ":
                         now = datetime.datetime.now()
                         track = now.strftime("%y%m%d_%H%M%S")
                     track += mp
@@ -8025,7 +8039,9 @@ class MP3Player(Frame):
                         print(track,mp)
                     stn1 = self.m_user + "/" + USB_Files[0] + "/" + artist
                     stn2 = self.m_user + "/" + USB_Files[0] + "/" + artist + "/Radio_Recordings/"
-                    if track != ".mp3" and artist !="":
+                    file_size = os.path.getsize(rems[v])
+                    if free * 1000000 > file_size:
+                      if track != ".mp3" and artist !="":
                         if not os.path.exists(stn1):
                             os.system ("mkdir " + "'" + stn1 + "'")
                             time.sleep(1)
@@ -8047,7 +8063,7 @@ class MP3Player(Frame):
                                 with open(self.m3u_dir + self.m3u_def + ".m3u", 'a') as f:
                                     f.write(upath + "\n")
                                 with open("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt", "a") as f:
-                                    f.write("000:00 " + artist + "/Radio_Recordings/" + track + "\n")
+                                    f.write("000:00 Saved: " + artist + "/Radio_Recordings/" + track + "\n")
                                 self.tunes.sort()
                                 time.sleep(1)
                                 tcount = len(glob.glob(self.m_user + "/" + USB_Files[0] + "/" + artist + "/Radio_Recordings/*.mp3"))
@@ -8066,9 +8082,7 @@ class MP3Player(Frame):
                                 tags["TRCK"] = TRCK(encoding=1, text=str(tcount))
                                 tags["TXXX:Encoded by"] = TXXX(encoding=0, text="")
                                 tags.save(self.m_user + "/" + USB_Files[0] + "/" + artist + "/Radio_Recordings/" + track)
-                                
-
-
+ 
         # ======================================================================================================================
         rems = glob.glob("/run/shm/music/*/*/*/*.mp3")
         for x in range(0,len(rems)):
