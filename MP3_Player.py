@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.10
+version = 18.11
 
 """Copyright (c) 2025
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -239,6 +239,7 @@ class MP3Player(Frame):
         self.old_rotor1     = 0
         self.old_rotor2     = 0
         self.rot_posp       = 3
+        self.track2         = ""
         
         if self.cutdown == 0 or self.cutdown == 2 or self.cutdown >= 7 or self.cutdown == 8:
             self.order = [1,2,12,3,4,9,13,10,16,6,7,8,5,14,15,11,0]
@@ -6211,39 +6212,40 @@ class MP3Player(Frame):
     def RELOAD_List(self):
         if self.trace > 0:
             print ("RELOAD_List")
-        # skip forward (next track if .txt file available, eg radio recording)
-        if os.path.exists(self.track2) and self.paused == 0 and (self.album_start == 1 or self.stopstart == 1) and self.Radio_ON == 0:
-           names = []
-           with open(self.track2, "r") as file:
-               line = file.readline()
-               while line:
-                   names.append(line.strip())
+        if len(self.tunes) > 0 and self.track2 != "":
+            # skip forward (next track if .txt file available, eg radio recording)
+            if os.path.exists(self.track2) and self.paused == 0 and (self.album_start == 1 or self.stopstart == 1) and self.Radio_ON == 0:
+               names = []
+               with open(self.track2, "r") as file:
                    line = file.readline()
-           x = 0
-           stop = 0
-           while x < len(names) and stop == 0:
-               dtime = names[x][0:6]
-               dname = names[x][7:]
-               pstime = int(dtime[0:3]) * 60 + int(dtime[4:6])
-               if (self.p_minutes * 60) + self.p_seconds < pstime and dtime != "000:00":
-                   #print("skip to ",pstime,self.start,self.total,self.played)
-                   player.time_pos = pstime
-                   self.start -= pstime - self.played
-                   self.total -= pstime - self.played
-                   stop = 1
-               x +=1
+                   while line:
+                       names.append(line.strip())
+                       line = file.readline()
+               x = 0
+               stop = 0
+               while x < len(names) and stop == 0:
+                   dtime = names[x][0:6]
+                   dname = names[x][7:]
+                   pstime = int(dtime[0:3]) * 60 + int(dtime[4:6])
+                   if (self.p_minutes * 60) + self.p_seconds < pstime and dtime != "000:00":
+                       #print("skip to ",pstime,self.start,self.total,self.played)
+                       player.time_pos = pstime
+                       self.start -= pstime - self.played
+                       self.total -= pstime - self.played
+                       stop = 1
+                   x +=1
             
-        # skip forward (1/10 of track)
-        elif self.paused == 0 and (self.album_start == 1 or self.stopstart == 1) and self.Radio_ON == 0:
-                   if self.play == 1 and self.version == 2 and self.paused == 0:
-                       self.skip = int(self.track_len/10)
-                       if self.skip + self.played < self.track_len  - self.skip:
-                           self.start -= self.skip
-                           self.total -= self.skip
-                           if self.sleep_time_min > self.skip and self.shutdown == 1 and self.album_start == 1:
-                               self.sleep_time_min += self.skip
-                           if self.BT == 0:
-                               player.time_pos = self.played + self.skip
+            # skip forward (1/10 of track)
+            elif self.paused == 0 and (self.album_start == 1 or self.stopstart == 1) and self.Radio_ON == 0:
+               if self.play == 1 and self.version == 2 and self.paused == 0:
+                   self.skip = int(self.track_len/10)
+                   if self.skip + self.played < self.track_len  - self.skip:
+                       self.start -= self.skip
+                       self.total -= self.skip
+                       if self.sleep_time_min > self.skip and self.shutdown == 1 and self.album_start == 1:
+                           self.sleep_time_min += self.skip
+                       if self.BT == 0:
+                           player.time_pos = self.played + self.skip
             
         # RELOAD tracks   
         if self.paused == 0 and self.album_start == 0 and self.stopstart == 0 and self.Radio_ON == 0:
