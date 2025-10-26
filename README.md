@@ -63,15 +63,15 @@ sudo apt-get install python3-alsaaudio
 
 sudo apt-get install mplayer
 
-sudo pip3 install mutagen (with BOOKWORM add --break-system-packages)
+sudo pip3 install mutagen --break-system-packages
 
-sudo pip3 install mplayer.py (with BOOKWORM add --break-system-packages)
+sudo pip3 install mplayer.py --break-system-packages
 
 sudo apt-get install streamripper
 
 sudo apt-get install python3-pil.imagetk
 
-sudo pip3 install rpi_backlight  (with BOOKWORM add --break-system-packages)
+sudo pip3 install rpi_backlight --break-system-packages
 
 To run python3 MP3_Player.py
 
