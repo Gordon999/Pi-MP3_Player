@@ -2,9 +2,9 @@
 
 # Pi_MP3_Player
 
-version = 18.14
+version = 18.15
 
-"""Copyright (c) 2025
+"""Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -512,7 +512,7 @@ class MP3Player(Frame):
             self.Button_Prev_Track.grid(row = 4, column = 0)
             self.Button_Next_Track = tk.Button(self.Frame10, text = "Track >",    bg = "light blue",width = 8, height = 2,font = self.helv02,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_Track.grid(row = 4, column = 7)
-            self.Button_Bluetooth = tk.Button(self.Frame10, text = "Bluetooth",    bg = "light blue",width = 6, height = 1,font = self.helv02,command = self.Bluetooth)
+            self.Button_Bluetooth = tk.Button(self.Frame10, text = "Bluetooth IN",    bg = "light blue",width = 8, height = 1,font = self.helv02,command = self.Bluetooth)
             self.Button_Bluetooth.grid(row = 5, column = 7)
             if self.Button_Radi_on == 1:
                 self.Button_Radio = tk.Button(self.Frame10, text = "Radio",    bg = "light blue",width = 8, height = 2,font = self.helv02,command = self.RadioX, wraplength=80, justify=CENTER)
@@ -1220,7 +1220,7 @@ class MP3Player(Frame):
             self.Button_Prev_Track.grid(row = 4, column = 0)
             self.Button_Next_Track = tk.Button(self.Frame10, text = "Track >",    bg = "light blue",width = 7, height = 2,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_Track.grid(row = 4, column = 7)
-            self.Button_Bluetooth = tk.Button(self.Frame10, text = "Bluetooth",    bg = "light blue",width = 6, height = 1,command = self.Bluetooth)
+            self.Button_Bluetooth = tk.Button(self.Frame10, text = "Bluetooth IN",    bg = "light blue",width = 8, height = 1,command = self.Bluetooth)
             self.Button_Bluetooth.grid(row = 5, column = 7)
             if self.Button_Radi_on == 1:
                 self.Button_Radio = tk.Button(self.Frame10, text = "Radio",    bg = "light blue",width = 7, height = 2,command = self.RadioX, wraplength=80, justify=CENTER)
@@ -1372,7 +1372,7 @@ class MP3Player(Frame):
             self.Button_Prev_Track.grid(row = 4, column = 0)
             self.Button_Next_Track = tk.Button(self.Frame10, text = "Track >",    bg = "light blue",width = 15, height = hei2,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_Track.grid(row = 4, column = 7)
-            self.Button_Bluetooth = tk.Button(self.Frame10, text = "Bluetooth",    bg = "light blue",width = 6, height = 1,command = self.Bluetooth)
+            self.Button_Bluetooth = tk.Button(self.Frame10, text = "Bluetooth IN",    bg = "light blue",width = 8, height = 1,command = self.Bluetooth)
             self.Button_Bluetooth.grid(row = 5, column = 7)
             if self.Button_Radi_on == 1:
                 self.Button_Radio = tk.Button(self.Frame10, text = "Radio",    bg = "light blue",width = 15, height = 3,command = self.RadioX, wraplength=80, justify=CENTER)
