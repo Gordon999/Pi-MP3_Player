@@ -57,6 +57,9 @@ See installation_instructions.txt for how to install and run.
 
 Download the Zip, Extract, and copy MP3_Player.py, mp3c.py and mp3.jpg to /home/USERNAME/
 
+(NOTE: I am suggesting the use of --break-system-packages, this shouldn't be an issue if using this in a standalone
+pi BUT if not then learn how to use venv !!)
+
 and then run...
 
 sudo apt-get install python3-alsaaudio
