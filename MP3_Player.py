@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.15
+version = 18.16
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -377,6 +377,8 @@ class MP3Player(Frame):
             os.system("amixer -D pulse sset Master " + str(self.volume) + "%")
             if self.mixername == "DSP Program":
                 os.system("amixer set 'Digital' " + str(self.volume + 107))
+        else:
+            os.system("wpctl set-volume @DEFAULT_AUDIO_SINK@ " + str(self.volume/100))
         self.test     = 0
         self.counter5 = 0
        
