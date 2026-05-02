@@ -78,7 +78,7 @@ sudo pip3 install rpi_backlight --break-system-packages
 
 To run python3 MP3_Player.py
 
-To run at boot (assuming booting to GUI) if using Buster, Bullseye or Bookworm using X11. ..
+To run at boot (assuming booting to GUI) if using Bookworm using X11. ..
 
 add @/usr/bin/python3 /home/pi/MP3_Player.py to the end of /etc/xdg/lxsession/LXDE-pi/autostart
 
