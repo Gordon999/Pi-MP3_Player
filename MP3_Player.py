@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.16
+version = 18.17
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -113,11 +113,11 @@ class MP3Player(Frame):
         self.dsf3_search    = self.m_user + "/*/*/*/*/*.dsf"  # search criteria for dfss  (/media/USER/USBDrive Name/Genre/Artist Name/Album Name/Tracks.dsf)
         self.m4a3_search    = self.m_user + "/*/*/*/*/*.m4a"  # search criteria for m4as  (/media/USER/USBDrive Name/Genre/Artist Name/Album Name/Tracks.m4a)
         self.m3u_def        = "ALLTracks"                     # name of default .m3u. Limit to 9 characters.
-        self.mp3_jpg        = "mp3.jpg"                       # logo including the 'wheel', when inactive
+        self.mp3_jpg        = "mp3.jpg"                       # grey logo including the 'wheel', when inactive
         self.mp3c_jpg       = "mp3c.jpg"                      # blue logo including the 'wheel', when active
         self.radio_jpg      = "radio.jpg"                     # radio logo, shown if no jpg in /home/USERNAME/Documents for Radio Station
         self.Disp_max_time  = 120  # in minutes. Limits time taken to determine playlist length.
-        self.volume         = 30   # range 0 - 100. Will be overridden by saved volume in saved config file
+        self.volume         = 30   # range 0 - 100. Will be overridden by SAVED! volume in config file
         self.gapless_time   = 2    # in seconds. Defines length of track overlap.
         self.scroll_rate    = 3    # scroll rate 1 (slow) to 10 (fast)
         self.Pi7_backlight  = 0    # Pi 7" inch v1 display backlight control (pip3 install rpi_backlight)
@@ -241,6 +241,7 @@ class MP3Player(Frame):
         self.rot_posp       = 3
         self.track2         = ""
         
+        # define buttons for rotary encoder
         if self.cutdown == 0 or self.cutdown == 2 or self.cutdown >= 7 or self.cutdown == 8:
             self.order = [1,2,12,3,4,9,13,10,16,6,7,8,5,14,15,11,0]
         elif self.cutdown == 1:
@@ -261,24 +262,26 @@ class MP3Player(Frame):
             self.synced = 1
         else:
             self.synced = 0
+            
         # bind wheel button       
         if self.cutdown != 4 and self.cutdown != 1 and self.cutdown != 5:
             self.master.bind("<Button-1>", self.Wheel_Opt_Button)
 
         #check Pi model.
-        if os.path.exists ('/run/shm/md.txt'): 
-            os.remove("/run/shm/md.txt")
-        os.system("cat /proc/cpuinfo >> /run/shm/md.txt")
-        with open("/run/shm/md.txt", "r") as file:
-                line = file.readline()
-                while line:
-                   line = file.readline()
-                   if line[0:5] == "Model":
-                       model = line
+        model = os.popen("cat /proc/device-tree/model").read()
         if "Zero" in model:
             self.model = 0
         if self.trace > 0:
             print (model,self.model)
+         
+        #check linux version.
+        lv = os.popen("cat /etc/os-release").read()
+        lva = lv.split("\n")
+        for w in range(0,len(lva)):
+            if lva[w][0:16] == "VERSION_CODENAME":
+                lvers = lva[w].split("=")
+                self.lver = lvers[1][0:6]
+        print(self.lver)
 
         # read radio_stns.txt (Station Name,URL,X)
         if os.path.exists ("radio_stns.txt"): 
@@ -298,6 +301,7 @@ class MP3Player(Frame):
                             self.Radio_Stns.append(b.strip())
                             self.Radio_Stns.append(0)
                     line = textobj.readline()
+                    
         # read radio_stns.csv (Station Name,URL,X,)
         elif os.path.exists ("radio_stns.csv"): 
             with open("radio_stns.csv","r") as textobj:
@@ -363,7 +367,7 @@ class MP3Player(Frame):
                         
         # check for audio mixers
         print (alsaaudio.mixers())
-        if len(alsaaudio.mixers()) > 0:
+        if len(alsaaudio.mixers()) > 0 and self.lver == 'bookwo':
             for mixername in alsaaudio.mixers():
                 if str(mixername) == "PCM" or str(mixername) == "DSP Program" or str(mixername) == "Master" or str(mixername) == "Capture" or str(mixername) == "Headphone" or str(mixername) == "HDMI":
                     self.m = alsaaudio.Mixer(mixername)
@@ -379,11 +383,20 @@ class MP3Player(Frame):
                 os.system("amixer set 'Digital' " + str(self.volume + 107))
         else:
             os.system("wpctl set-volume @DEFAULT_AUDIO_SINK@ " + str(self.volume/100))
+        print(str(self.volume/100))
         self.test     = 0
         self.counter5 = 0
        
-        # check for HyperPixel4 LCD and if so disable GPIO controls.
-        if os.path.exists ('/sys/devices/platform/i2c@0') and self.ext_buttons == 1: 
+        # read /boot/firmware/config.txt
+        configtxt = []
+        with open("/boot/firmware/config.txt", "r") as file:
+            line = file.readline()
+            while line:
+                configtxt.append(line.strip())
+                line = file.readline()
+        
+        # switch off GPIO if using Hyperpixel4 
+        if "dtoverlay=vc4-kms-dpi-hyperpixel4" in configtxt and self.ext_buttons == 1: 
             self.gpio_enable = 0
             from gpiozero import PWMLED
             self.pwm_pin = 19
@@ -391,6 +404,7 @@ class MP3Player(Frame):
             self.dim     = 0.1  # Backlight dim 
             self.bright  = 0.8  # Backlight bright , 1 full brightness
             self.LCD_pwm.value = self.bright
+            
         # enable buttons on Waveshare LCD (A)
         elif self.waveshare == 1 and self.cutdown == 4 and self.ext_buttons == 1:
             self.gpio_enable = 1
@@ -400,6 +414,7 @@ class MP3Player(Frame):
             self.button_voldn    = Button(self.voldn)
             self.button_mute     = Button(self.mute)
             self.button_volup    = Button(self.volup)
+            
         # enable buttons or rotary on other displays and cutdowns
         else:
             self.gpio_enable = 2
@@ -463,7 +478,7 @@ class MP3Player(Frame):
             if (self.shuffle_on == 1 and self.sleep_time > 0 and self.play == 0) or self.Shutdown_exit == 0:
                 self.exit()
             else:
-                os.system("sudo shutdown -h now")
+                os.system("shutdown -h now")
         # shutdown button right click
         def right_click(event):
             self.exit()
@@ -4711,7 +4726,7 @@ class MP3Player(Frame):
         self.volume -=2
         self.volume = max(self.volume,0)
         self.f_volume = self.volume
-        if self.m != 0:
+        if self.lver == 'bookwo':
             self.m.setvolume(self.volume)
             os.system("amixer -D pulse sset Master " + str(self.volume) + "%")
             if self.mixername == "DSP Program":
@@ -4730,7 +4745,7 @@ class MP3Player(Frame):
         self.volume +=2
         self.volume = min(self.volume,100)
         self.f_volume = self.volume
-        if self.m != 0:
+        if self.lver == 'bookwo':
             self.m.setvolume(self.volume)
             os.system("amixer -D pulse sset Master " + str(self.volume) + "%")
             if self.mixername == "DSP Program":
@@ -4752,7 +4767,7 @@ class MP3Player(Frame):
         else:
             self.muted = 0
             volume = self.volume
-        if self.m != 0:
+        if self.lver == 'bookwo':
             self.m.setvolume(self.volume)
             os.system("amixer -D pulse sset Master " + str(volume) + "%")
             if self.mixername == "DSP Program":
@@ -4831,15 +4846,6 @@ class MP3Player(Frame):
             self.Artist_options = []
             for counter in range (0,len(Tracks)):
                 counter2 = Tracks[counter].count('/')
-                if counter2 == 6:
-                    self.genre_name = "None"
-                    z,self.drive_name1,self.drive_name2,self.drive_name,self.artist_name,self.album_name,self.track_name  = Tracks[counter].split('/')
-                    self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
-                    self.Artist_options.append(self.artist_name)
-                if counter2 == 7:
-                    z,self.drive_name1,self.drive_name2,self.drive_name,self.genre_name,self.artist_name,self.album_name,self.track_name  = Tracks[counter].split('/')
-                    self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
-                    self.Artist_options.append(self.artist_name)
                 if counter2 == 5:
                     self.genre_name = "None"
                     self.drive_name1,self.drive_name2,self.drive_name,self.artist_name3,self.album_name3,self.track_name  = Tracks[counter].split('/')
@@ -4847,6 +4853,15 @@ class MP3Player(Frame):
                         self.artist_name,self.album_name = self.album_name3.split(" - ")
                         self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.artist_name3 + "*^" + self.drive_name2 + "^" + self.drive_name + "^" + self.genre_name)
                         self.Artist_options.append(self.artist_name)
+                elif counter2 == 6:
+                    self.genre_name = "None"
+                    z,self.drive_name1,self.drive_name2,self.drive_name,self.artist_name,self.album_name,self.track_name  = Tracks[counter].split('/')
+                    self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
+                    self.Artist_options.append(self.artist_name)
+                elif counter2 == 7:
+                    z,self.drive_name1,self.drive_name2,self.drive_name,self.genre_name,self.artist_name,self.album_name,self.track_name  = Tracks[counter].split('/')
+                    self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.drive_name + "^" + self.drive_name1 + "^" + self.drive_name2 + "^" + self.genre_name)
+                    self.Artist_options.append(self.artist_name)
             if self.cutdown >= 7:
                 self.Artist_options.sort()
                 self.Artist_options = list(dict.fromkeys(self.Artist_options))
@@ -6917,10 +6932,10 @@ class MP3Player(Frame):
             if self.sleep_current < 1:
                 self.Button_Sleep.config(bg = "red")
         if (time.monotonic() - self.begin > self.sleep_time_min) and self.sleep_time > 0 and self.shutdown == 1 and self.Radio_RON == 0 and self.usave == 1:
-            os.system("sudo shutdown -h now")
+            os.system("shutdown -h now")
         if (time.monotonic() - self.begin > self.sleep_time_min) and self.sleep_time > 0 and self.shutdown == 1 and self.Radio_RON == 0:
             if self.R_Stopped == 0:
-                os.system("sudo shutdown -h now")
+                os.system("shutdown -h now")
             else:
                 self.shutdown = 0
                 self.sleep_time = 0
@@ -6999,6 +7014,7 @@ class MP3Player(Frame):
                 
     def Del_Track(self):
         if os.path.exists(self.track) and self.album_start == 0 and self.Radio_ON == 0 and self.volume == 22 and self.stopstart == 0:
+            print("x")
             os.remove(self.track)
             Tracks = []
             with open(self.que_dir,"r") as textobj:
@@ -7742,7 +7758,7 @@ class MP3Player(Frame):
                 else:
                     self.Button_Pause.config(fg = "black", bg = "orange", text = str(self.record_current + 1)  + " mins")
             else:
-                self.Button_Pause.config(fg = "black", bg = "orange", text = str(int((self.record_time_min - (time.monotonic() - self.rec_begin)))) + " s")
+                self.Button_Pause.config(fg = "red", bg = "orange", text = str(int((self.record_time_min - (time.monotonic() - self.rec_begin)))) + " s")
             if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 6 and self.model != 0:
                 if self.cutdown != 3:
                     self.L9.config(text= " R :")
@@ -8144,7 +8160,7 @@ class MP3Player(Frame):
                                 with open(self.m3u_dir + self.m3u_def + ".m3u", 'a') as f:
                                     f.write(upath + "\n")
                                 with open("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt", "a") as f:
-                                    f.write("000:00 Saved: " + artist + "/Radio_Recordings/" + track + "\n")
+                                    f.write("000:00 SAVED!: " + artist + "/Radio_Recordings/" + track + "\n")
                                 self.tunes.sort()
                                 time.sleep(1)
                                 tcount = len(glob.glob(self.m_user + "/" + USB_Files[0] + "/" + artist + "/Radio_Recordings/*.mp3"))
@@ -8238,7 +8254,7 @@ class MP3Player(Frame):
     def Shutdown(self):
         if (self.shuffle_on == 1 and self.sleep_time > 0 and self.play == 0) or self.Shutdown_exit == 0:
             if self.rotary_pos == 1 or self.rotary_vol == 1:
-                os.system("sudo shutdown -h now")
+                os.system("shutdown -h now")
             self.exit()
             
 def main():
