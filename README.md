@@ -1,7 +1,9 @@
 # Pi-MP3 and Radio Stream Player
-Pi-MP3_Player
+Pi-MP3_Player (cutdown 8 shown)
 
 ![screenshot](screenshot.jpg)
+
+v18.23 improved screen layout
 
 v18.20 option for background image, add backgnd.jpg. upto 1280 x 720, will be resized to fit.
 
