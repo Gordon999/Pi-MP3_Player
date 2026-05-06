@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.21
+version = 18.23
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -468,7 +468,8 @@ class MP3Player(Frame):
             self.dim     = 0.0  # Backlight dim 
             self.bright  = 0.8  # Backlight bright , 1 full brightness
             self.LCD_pwm.value = self.bright
-        # Pi 7" screen backlight
+            
+        # Pi 7" v1 screen backlight
         if self.Pi7_backlight == 1:
             os.system("rpi-backlight -b 100")
         
@@ -679,18 +680,10 @@ class MP3Player(Frame):
             self.Disp_album_name.grid(row = 3, column = 1, columnspan = 3)
             self.Disp_track_name = tk.Label(self.Frame10, height=1, width=20,bg='white', anchor="w", borderwidth=2, relief="groove")
             self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
-            self.Disp_track_no = tk.Label(self.Frame10, height=1, width=5)
-            self.Disp_track_no.grid(row = 5, column = 0,sticky = W)
-            self.Disp_Total_tunes = tk.Label(self.Frame10, height=1, width=7) 
-            self.Disp_Total_tunes.grid(row = 5, column = 1,sticky = W) 
-            self.Disp_played = tk.Label(self.Frame10, height=1, width=5)
-            self.Disp_played.grid(row = 5, column = 2, sticky = E)
-            self.Disp_track_len = tk.Label(self.Frame10, height=1, width=5)
-            self.Disp_track_len.grid(row = 5, column = 3, sticky = E)
-            self.L2 = tk.Label(self.Frame10, text="of")
-            self.L2.grid(row = 5, column = 0, sticky = E)
-            self.L4 = tk.Label(self.Frame10,text="/")
-            self.L4.grid(row = 5, column = 3, sticky = W,padx = 5)
+            self.L1 = tk.Label(self.Frame10, height=1, width=15)
+            self.L1.grid(row = 5, column = 0,sticky = W,columnspan=2)
+            self.L3 = tk.Label(self.Frame10, height=1, width=15)
+            self.L3.grid(row = 5, column = 2, sticky = E,columnspan = 2)
 
         if self.cutdown == 2: # 640 x 480
             self.length = 30
@@ -1514,7 +1507,6 @@ class MP3Player(Frame):
             self.m3us.remove(self.m3u_dir + self.m3u_def + ".m3u")
             self.m3us.sort()
             self.m3us.insert(0,self.m3u_dir + self.m3u_def + ".m3u")
-            #self.Disp_Total_tunes.config(text =len(self.tunes))
             self.total = 0
             if self.track_no > len(self.tunes) - 1:
                 self.track_no = 0
@@ -2417,8 +2409,10 @@ class MP3Player(Frame):
                 stop = 1
                 self.track_no = k
             k +=1
-        #self.Disp_track_no.config(text = self.track_no + 1)
-        self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
+        if self.cutdown != 1:
+            self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
+        else:
+            self.L1.config(text = str(self.track_no + 1) + " / " + str(len(self.tunes)))
         self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
         if self.drive_name[-1] == "*":
             self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
@@ -2501,7 +2495,10 @@ class MP3Player(Frame):
               stop = 1
               self.track_no = k
            k +=1
-        self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
+        if self.cutdown != 1:
+            self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
+        else:
+            self.L1.config(text = str(self.track_no + 1) + " / " + str(len(self.tunes)))
         self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
         if self.drive_name[-1] == "*":
             self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
@@ -2614,8 +2611,10 @@ class MP3Player(Frame):
                 stop = 1
                 self.track_no = k
             k +=1
-        #self.Disp_track_no.config(text = self.track_no + 1) 
-        self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
+        if self.cutdown != 1: 
+            self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
+        else:
+            self.L1.config(text = str(self.track_no + 1) + " / " + str(len(self.tunes)))
         self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
         if self.drive_name[-1] == "*":
             self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
@@ -2640,7 +2639,10 @@ class MP3Player(Frame):
                         self.track_len = frames / float(rate)
                 minutes = int(self.track_len // 60)
                 seconds = int (self.track_len - (minutes * 60))
-                self.L3.config(text ="Played: 000:00 / " + "%03d:%02d" % (minutes, seconds % 60),fg = "black")    
+                if self.cutdown != 1:
+                    self.L3.config(text ="Played: 000:00 / " + "%03d:%02d" % (minutes, seconds % 60),fg = "black")  
+                else:
+                    self.L3.config(text ="000:00 / " + "%03d:%02d" % (minutes, seconds % 60),fg = "black")   
         if self.trace > 0:
             print ("album callback exit2",self.track_no)
         self.auto_albums = 0
@@ -2696,7 +2698,10 @@ class MP3Player(Frame):
               stop = 1
               self.track_no = k
            k +=1
-        self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
+        if self.cutdown != 1:
+            self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
+        else:
+            self.L1.config(text = str(self.track_no + 1) + " / " + str(len(self.tunes)))
         self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
         if self.drive_name[-1] == "*":
             self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
@@ -2733,8 +2738,6 @@ class MP3Player(Frame):
         if self.trace > 0:
             print ("Show Track", self.track_no,self.play)
         if len(self.tunes) > 0:
-            #if self.album_start == 0:
-            #    self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
             self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
             if self.drive_name[-1] == "*":
                 self.track = os.path.join("/" + self.drive_name1,self.drive_name2,self.drive_name[:-1], self.artist_name + " - " + self.album_name, self.track_name)
@@ -2749,7 +2752,10 @@ class MP3Player(Frame):
                     self.Disp_track_name.config(fg = "black",text =self.track_name[:-4])
                 elif self.track[-4:] == "flac":
                     self.Disp_track_name.config(fg = "black",text =self.track_name[:-5])
-            self.L3.config(fg = "black",text ="Played: 000:00")
+            if self.cutdown != 1:
+                self.L3.config(fg = "black",text ="Played: 000:00")
+            else:
+                self.L3.config(fg = "black",text ="000:00")
             if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 2:
                 self.L5.config(fg = 'black')
                 if self.drive_name1 == "run":
@@ -2811,10 +2817,16 @@ class MP3Player(Frame):
                         self.track_len = frames / float(rate)
                 minutes = int(self.track_len // 60)
                 seconds = int (self.track_len - (minutes * 60))
-                self.L3.config(text ="Played: 000:00 / " + "%03d:%02d" % (minutes, seconds % 60),fg = "red")
+                if self.cutdown != 1:
+                    self.L3.config(text ="Played: 000:00 / " + "%03d:%02d" % (minutes, seconds % 60),fg = "red")
+                else:
+                    self.L3.config(text ="000:00 / " + "%03d:%02d" % (minutes, seconds % 60),fg = "red")
     
-                if self.cutdown < 6:
-                    self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
+                if self.cutdown < 6 :
+                    if self.cutdown != 1:
+                        self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
+                    else:
+                        self.L1.config(text = str(self.track_no + 1) + " / " + str(len(self.tunes)))
                     if self.track[-4:] == "flac" and len(audio) > 0:
                         try:
                             track_title = audio["title"]
@@ -2858,7 +2870,10 @@ class MP3Player(Frame):
                         self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tcount)))
                     self.plist_callback()
                 else:
-                    self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
+                    if self.cutdown != 1:
+                        self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
+                    else:
+                        self.L1.config(text = str(self.track_no + 1) + " / " + str(len(self.tunes)))
                     if self.track_no < len(self.tunes) - 1:
                         self.artist_name_1,self.album_name_1,self.track_name_1,self.drive_name_1,self.drive_name1_1,self.drive_name2_1,self.genre_name1 = self.tunes[self.track_no + 1].split('^')
                         if self.artist_name_1 == self.artist_name and self.album_name_1[:-1] == self.album_name[:-1]:
@@ -3242,7 +3257,10 @@ class MP3Player(Frame):
               print ("Start_Play",self.track_no)
           with open('Lasttrack3.txt', 'w') as f:
               f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
-          self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
+          if self.cutdown != 1:
+              self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
+          else:
+              self.L1.config(text = str(self.track_no + 1) + " / " + str(len(self.tunes)))
           if self.cutdown != 7 and self.cutdown != 8:
               self.Show_Track()
           self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[self.track_no].split('^')
@@ -3305,7 +3323,10 @@ class MP3Player(Frame):
                         self.track_len = frames / float(rate)
                 minutes = int(self.track_len // 60)
                 seconds = int (self.track_len - (minutes * 60))
-                self.L3.config(text ="Played: %03d:%02d" % (self.p_minutes, self.p_seconds % 60) + " / " + "%03d:%02d" % (minutes, seconds % 60),fg = "red")
+                if self.cutdown != 1:
+                    self.L3.config(text ="Played: %03d:%02d" % (self.p_minutes, self.p_seconds % 60) + " / " + "%03d:%02d" % (minutes, seconds % 60),fg = "red")
+                else:
+                    self.L3.config(text ="%03d:%02d" % (self.p_minutes, self.p_seconds % 60) + " / " + "%03d:%02d" % (minutes, seconds % 60),fg = "red")
                 self.play = 1
                 self.start = time.monotonic()
                 self.pstart = time.monotonic()
@@ -3455,12 +3476,21 @@ class MP3Player(Frame):
             if stop == 2:
                 counter -=1
             if self.album_start == 0:
-                self.L1.config(text = "Track: " + str((self.track_no - self.scount) + 1) + " / " + str(len(self.tunes)))
+                if self.cutdown != 1:
+                    self.L1.config(text = "Track: " + str((self.track_no - self.scount) + 1) + " / " + str(len(self.tunes)))
+                else:
+                    self.L1.config(text = str((self.track_no - self.scount) + 1) + " / " + str(len(self.tunes)))
             else:
-                self.L1.config(text = "Track: " + str((self.track_no - self.scount) + 1) + " / " + str((self.tcount - self.scount) + 1))
+                if self.cutdown != 1:
+                    self.L1.config(text = "Track: " + str((self.track_no - self.scount) + 1) + " / " + str((self.tcount - self.scount) + 1))
+                else:
+                    self.L1.config(text = str((self.track_no - self.scount) + 1) + " / " + str((self.tcount - self.scount) + 1))
             if self.album_track == 1 and len(self.tunes) > 1:
                 self.countex = counter - self.track_no + stop
-                self.L1.config(text = "Track: " + str((self.track_no - self.scount) + 1) + " / " + str(counter - self.track_no + stop))
+                if self.cutdown != 1:
+                    self.L1.config(text = "Track: " + str((self.track_no - self.scount) + 1) + " / " + str(counter - self.track_no + stop))
+                else:
+                    self.L1.config(text = str((self.track_no - self.scount) + 1) + " / " + str(counter - self.track_no + stop))
                 
             self.total = self.album_time
         self.start2 = time.monotonic()
@@ -3696,7 +3726,10 @@ class MP3Player(Frame):
                 if self.shuffle_on == 1:
                     self.shuffle_on = 0
                     self.tunes[self.track_no - self.album_track + 1:self.tcount]=sorted(self.tunes[self.track_no  - self.album_track + 1:self.tcount])
-                self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
+                if self.cutdown != 1:
+                    self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
+                else:
+                    self.L1.config(text = str(self.track_no + 1) + " / " + str(len(self.tunes)))
                 self.auto_album = 0
                 with open('Lasttrack3.txt', 'w') as f:
                     f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
@@ -3839,7 +3872,10 @@ class MP3Player(Frame):
                     #self.Disp_played.config(text ="%03d:%02d" % (self.p_minutes, self.p_seconds % 60),fg = "red")
                     minutes = int(self.track_len // 60)
                     seconds = int (self.track_len - (minutes * 60))
-                    self.L3.config(text ="Played: %03d:%02d" % (self.p_minutes, self.p_seconds % 60) + " / " + "%03d:%02d" % (minutes, seconds % 60),fg = "red")
+                    if self.cutdown != 1:
+                        self.L3.config(text ="Played: %03d:%02d" % (self.p_minutes, self.p_seconds % 60) + " / " + "%03d:%02d" % (minutes, seconds % 60),fg = "red")
+                    else:
+                        self.L3.config(text ="%03d:%02d" % (self.p_minutes, self.p_seconds % 60) + " / " + "%03d:%02d" % (minutes, seconds % 60),fg = "red")
                     self.oldsecs = self.p_seconds
 
             if self.play == 1 and self.paused == 0: 
@@ -3927,7 +3963,6 @@ class MP3Player(Frame):
                 self.Disp_Name_m3u.config(background=self.btn_color, foreground="black")
                 self.Name = str(self.Disp_Name_m3u.get('1.0','20.0')).strip()
             self.Button_Reload.config(text = "RELOAD", bg = self.btn_color, fg = "gray")
-            #self.Button_Shuffle.config(text = "CLR RAM",bg = self.btn_color, fg = "black")
             if len(self.Name) == 0 or self.Name == "Name ?":
                 now = datetime.datetime.now()
                 self.Name = now.strftime("%y%m%d_%H%M%S")
@@ -3968,7 +4003,6 @@ class MP3Player(Frame):
                 self.record_time = self.auto_rec_time
             self.total_record = self.record_time * 60
             self.record_time_min = self.record_time * 60
-            #self.Disp_track_len.config(text ="010:00")
             if self.cutdown == 6 or self.cutdown == 4 or self.cutdown == 2 or self.cutdown == 0 or self.cutdown >= 7:
                 self.Button_Next_AZ.config(text = "Info", bg = "light blue", fg = "black")
             self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
@@ -4035,7 +4069,6 @@ class MP3Player(Frame):
             self.t_minutes = int(self.total_record // 60)
             self.t_seconds = int (self.total_record - (self.t_minutes * 60))
             self.L3.config(text ="Rec'd: " + "%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " / " + "%03d:%02d" % (self.t_minutes, self.t_seconds % 60),fg = "red")
-            #self.L3.config(text = "W" + "%03d:%02d" % (t_minutes, t_seconds % 60))
             self.record_current = int((self.total_record - (time.monotonic() - self.rec_begin))/60)
             self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
             if (self.cutdown >= 7 or self.cutdown == 0) and self.synced == 1:
@@ -4255,8 +4288,6 @@ class MP3Player(Frame):
                 self.Button_Artist_m3u.config(bg = self.btn_color, fg = "black")
                 self.Button_Album_m3u.config(bg = self.btn_color, fg = "black")
                 self.Button_PList_m3u.config(bg = self.btn_color, fg = "black")
-            #if self.cutdown == 0 or self.cutdown >= 7:
-            #    self.L6.config(text= "Album :")
             if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 2 or self.cutdown == 3:
                 self.Button_AZ_artists.config(fg = "gray",bg = self.btn_color)
                 self.Button_repeat.config(bg = "light blue",fg = "black",text = "Repeat Album")
@@ -4460,8 +4491,6 @@ class MP3Player(Frame):
         if self.cutdown != 1 and self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 6 :
             self.Button_AZ_artists.config(fg = "black",bg = "light blue")
             self.Button_repeat.config(fg = "black",bg = "light blue", text = "Repeat")
-        #if self.cutdown == 0 or self.cutdown >= 7:
-        #    self.L6.config(text= "Playlist :")
         self.Button_TAlbum.config(fg = "black",bg = "blue",text = "PLAY Album",)
         if self.album_start == 1 and self.shuffle_on == 1:
             self.shuffle_on = 0
@@ -4489,8 +4518,6 @@ class MP3Player(Frame):
             elif self.rot_pos == 4:
                 self.Button_TAlbum.config(bg = "yellow",text = "PLAY Album")
                 self.Button_Start.config(bg = "green",text = "PLAY Playlist")
-            
-            #self.Disp_Total_tunes.config(text =len(self.tunes))
         if self.play == 1:
             if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 2:
                 self.Button_volume.config(fg = "green")
@@ -6208,8 +6235,10 @@ class MP3Player(Frame):
                 self.Disp_album_name.set(" ")
                 self.Disp_track_name.set(" ")
             if self.cutdown == 0 or self.cutdown >= 7:
-                self.L5.config(text =" ")
+                self.L5.config(text = " ")
             self.L1.config(text = "Track: " )
+            self.L3.config(text = " ")
+            self.Button_Reload.config(text = "Reloading..",bg = "red")
             self.Button_Shuffle.config(bg = "light blue",fg = "black",text = "Shuffle")
             self.shuffle_on = 0
             if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 2 or self.cutdown == 3:
@@ -6223,9 +6252,13 @@ class MP3Player(Frame):
                     self.p.kill()
                 else:
                     player.stop()
+            self.RELOADA()
+                    
+    def RELOADA(self):
             if os.path.exists(self.m3u_dir + self.m3u_def + ".m3u"):
                 os.remove(self.m3u_dir + self.m3u_def + ".m3u")
             self.sorted == 0
+            self.Button_Reload.config(text = "Reloading..",bg = "red")
             if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 2 or self.cutdown == 3:
                 self.Button_AZ_artists.config(bg = "light blue",fg = "black",text = "A-Z Sort")
             self.Tracks = []
@@ -6327,6 +6360,7 @@ class MP3Player(Frame):
                
             else:
                 self.Disp_artist_name.config(text =" NO TRACKS FOUND !")
+                self.Button_Reload.config(text = " RELOAD " + self.m3u_def,bg = "light blue")
                 if self.rotary_pos== 0:
                     messagebox.showinfo("WARNING!","No Tracks found!")
 
@@ -6361,7 +6395,7 @@ class MP3Player(Frame):
 
     def RELOAD2_List(self):
         self.counter5 = 0
-        self.Button_Reload.config(fg = "black", bg = "light blue")
+        self.Button_Reload.config(text = " RELOAD " + self.m3u_def,fg = "black", bg = "light blue")
         if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 2:
             self.L9.config(text= " ")
         if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 6  and self.cutdown != 4 and self.model != 0:
@@ -7335,7 +7369,10 @@ class MP3Player(Frame):
             if self.cutdown != 1 and self.cutdown != 5 and  self.cutdown != 6:
                 self.Button_Gapless.config(fg = "black",bg = "light blue")
             self.Button_TAlbum.config(fg = "black",bg = "blue")
-            self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
+            if self.cutdown != 1:
+                self.L1.config(text = "Track: " + str(self.track_no + 1) + " / " + str(len(self.tunes)))
+            else:
+                self.L1.config(text = str(self.track_no + 1) + " / " + str(len(self.tunes)))
             if self.cutdown == 6:
                 self.Disp_track_name1.config(fg = "black",bg = self.btn_color,text = " ", borderwidth=2)
                 self.Disp_track_name2.config(fg = "black",bg = self.btn_color,text = " ", borderwidth=2)
@@ -7646,7 +7683,7 @@ class MP3Player(Frame):
                 self.Button_Pause.config(fg = "red", bg = "orange", text = str(int((self.record_time_min - (time.monotonic() - self.rec_begin)))) + " s")
             if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 6 and self.model != 0:
                 if self.cutdown != 3:
-                    self.L9.config(text= " R :")
+                    self.L9.config(text= " Record:")
                 self.s.configure("LabeledProgressbar", text="{0} %      ".format(int((self.rplayed/self.record_time_min)*100)), background='red')
                 self.progress['value'] = (self.rplayed/self.record_time_min)*100
         self.Get_track(1)
