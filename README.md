@@ -1,5 +1,5 @@
 # Pi-MP3 and Radio Stream Player
-Pi-MP3_Player (cutdown 8 shown)
+Pi-MP3_Player (cutdown 7 shown)
 
 ![screenshot](screenshot.jpg)
 
