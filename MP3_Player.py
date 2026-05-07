@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.23
+version = 18.25
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -1255,9 +1255,9 @@ class MP3Player(Frame):
                 self.Button_Gapless.config(fg = self.btn_color,bg = self.btn_color)
     
             self.L1 = tk.Label(self.Frame10, text="Track:")
-            self.L1.grid(row = 5, column = 2, sticky = W, columnspan = 2)
+            self.L1.grid(row = 5, column = 2, sticky = W, columnspan = 2,padx = 20)
             self.L3 = tk.Label(self.Frame10, text="Played:")
-            self.L3.grid(row = 6, column = 2, sticky = W, columnspan = 2)
+            self.L3.grid(row = 6, column = 2, sticky = W, columnspan = 2,padx = 20)
             self.L5 = tk.Label(self.Frame10, text="Drive :")
             self.L5.grid(row = 5, column = 4, sticky = W,padx = 1, columnspan = 2)
             self.L6 = tk.Label(self.Frame10, text="Playlist :")
@@ -1403,7 +1403,7 @@ class MP3Player(Frame):
             self.L3 = tk.Label(self.Frame10, text="Played: ")
             self.L3.grid(row = 6, column = 2)
             self.L5 = tk.Label(self.Frame10, text="Drive: ")
-            self.L5.grid(row = 6, column = 5)
+            self.L5.grid(row = 5, column = 3)
             self.L6 = tk.Label(self.Frame10, text="Playlist: ")
             self.L6.grid(row = 6, column = 3)
             if self.touchscreen == 1:
@@ -2761,7 +2761,7 @@ class MP3Player(Frame):
                 if self.drive_name1 == "run":
                     self.L5.config(text = "Drive: RAM")
                 else:
-                    self.L5.config(text = "Drive: /" + self.drive_name1 + "/" + self.drive_name2  + "/" + self.drive_name)
+                    self.L5.config(text = "Drive: " +  self.drive_name)
             if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 2 or self.cutdown == 3 or self.cutdown == 6:
                 self.render2 = ""
                 if self.drive_name[-1] == "*":
@@ -3280,7 +3280,7 @@ class MP3Player(Frame):
                 if self.drive_name1 == "run":
                     self.L5.config(text = "Drive: RAM")
                 else:
-                    self.L5.config(text = "Drive: /" + self.drive_name1 + "/" + self.drive_name2  + "/" + self.drive_name) 
+                    self.L5.config(text = "Drive: " + self.drive_name) 
                 self.Disp_Name_m3u.config(background=self.btn_color, foreground="gray")
                 self.Disp_Name_m3u.delete('1.0','20.0')
             if os.path.exists(self.track):
@@ -3864,7 +3864,7 @@ class MP3Player(Frame):
                 self.p_seconds = int (self.played - (self.p_minutes * 60))
                 if self.album_start == 0:
                     if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 6 and self.model != 0:
-                        if self.cutdown != 3:
+                        if self.cutdown != 3 and self.cutdown != 4:
                             self.L9.config(text= " Track :")
                         self.s.configure("LabeledProgressbar", text="{0} %      ".format(int((self.played/self.track_len)*100)), background='blue')
                         self.progress['value'] = (self.played/self.track_len)*100
@@ -3889,7 +3889,7 @@ class MP3Player(Frame):
                         self.album_length = self.total + self.track_len
                         self.album_trig = 1
                     if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 6  and self.model != 0:
-                        if self.cutdown != 3:
+                        if self.cutdown != 3 and self.cutdown != 4:
                             self.L9.config(text= " Album:")
                         self.s.configure("LabeledProgressbar", text="{0} %      ".format(100-int((self.tplaylist/(self.album_length))*100)), background='green')
                         self.progress['value'] = 100 - (self.tplaylist/(self.album_length))*100
@@ -4068,7 +4068,10 @@ class MP3Player(Frame):
             self.record_time_min = self.record_time * 60
             self.t_minutes = int(self.total_record // 60)
             self.t_seconds = int (self.total_record - (self.t_minutes * 60))
-            self.L3.config(text ="Rec'd: " + "%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " / " + "%03d:%02d" % (self.t_minutes, self.t_seconds % 60),fg = "red")
+            if self.cutdown != 1:
+                self.L3.config(text ="Rec'd: " + "%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " / " + "%03d:%02d" % (self.t_minutes, self.t_seconds % 60),fg = "red")
+            else:
+                self.L3.config(text ="%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " / " + "%03d:%02d" % (self.t_minutes, self.t_seconds % 60),fg = "red")
             self.record_current = int((self.total_record - (time.monotonic() - self.rec_begin))/60)
             self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
             if (self.cutdown >= 7 or self.cutdown == 0) and self.synced == 1:
@@ -4432,7 +4435,7 @@ class MP3Player(Frame):
             self.Disp_Name_m3u.config(background=self.btn_color, foreground="black")
             self.Disp_Name_m3u.delete('1.0','20.0')
             if self.cutdown != 1  and self.cutdown != 5 and self.cutdown != 6 and self.model != 0:
-                if self.cutdown != 3:
+                if self.cutdown != 3 and self.cutdown != 4:
                    self.L9.config(text= "   ")
                 self.s.configure("LabeledProgressbar", text="0 %      ", background='red')
                 self.progress['value'] = 0
@@ -6385,7 +6388,7 @@ class MP3Player(Frame):
              self.progress['value']=(self.counter5/len(self.Tracks)* 100)
          self.L1.config(text = "Track: " + str(self.counter5))
          if self.cutdown == 0 or self.cutdown >= 7:
-             self.L5.config(text = "Drive: /" + self.drive_name1 + "/" +  self.drive_name2 + "/" +  self.drive_name )
+             self.L5.config(text = "Drive: " + self.drive_name )
          if self.counter5 < len(self.Tracks) and len(self.Tracks) > 0:
              self.after(1,self.RELOAD1_List)
          else:
@@ -7237,7 +7240,7 @@ class MP3Player(Frame):
             if self.cutdown != 1:
                 self.Button_Radio.config(bg = "yellow",fg = "black", text = "STOP Radio")
             if self.cutdown != 1  and self.cutdown != 5 and self.cutdown != 6 and self.model != 0:
-                if self.cutdown != 3:
+                if self.cutdown != 3 and self.cutdown != 4:
                     self.L9.config(text= "   ")
                 self.s.configure("LabeledProgressbar", text="0 %      ", background='red')
                 self.progress['value'] = 0
@@ -7260,7 +7263,7 @@ class MP3Player(Frame):
                 self.Disp_Name_m3u.delete('1.0','20.0')
                 self.L6.config(text = "")
                 if self.cutdown != 2 and self.cutdown != 3:
-                    self.L5.config(text="Drive :")
+                    self.L5.config(text="Drive: ")
             if self.cutdown == 5 or self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 6:
                 self.L1.config(text="Track:")
                 self.L3.config(text="Played:")
@@ -7429,7 +7432,8 @@ class MP3Player(Frame):
                     if self.cutdown != 1 and self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 6 and self.touchscreen == 1:
                         self.L8.config(text = "")
                     self.Button_Pause.config(fg = "black", bg = "light blue", text = "Pause")
-                    
+                if self.cutdown == 4:
+                    self.L3.config(text = " ")    
                 if self.cutdown != 1 and self.cutdown != 4:
                     if self.cutdown != 3 and self.cutdown != 2:
                         self.L1.config(text="")
@@ -7517,10 +7521,7 @@ class MP3Player(Frame):
                 self.Button_Next_Album.config(bg  = self.btn_color, fg = "gray")
                 self.Button_Prev_Track.config(bg  = self.btn_color, fg = "gray")
                 self.Button_Next_Track.config(bg = self.btn_color, fg = "gray")
-                if self.cutdown == 5 or self.cutdown >= 7:
-                    self.Button_Next_AZ.config(bg = "light blue", fg = "black", text = "Info")
-                else:
-                    self.Button_Next_AZ.config(bg = self.btn_color, fg = "gray")
+                self.Button_Next_AZ.config(bg = self.btn_color, fg = "gray")
                 self.Button_Shuffle.config(bg = self.btn_color, fg = "gray")
                 if (self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 3 or self.cutdown == 2) and self.touchscreen == 1:
                     self.Button_Add_to_FAV.config(bg = self.btn_color, fg = "gray",text = "Add track to FAV .m3u  ")
@@ -7669,7 +7670,10 @@ class MP3Player(Frame):
             self.t_minutes = int(self.total_record // 60)
             self.t_seconds = int(self.total_record - (self.t_minutes * 60))
             if self.r_seconds != self.roldsecs:
-                self.L3.config(text ="Rec'd: " + "%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " / " + "%03d:%02d" % (self.t_minutes, self.t_seconds % 60),fg = "red")
+                if self.cutdown != 1:
+                    self.L3.config(text ="Rec'd: " + "%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " / " + "%03d:%02d" % (self.t_minutes, self.t_seconds % 60),fg = "red")
+                else:
+                    self.L3.config(text ="%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " / " + "%03d:%02d" % (self.t_minutes, self.t_seconds % 60),fg = "red")
                 self.roldsecs = self.r_seconds
             rec_stat = 0
             rec_stat = (os.stat("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".mp3").st_size)/1000000
@@ -7682,7 +7686,7 @@ class MP3Player(Frame):
             else:
                 self.Button_Pause.config(fg = "red", bg = "orange", text = str(int((self.record_time_min - (time.monotonic() - self.rec_begin)))) + " s")
             if self.cutdown != 1 and self.cutdown != 5 and self.cutdown != 6 and self.model != 0:
-                if self.cutdown != 3:
+                if self.cutdown != 3 and self.cutdown != 4:
                     self.L9.config(text= " Record:")
                 self.s.configure("LabeledProgressbar", text="{0} %      ".format(int((self.rplayed/self.record_time_min)*100)), background='red')
                 self.progress['value'] = (self.rplayed/self.record_time_min)*100
@@ -8014,9 +8018,10 @@ class MP3Player(Frame):
                                 del USB_Files[0]
             except:
                 pass
-            if self.cutdown == 0 or self.cutdown >= 7:
+            if self.cutdown >= 7:
+                self.L5.config(text = "Drive: " + USB_Files[0] + " - " + str(int(free)) + "MB")
+            if self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 6 and self.cutdown != 1 and self.cutdown < 7:
                 self.L5.config(text = "Drive: " + USB_Files[0])
-            if self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 6 and self.cutdown != 1:
                 self.L6.config(text = "USB: " + str(int(free)) + "MB")
             if self.trace > 0:
                 print ("Copy Indies")
