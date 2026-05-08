@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.25
+version = 18.26
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -600,9 +600,9 @@ class MP3Player(Frame):
                 self.Button_Gapless.config(fg = self.btn_color,bg = self.btn_color)
     
             self.L1 = tk.Label(self.Frame10, text="Track:")
-            self.L1.grid(row = 5, column = 2, sticky = W, columnspan = 2)
+            self.L1.grid(row = 5, column = 2, sticky = W, columnspan = 2,padx = 20)
             self.L3 = tk.Label(self.Frame10, text="Played:")
-            self.L3.grid(row = 6, column = 2, sticky = W, columnspan = 2)
+            self.L3.grid(row = 6, column = 2, sticky = W, columnspan = 2,padx = 20)
             self.L5 = tk.Label(self.Frame10, text="Drive :")
             self.L5.grid(row = 5, column = 4, sticky = W, columnspan = 2)
             self.L6 = tk.Label(self.Frame10, text="Playlist :")
@@ -4006,8 +4006,6 @@ class MP3Player(Frame):
             if self.cutdown == 6 or self.cutdown == 4 or self.cutdown == 2 or self.cutdown == 0 or self.cutdown >= 7:
                 self.Button_Next_AZ.config(text = "Info", bg = "light blue", fg = "black")
             self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
-            if (self.cutdown >= 7 or self.cutdown == 0) and self.synced == 1:
-                self.L6.config(text = "(" + str(self.stop_record)[11:16] + ")")
             if self.cutdown != 1:
                 if self.rotary_pos== 0:
                     self.Button_Radio.config(bg = "red",fg = "black", text = "STOP RECORD")
@@ -4069,13 +4067,11 @@ class MP3Player(Frame):
             self.t_minutes = int(self.total_record // 60)
             self.t_seconds = int (self.total_record - (self.t_minutes * 60))
             if self.cutdown != 1:
-                self.L3.config(text ="Rec'd: " + "%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " / " + "%03d:%02d" % (self.t_minutes, self.t_seconds % 60),fg = "red")
+                self.L3.config(text ="Rec'd: " + "%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " / " + "%03d:%02d" % (self.t_minutes, self.t_seconds % 60) + "  " + "(" + str(self.stop_record)[11:16] + ")",fg = "red")
             else:
                 self.L3.config(text ="%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " / " + "%03d:%02d" % (self.t_minutes, self.t_seconds % 60),fg = "red")
             self.record_current = int((self.total_record - (time.monotonic() - self.rec_begin))/60)
             self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
-            if (self.cutdown >= 7 or self.cutdown == 0) and self.synced == 1:
-                self.L6.config(text = "(" + str(self.stop_record)[11:16] + ")")
             if self.Radio_ON == 1 and self.Radio_RON == 1 and self.shutdown == 1 and self.record_sleep == 1:
                 self.sleep_time_min = (self.record_current *60) + 60
                 self.sleep_time = int(self.sleep_time_min / 60)
@@ -4158,8 +4154,6 @@ class MP3Player(Frame):
             self.Disp_track_len.config(text ="%03d:%02d" % (t_minutes, t_seconds % 60))
             self.record_current = int((self.total_record - (time.monotonic() - self.rec_begin))/60)
             self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
-            if (self.cutdown >= 7 or self.cutdown == 0) and self.synced == 1:
-                self.L6.config(text = "(" + str(self.stop_record)[11:16] + ")")
             if self.Radio_ON == 1 and self.Radio_RON == 1 and self.shutdown == 1 and self.record_sleep == 1:
                 self.sleep_time_min = (self.record_current *60) + 60
                 self.sleep_time = int(self.sleep_time_min / 60)
@@ -7671,7 +7665,7 @@ class MP3Player(Frame):
             self.t_seconds = int(self.total_record - (self.t_minutes * 60))
             if self.r_seconds != self.roldsecs:
                 if self.cutdown != 1:
-                    self.L3.config(text ="Rec'd: " + "%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " / " + "%03d:%02d" % (self.t_minutes, self.t_seconds % 60),fg = "red")
+                    self.L3.config(text ="Rec'd: " + "%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " / " + "%03d:%02d" % (self.t_minutes, self.t_seconds % 60) + "  " + "(" + str(self.stop_record)[11:16] + ")",fg = "red")
                 else:
                     self.L3.config(text ="%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " / " + "%03d:%02d" % (self.t_minutes, self.t_seconds % 60),fg = "red")
                 self.roldsecs = self.r_seconds
@@ -7873,8 +7867,6 @@ class MP3Player(Frame):
                 self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
                 now = datetime.datetime.now()
                 self.stop_record = now + timedelta(minutes=self.record_time)
-                if (self.cutdown >= 7 or self.cutdown == 0) and self.synced == 1:
-                    self.L6.config(text = "(" + str(self.stop_record)[11:16] + ")")
             
         # backlight off
         if time.monotonic() - self.light_on > self.light and (self.HP4_backlight == 1 or self.LCD_backlight == 1 or self.Pi7_backlight == 1):
