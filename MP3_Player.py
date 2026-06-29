@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.30
+version = 18.32
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,12 +31,12 @@ global ext_buttons
 # set display cutdown format
 # 0:800x480, 1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist
 # 6:800x480 List 10 tracks, 7:800x480 with scrollbars, 8:1280x720 with scrollbars (incl. Pi 7" v2 display)
-cutdown     = 7 # set the format required
+cutdown     = 8 # set the format required
 fullscreen  = 0 # set to 1 for fullscreen
 rotary_vol  = 0 # set to 1 if using VOLUME   rotary encoder 1 (see connections.jpg for wiring details)
 rotary_pos  = 0 # set to 1 if using POSITION rotary encoder 2 (see connections.jpg for wiring details)
 ext_buttons = 0 # set to 1 if using external buttons (see connections.jpg for wiring details)
-touchscreen = 1 # set to 0 if using the rotary encoders and a non-touchscreen (hides non rotary buttons)
+touchscreen = 0 # set to 0 if using the rotary encoders and a non-touchscreen (hides non rotary buttons)
 bg_image    = 'backgnd.jpg' # background image
 btn_color   = 'gray85'      # button default colour
 
@@ -797,18 +797,18 @@ class MP3Player(Frame):
             self.Button_Vol_UP.grid(row = 0, column = 7)
             self.Button_Prev_PList =  tk.Button(self.Frame10, text = "< P-list",   bg = "light blue",width = 7, height = hei,command = self.Prev_m3u,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_PList.grid(row = 1, column = 0)
-            self.Button_Next_PList =  tk.Button(self.Frame10, text = "P-list >",   bg = "light blue",width = 7, height = hei,command = self.Next_m3u,repeatdelay=1000, repeatinterval=500)
-            self.Button_Next_PList.grid(row = 1, column = 7)
             self.Button_Prev_Artist =  tk.Button(self.Frame10, text = "< Artist",   bg = "light blue",width = 7, height = hei2,command = self.Prev_Artist,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Artist.grid(row = 2, column = 0)
-            self.Button_Next_Artist =  tk.Button(self.Frame10, text = "Artist >",   bg = "light blue",fg = "red",width = 7, height = hei2,command = self.Next_Artist,repeatdelay=1000, repeatinterval=500)
-            self.Button_Next_Artist.grid(row = 2, column = 7)
             self.Button_Prev_Album =  tk.Button(self.Frame10, text = "< Album",    bg = "light blue",width = 7, height = hei2,command = self.Prev_Album,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Album.grid(row = 3, column = 0)
-            self.Button_Next_Album =  tk.Button(self.Frame10, text = "Album >",     bg = "light blue",width = 7, height = hei2,command = self.Next_Album,repeatdelay=1000, repeatinterval=500)
-            self.Button_Next_Album.grid(row = 3, column = 7)
             self.Button_Prev_Track =  tk.Button(self.Frame10, text = "< Track",    bg = "light blue",width = 7, height = 2,command = self.Prev_Track,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Track.grid(row = 4, column = 0)
+            self.Button_Next_PList =  tk.Button(self.Frame10, text = "P-list >",   bg = "light blue",width = 7, height = hei,command = self.Next_m3u,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_PList.grid(row = 1, column = 7)
+            self.Button_Next_Artist =  tk.Button(self.Frame10, text = "Artist >",   bg = "light blue",fg = "red",width = 7, height = hei2,command = self.Next_Artist,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Artist.grid(row = 2, column = 7)
+            self.Button_Next_Album =  tk.Button(self.Frame10, text = "Album >",     bg = "light blue",width = 7, height = hei2,command = self.Next_Album,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Album.grid(row = 3, column = 7)
             self.Button_Next_Track = tk.Button(self.Frame10, text = "Track >",    bg = "light blue",width = 7, height = 2,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_Track.grid(row = 4, column = 7)
             self.Button_Bluetooth = tk.Button(self.Frame10, text = "Bluetooth IN",    bg = "light blue",width = 8, height = 1,command = self.Bluetooth)
@@ -943,18 +943,18 @@ class MP3Player(Frame):
             self.Button_Vol_UP.grid(row = 0, column = 7)
             self.Button_Prev_PList =  tk.Button(self.Frame10, text = "< P-list",   bg = "light blue",width = 15, height = hei2,command = self.Prev_m3u,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_PList.grid(row = 1, column = 0)
-            self.Button_Next_PList =  tk.Button(self.Frame10, text = "P-list >",   bg = "light blue",width = 15, height = hei2,command = self.Next_m3u,repeatdelay=1000, repeatinterval=500)
-            self.Button_Next_PList.grid(row = 1, column = 7)
             self.Button_Prev_Artist =  tk.Button(self.Frame10, text = "< Artist",   bg = "light blue",width = 15, height = hei2,command = self.Prev_Artist,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Artist.grid(row = 2, column = 0)
-            self.Button_Next_Artist =  tk.Button(self.Frame10, text = "Artist >",   bg = "light blue",fg = "red",width = 15, height = hei2,command = self.Next_Artist,repeatdelay=1000, repeatinterval=500)
-            self.Button_Next_Artist.grid(row = 2, column = 7)
             self.Button_Prev_Album =  tk.Button(self.Frame10, text = "< Album",    bg = "light blue",width = 15, height = hei2,command = self.Prev_Album,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Album.grid(row = 3, column = 0)
-            self.Button_Next_Album =  tk.Button(self.Frame10, text = "Album >",     bg = "light blue",width = 15, height = hei2,command = self.Next_Album,repeatdelay=1000, repeatinterval=500)
-            self.Button_Next_Album.grid(row = 3, column = 7)
             self.Button_Prev_Track =  tk.Button(self.Frame10, text = "< Track",    bg = "light blue",width = 15, height = hei2,command = self.Prev_Track,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Track.grid(row = 4, column = 0)
+            self.Button_Next_PList =  tk.Button(self.Frame10, text = "P-list >",   bg = "light blue",width = 15, height = hei2,command = self.Next_m3u,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_PList.grid(row = 1, column = 7)
+            self.Button_Next_Artist =  tk.Button(self.Frame10, text = "Artist >",   bg = "light blue",fg = "red",width = 15, height = hei2,command = self.Next_Artist,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Artist.grid(row = 2, column = 7)
+            self.Button_Next_Album =  tk.Button(self.Frame10, text = "Album >",     bg = "light blue",width = 15, height = hei2,command = self.Next_Album,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Album.grid(row = 3, column = 7)
             self.Button_Next_Track = tk.Button(self.Frame10, text = "Track >",    bg = "light blue",width = 15, height = hei2,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_Track.grid(row = 4, column = 7)
             self.Button_Bluetooth = tk.Button(self.Frame10, text = "Bluetooth IN",    bg = "light blue",width = 8, height = 1,command = self.Bluetooth)
@@ -1031,8 +1031,6 @@ class MP3Player(Frame):
             self.Disp_plist_name = tk.Label(self.Frame10, height=2, width=57,bg=btn_color,   anchor="w", borderwidth=2, relief="groove")
             self.Disp_plist_name.grid(row = 1, column = 1, columnspan = 6)
             self.Disp_plist_name.config(text=" " + self.que_dir[len(self.m3u_dir):])
-            #self.Disp_Name_m3u = tk.Text(self.Frame10,height = 1, width=13)
-            #self.Disp_Name_m3u.grid(row = 8, column = 3, sticky = N, pady = 10)
     
     def menuX(self):
         if self.trace == 1:
@@ -3161,11 +3159,11 @@ class MP3Player(Frame):
                 if self.Radio > len(self.Radio_Stns) - 1:
                     self.Radio = 0
                 if self.Radio_Stns[self.Radio + 2] == 0:
-                    self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                    self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
                 else:
                     self.r = subprocess.Popen(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-9000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
                     time.sleep(1)
-                    self.q = subprocess.Popen(["mplayer", "-nocache", "http://localhost:8000"] , shell=False)
+                    self.q = subprocess.Popen(["cvlc", "http://localhost:8000"] , shell=False)
                     track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
                     if len(track) == 0:
                         time.sleep(2)
@@ -3174,7 +3172,7 @@ class MP3Player(Frame):
                     if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                         self.L8.config(text = ".mp3")
                 else:
-                    self.Button_Pause.config(fg = "black", bg = self.btn_color, text = "Pause")
+                    self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
                     if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                         self.L8.config(text = "")
                 self.Name = self.Radio_Stns[self.Radio]
@@ -4034,12 +4032,12 @@ class MP3Player(Frame):
             for x in range(0,len(rems)):
                 os.remove(rems[x])
             if self.Radio_Stns[self.Radio + 2] == 0:
-                self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
                 time.sleep(1)
             else:
                 self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-9000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
                 time.sleep(1)
-                self.q = subprocess.Popen(["mplayer","-nocache","http://localhost:8000"] , shell=False)
+                self.q = subprocess.Popen(["cvlc","http://localhost:8000"] , shell=False)
                 time.sleep(1)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
                 if len(track) == 0:
@@ -4923,11 +4921,11 @@ class MP3Player(Frame):
                     self.playlist = "-playlist"
                     self.Radio_Stns[self.Radio + 2] = 0
             if self.Radio_Stns[self.Radio + 2] == 0:
-                self.q = subprocess.Popen(["mplayer",self.playlist, self.Radio_Stns[self.Radio + 1]] , shell=False)
+                self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
             else:
                 self.r = subprocess.Popen(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-9000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
                 time.sleep(1)
-                self.q = subprocess.Popen(["mplayer", "-nocache", "http://localhost:8000"] , shell=False)
+                self.q = subprocess.Popen(["cvlc", "http://localhost:8000"] , shell=False)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
                 if len(track) == 0:
                     time.sleep(2)
@@ -4936,7 +4934,7 @@ class MP3Player(Frame):
                 if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                     self.L8.config(text = ".mp3")
             else:
-                self.Button_Pause.config(fg = "black", bg = self.btn_color, text = "Pause")
+                self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
                 if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                     self.L8.config(text = "")
             self.Name = self.Radio_Stns[self.Radio]
@@ -5161,11 +5159,11 @@ class MP3Player(Frame):
                     self.playlist = "-playlist"
                     self.Radio_Stns[self.Radio + 2] = 0
             if self.Radio_Stns[self.Radio + 2] == 0:
-                self.q = subprocess.Popen(["mplayer",self.playlist, self.Radio_Stns[self.Radio + 1]] , shell=False)
+                self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
             else:
                 self.r = subprocess.Popen(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-9000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
                 time.sleep(1)
-                self.q = subprocess.Popen(["mplayer", "-nocache", "http://localhost:8000"] , shell=False)
+                self.q = subprocess.Popen(["cvlc", "http://localhost:8000"] , shell=False)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
                 if len(track) == 0:
                     time.sleep(2)
@@ -5174,7 +5172,7 @@ class MP3Player(Frame):
                 if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                     self.L8.config(text = ".mp3")
             else:
-                self.Button_Pause.config(fg = "black", bg = self.btn_color, text = "Pause")
+                self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
                 if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                     self.L8.config(text = "")
             self.Name = self.Radio_Stns[self.Radio]
@@ -5795,11 +5793,11 @@ class MP3Player(Frame):
             if cutdown == 1:
                 self.Disp_played.config(text = int((self.Radio)/3)+1)
             if self.Radio_Stns[self.Radio + 2] == 0:
-                self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
             else:
                 self.r = subprocess.Popen(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-9000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
                 time.sleep(1)
-                self.q = subprocess.Popen(["mplayer", "-nocache", "http://localhost:8000"] , shell=False)
+                self.q = subprocess.Popen(["cvlc", "http://localhost:8000"] , shell=False)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
                 if len(track) == 0:
                     time.sleep(2)
@@ -5808,7 +5806,7 @@ class MP3Player(Frame):
                 if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                     self.L8.config(text = ".mp3")
             else:
-                self.Button_Pause.config(fg = "black", bg = self.btn_color, text = "Pause")
+                self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
                 if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                     self.L8.config(text = "")
             self.Name = self.Radio_Stns[self.Radio]
@@ -5987,11 +5985,11 @@ class MP3Player(Frame):
             if cutdown == 1:
                 self.Disp_played.config(text = int((self.Radio)/3)+1)
             if self.Radio_Stns[self.Radio + 2] == 0:
-                self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
             else:
                 self.r = subprocess.Popen(["streamripper", self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-9000","-z","-l", "99999","-d", "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
                 time.sleep(1)
-                self.q = subprocess.Popen(["mplayer", "-nocache", "http://localhost:8000"] , shell=False)
+                self.q = subprocess.Popen(["cvlc", "http://localhost:8000"] , shell=False)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
                 if len(track) == 0:
                     time.sleep(2)
@@ -6000,7 +5998,7 @@ class MP3Player(Frame):
                 if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                     self.L8.config(text = ".mp3")
             else:
-                self.Button_Pause.config(fg = "black", bg = self.btn_color, text = "Pause")
+                self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
                 if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                     self.L8.config(text = "")
             self.Name = self.Radio_Stns[self.Radio]
@@ -7188,7 +7186,7 @@ class MP3Player(Frame):
             if self.Radio_Stns[self.Radio + 2]  > 0:
                 self.Button_Pause.config(fg = "black", bg = "light blue", text = "RECORD")
             else:
-                self.Button_Pause.config(fg = "black", bg = self.btn_color, text = "RECORD")
+                self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
             if self.cutdown != 1:
                 self.Button_Radio.config(bg = "yellow",fg = "black", text = "STOP Radio")
             if self.cutdown != 1  and self.cutdown != 5 and self.cutdown != 6 and self.model != 0:
@@ -7472,7 +7470,7 @@ class MP3Player(Frame):
                 if self.Radio_Stns[self.Radio + 2]  > 0 and self.record == 1:
                     self.Button_Pause.config(bg  = "light blue", fg = "black", text = "RECORD")
                 else:
-                    self.Button_Pause.grid_forget()
+                    self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
                 self.Button_Reload.grid_forget()
                 self.Disp_album_name.config(text ="")
                 self.Disp_track_name.config(text ="")
@@ -7533,11 +7531,11 @@ class MP3Player(Frame):
                     self.playlist = "-playlist"
                     self.Radio_Stns[self.Radio + 2] = 0
                 if self.Radio_Stns[self.Radio + 2] == 0:
-                    self.q = subprocess.Popen(["mplayer",self.playlist, self.Radio_Stns[self.Radio + 1]] , shell=False)
+                    self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
                 else:
                     self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-9000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
                     time.sleep(1)
-                    self.q = subprocess.Popen(["mplayer","-nocache","http://localhost:8000"] , shell=False)
+                    self.q = subprocess.Popen(["cvlc","http://localhost:8000"] , shell=False)
                     track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
                     if len(track) == 0:
                        time.sleep(2)
@@ -7608,11 +7606,11 @@ class MP3Player(Frame):
             for x in range(0,len(self.rems3)):
                 os.remove(self.rems3[x])
             if self.Radio_Stns[self.Radio + 2] == 0:
-                self.q = subprocess.Popen(["mplayer", "-nocache", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
             else:
                 self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-9000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
                 time.sleep(1)
-                self.q = subprocess.Popen(["mplayer","-nocache","http://localhost:8000"] , shell=False)
+                self.q = subprocess.Popen(["cvlc","http://localhost:8000"] , shell=False)
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
                 if len(track) == 0:
                    time.sleep(2)
@@ -7927,7 +7925,7 @@ class MP3Player(Frame):
                 trame = data[count]
                 if self.trace > 0:
                     print(trame)
-                if trame[0:10] != 'Commercial' and trame[0:6] != ' - AD ' and trame[0:8] != ' - STOP ' and trame[0:9] != ' - START ' and trame[0:11] != 'BFBS - Edge':
+                if trame[0:10] != 'Commercial' and trame[0:7] != 'Unknown' and trame[0:6] != ' - AD ' and trame[0:8] != ' - STOP ' and trame[0:9] != ' - START ' and trame[0:11] != 'BFBS - Edge':
                     if self.Radio_Stns[self.Radio + 2] == 2 or self.Radio_Stns[self.Radio + 2] == 3:
                         count2 = trame.count(' - ')
                         names = trame.split(' - ',count2)
@@ -8008,6 +8006,7 @@ class MP3Player(Frame):
         # show info.txt, other .txt or .m3u file
         if self.Radio_ON == 0 or self.Radio_RON == 1:
             ipath = ""
+            			
             if self.Radio_RON == 1:
                 ipath = "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings"
             elif len(self.tunes) > 0:
@@ -8018,23 +8017,42 @@ class MP3Player(Frame):
                     ipath = ipath + self.drive_name + "/" + self.artist_name + "/" + self.album_name
             ipath = ipath + "/"
             infofile = ""
-            filename = "info.txt"
-            # Look for info.txt
-            if os.path.exists(ipath + filename):
-                infofile = filename
-            else:
-                # Look for other txt files
-                txts = glob.glob(ipath + "/*.txt")
-                txts.sort(reverse=True)
-                for txt in txts:
-                    filename = os.path.split(txt)[1]
-                    if "fing" in filename or "md5" in filename or "ffp" in filename or self.track_name in filename:
-                        infofile = txts[0]
-                    elif "album" in filename:
-                        infofile = "album.txt"
-                    else:
-                        infofile = filename
-                        break
+            
+            # show next tracks list           
+            if self.Radio_ON == 0 and self.album_start == 0:
+                temp_list = []
+                end_track = self.track_no + 20
+                if end_track > len(self.tunes):
+                    end_track = len(self.tunes) - 1
+                for r in range(self.track_no,end_track):
+                    self.artist_name,self.album_name,self.track_name,self.drive_name,self.drive_name1,self.drive_name2,self.genre_name  = self.tunes[r].split('^')
+                    temp_list.append(self.artist_name + " / " + self.album_name + " / " + self.track_name)
+					
+                with open("/run/shm/next.txt", 'w') as f:
+                    for item in temp_list:
+                        f.write("%s\n" % item)
+                ipath = "/run/shm/"
+                infofile = "next.txt" 
+                filename = "next.txt"
+                
+            if infofile == '':      
+                # Look for info.txt
+                filename = "info.txt"
+                if os.path.exists(ipath + filename):
+                    infofile = filename
+                else:
+                    # Look for other txt files
+                    txts = glob.glob(ipath + "/*.txt")
+                    txts.sort(reverse=True)
+                    for txt in txts:
+                        filename = os.path.split(txt)[1]
+                        if "fing" in filename or "md5" in filename or "ffp" in filename or self.track_name in filename:
+                            infofile = txts[0]
+                        elif "album" in filename:
+                            infofile = "album.txt"
+                        else:
+                            infofile = filename
+                            break
                         
             # look for .m3u file                        
             if infofile == '':
