@@ -3,6 +3,8 @@ Pi-MP3_Player (cutdown 7 shown)
 
 ![screenshot](screenshot.jpg)
 
+v18.32 uses CVLC to play online radio stations
+
 v18.23 improved screen layout with hidden unused buttons.
 
 v18.20 option for background image, add backgnd.jpg. upto 1280 x 720, will be resized to fit.
