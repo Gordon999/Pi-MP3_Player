@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.32
+version = 18.33
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,12 +31,12 @@ global ext_buttons
 # set display cutdown format
 # 0:800x480, 1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist
 # 6:800x480 List 10 tracks, 7:800x480 with scrollbars, 8:1280x720 with scrollbars (incl. Pi 7" v2 display)
-cutdown     = 8 # set the format required
+cutdown     = 7 # set the format required
 fullscreen  = 0 # set to 1 for fullscreen
 rotary_vol  = 0 # set to 1 if using VOLUME   rotary encoder 1 (see connections.jpg for wiring details)
 rotary_pos  = 0 # set to 1 if using POSITION rotary encoder 2 (see connections.jpg for wiring details)
 ext_buttons = 0 # set to 1 if using external buttons (see connections.jpg for wiring details)
-touchscreen = 0 # set to 0 if using the rotary encoders and a non-touchscreen (hides non rotary buttons)
+touchscreen = 1 # set to 0 if using the rotary encoders and a non-touchscreen (hides non rotary buttons)
 bg_image    = 'backgnd.jpg' # background image
 btn_color   = 'gray85'      # button default colour
 
@@ -4427,7 +4427,7 @@ class MP3Player(Frame):
                 self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
             
         if self.cutdown >= 7:
-            self.shuffle_on = 0
+            #self.shuffle_on = 0
             self.Disp_artist_name.set(self.artist_name)
             self.ac = 0
             self.bc = 1
