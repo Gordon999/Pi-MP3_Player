@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.34
+version = 18.35
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,8 +37,8 @@ rotary_vol  = 0 # set to 1 if using VOLUME   rotary encoder 1 (see connections.j
 rotary_pos  = 0 # set to 1 if using POSITION rotary encoder 2 (see connections.jpg for wiring details)
 ext_buttons = 0 # set to 1 if using external buttons (see connections.jpg for wiring details)
 touchscreen = 1 # set to 0 if using the rotary encoders and a non-touchscreen (hides non rotary buttons)
-bg_image    = 'backgnd.jpg' # background image
-btn_color   = 'gray85'      # button default colour
+bg_image    = 'backgnd012.jpg' # background image
+btn_color   = 'gray72'      # button default colour
 
 import tkinter as tk
 from tkinter import *
@@ -659,46 +659,46 @@ class MP3Player(Frame):
                 self.renderx = ImageTk.PhotoImage(self.load)
                 self.img = tk.Label(self.Frame10, image = self.renderx)
                 self.img.grid(row = 0, column = 0, columnspan = 10, rowspan = 24,sticky = N)
-            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", font = 50,bg = "green",fg = "black",width = 15, height = 2, command = self.Play, wraplength=60, justify=CENTER)
+            self.Button_Start = tk.Button(self.Frame10, text = "PLAY Playlist", font = 50,bg = "green",fg = "black",width = 13, height = 2, command = self.Play, wraplength=60, justify=CENTER)
             self.Button_Start.grid(row = 0, column = 0)
-            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", font = 50, bg = "blue",fg = "black", width = 15, height = 2,command=self.Play_Album, wraplength=60, justify=CENTER)
+            self.Button_TAlbum = tk.Button(self.Frame10, text = "PLAY Album", font = 50, bg = "blue",fg = "black", width = 13, height = 2,command=self.Play_Album, wraplength=60, justify=CENTER)
             self.Button_TAlbum.grid(row = 0, column = 1,pady = 0)
-            self.Button_Sleep = tk.Button(self.Frame10, text = "SLEEP", font = 50, bg = "light blue",width = 15, height = 2,command = self.sleep,repeatdelay=1000, repeatinterval=500)
+            self.Button_Sleep = tk.Button(self.Frame10, text = "SLEEP", font = 50, bg = "light blue",width = 13, height = 2,command = self.sleep,repeatdelay=1000, repeatinterval=500)
             self.Button_Sleep.grid(row = 19, column = 1)
-            self.Button_Vol_DN =  tk.Button(self.Frame10, text = " < Vol ", wraplength=50,    bg = "light green", font = 50,width = 15, height = 2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
+            self.Button_Vol_DN =  tk.Button(self.Frame10, text = " < Vol ", wraplength=50,    bg = "light green", font = 50,width = 13, height = 2,command = self.volume_DN,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_DN.grid(row = 0, column = 3)
-            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol > " + str(self.volume), wraplength=60,bg = "light green", font = 50,width = 15, height = 2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
+            self.Button_Vol_UP =  tk.Button(self.Frame10, text = "Vol > " + str(self.volume), wraplength=60,bg = "light green", font = 50,width = 13, height = 2,command = self.volume_UP,repeatdelay=1000, repeatinterval=500)
             self.Button_Vol_UP.grid(row = 0, column = 4)
-            self.Button_Prev_Artist =  tk.Button(self.Frame10, text = "<Artist", font = 50,   bg = "light blue",width = 15, height = 1,command = self.Prev_Artist,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_Artist =  tk.Button(self.Frame10, text = "<Artist", font = 50,   bg = "light blue",width = 13, height = 1,command = self.Prev_Artist,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Artist.grid(row = 2, column = 0)
-            self.Button_Next_Artist =  tk.Button(self.Frame10, text = "Artist>", font = 50,   bg = "light blue",fg = "red",width = 15, height = 1,command = self.Next_Artist,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Artist =  tk.Button(self.Frame10, text = "Artist>", font = 50,   bg = "light blue",fg = "red",width = 13, height = 1,command = self.Next_Artist,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_Artist.grid(row = 2, column = 1)
-            self.Button_Prev_Album =  tk.Button(self.Frame10, text = "<Album", font = 50,    bg = "light blue",width = 15, height = 1,command = self.Prev_Album,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_Album =  tk.Button(self.Frame10, text = "<Album", font = 50,    bg = "light blue",width = 13, height = 1,command = self.Prev_Album,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Album.grid(row = 3, column = 0)
-            self.Button_Next_Album =  tk.Button(self.Frame10, text = "Album>", font = 50,     bg = "light blue",width = 15, height = 1,command = self.Next_Album,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Album =  tk.Button(self.Frame10, text = "Album>", font = 50,     bg = "light blue",width = 13, height = 1,command = self.Next_Album,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_Album.grid(row = 3, column = 1)
-            self.Button_Prev_Track =  tk.Button(self.Frame10, text = "<Track", font = 50,    bg = "light blue",width = 15, height = 1,command = self.Prev_Track,repeatdelay=1000, repeatinterval=500)
+            self.Button_Prev_Track =  tk.Button(self.Frame10, text = "<Track", font = 50,    bg = "light blue",width = 13, height = 1,command = self.Prev_Track,repeatdelay=1000, repeatinterval=500)
             self.Button_Prev_Track.grid(row = 4, column = 0)
-            self.Button_Next_Track = tk.Button(self.Frame10, text = "Track>", font = 50,    bg = "light blue",width = 15, height = 1,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
+            self.Button_Next_Track = tk.Button(self.Frame10, text = "Track>", font = 50,    bg = "light blue",width = 13, height = 1,command = self.Next_Track,repeatdelay=1000, repeatinterval=500)
             self.Button_Next_Track.grid(row =4, column = 1)
             self.Button_Next_AZ = tk.Button(self.Frame10, text = "Info", font = 50,   width = 10, height = 1,bg = "light blue",command=self.PopupInfo,repeatdelay=250, repeatinterval=500)
             self.Button_Next_AZ.grid(row = 18, column = 4, pady = 0)
             self.Button_Reload = tk.Button(self.Frame10, text = "RELOAD", font = 50,width = 10, bg = "light blue", height = 2,command = self.RELOAD_List, wraplength=80, justify=CENTER)
             self.Button_Reload.grid(row = 19, column = 0)
             if self.Button_Radi_on == 1:
-                self.Button_Radio = tk.Button(self.Frame10, text = "Radio", font = 50,    bg = "light blue",width = 15, height = 2,command = self.RadioX, wraplength=80, justify=CENTER)
+                self.Button_Radio = tk.Button(self.Frame10, text = "Radio", font = 50,    bg = "light blue",width = 13, height = 2,command = self.RadioX, wraplength=80, justify=CENTER)
                 self.Button_Radio.grid(row = 19, column = 3)
             if self.Shutdown_exit == 1:
-                self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdn",   bg = "gray",width = 15, height = 2,command = self.Shutdown)
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "Shutdn",   bg = "gray",width = 13, height = 2,command = self.Shutdown)
             else:
-                self.Button_Shutdown = tk.Button(self.Frame10, text = "EXIT",   bg = "gray",width = 15, height = 2,command = self.Shutdown)
+                self.Button_Shutdown = tk.Button(self.Frame10, text = "EXIT",   bg = "gray",width = 13, height = 2,command = self.Shutdown)
             self.Button_Shutdown.grid(row = 19, column = 4)
-            self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", font = 50, bg = "light blue",width = 15, height = 2,command = self.Shuffle_Tracks, wraplength=80, justify=CENTER)
+            self.Button_Shuffle = tk.Button(self.Frame10, text = "Shuffle", font = 50, bg = "light blue",width = 13, height = 2,command = self.Shuffle_Tracks, wraplength=80, justify=CENTER)
             self.Button_Shuffle.grid(row = 0, column = 2)
             if self.auto_play == 0 and self.auto_radio == 0 and self.auto_record == 0 and self.auto_album == 0:
-                self.Button_Pause = tk.Button(self.Frame10, text = "NextAZ", font = 50,bg = "light blue", width = 15, height = 2,command=self.Pause, wraplength=80, justify=CENTER)
+                self.Button_Pause = tk.Button(self.Frame10, text = "NextAZ", font = 50,bg = "light blue", width = 13, height = 2,command=self.Pause, wraplength=80, justify=CENTER)
             else:
-                self.Button_Pause = tk.Button(self.Frame10, text = "Pause", font = 50,bg = "light blue", width = 15, height = 2,command=self.Pause, wraplength=80, justify=CENTER)
+                self.Button_Pause = tk.Button(self.Frame10, text = "Pause", font = 50,bg = "light blue", width = 13, height = 2,command=self.Pause, wraplength=80, justify=CENTER)
             self.Button_Pause.grid(row = 19, column = 2)
             if os.path.exists(self.mp3c_jpg):
                 self.load = Image.open(self.mp3c_jpg)
