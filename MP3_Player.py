@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.33
+version = 18.34
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -741,7 +741,7 @@ class MP3Player(Frame):
 
     def menu7(self):
             # Pi 7" Display 800 x 480 with scrollbars
-            self.length = 40
+            self.length = 48
             if scr_width == 800 and scr_height == 600:
                 hei = 3
                 hei2 = 3
@@ -1283,7 +1283,8 @@ class MP3Player(Frame):
             title = lva[w].split("=")
             if title[0] == "VERSION_ID":
                 self.lver = int(title[1][1:3])
-        print(self.lver)
+        if self.trace > 0:
+            print(self.lver)
 
         # read radio_stns.txt (Station Name,URL,X)
         if os.path.exists ("radio_stns.txt"): 
@@ -1385,7 +1386,6 @@ class MP3Player(Frame):
                 os.system("amixer set 'Digital' " + str(self.volume + 107))
         else:
             os.system("wpctl set-volume @DEFAULT_AUDIO_SINK@ " + str(self.volume/100))
-        print(str(self.volume/100))
         self.test     = 0
         self.counter5 = 0
        
@@ -2560,7 +2560,7 @@ class MP3Player(Frame):
                     self.track_len = frames / float(rate)
             minutes = int(self.track_len // 60)
             seconds = int (self.track_len - (minutes * 60))
-            self.Disp_track_len.config(text ="%03d:%02d" % (minutes, seconds % 60))
+            #self.Disp_track_len.config(text ="%03d:%02d" % (minutes, seconds % 60))
         if self.trace > 0:
             print ("callback exit",self.track_no)
         if self.play == 1:
@@ -2763,7 +2763,7 @@ class MP3Player(Frame):
                     self.track_len = frames / float(rate)
             minutes = int(self.track_len // 60)
             seconds = int (self.track_len - (minutes * 60))
-            self.Disp_track_len.config(text ="%03d:%02d" % (minutes, seconds % 60))
+            #self.Disp_track_len.config(text ="%03d:%02d" % (minutes, seconds % 60))
         if self.trace > 0:
             print ("callback exit2",self.track_no)
         if self.play == 1:
@@ -3029,7 +3029,7 @@ class MP3Player(Frame):
         self.Button_Next_AZ.config(bg = 'light blue', text = "Info")
         if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
             self.L8.grid_forget()
-        if self.touchscreen == 1:
+        if self.touchscreen == 1 and self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6:
             self.Button_DELETE_m3u.grid_forget()
         if (self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 2 or self.cutdown == 3) and self.touchscreen == 1:
             self.Disp_Name_m3u.grid_forget()
@@ -3372,7 +3372,7 @@ class MP3Player(Frame):
                 self.play = 1
                 self.start = time.monotonic()
                 self.pstart = time.monotonic()
-                print(self.album_start)
+                #print(self.album_start)
                 if self.album_start == 1:
                     if self.rotary_pos == 0:
                         self.Button_TAlbum.config(bg = "red",fg = "black",text = "STOP")
@@ -3426,7 +3426,8 @@ class MP3Player(Frame):
                 else:
                     self.Stop_Play()
           else:
-              print("No track")
+              if self.trace > 0:
+                  print("No track")
               self.album_start = 0
               self.stopstart = 0
               self.Button_TAlbum.config(bg = "blue",fg = "black",text = "PLAY Album")
@@ -4159,7 +4160,7 @@ class MP3Player(Frame):
             self.record_time_min = self.record_time * 60
             t_minutes = int(self.total_record // 60)
             t_seconds = int (self.total_record - (t_minutes * 60))
-            self.Disp_track_len.config(text ="%03d:%02d" % (t_minutes, t_seconds % 60))
+            #self.Disp_track_len.config(text ="%03d:%02d" % (t_minutes, t_seconds % 60))
             self.record_current = int((self.total_record - (time.monotonic() - self.rec_begin))/60)
             self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
             if self.Radio_ON == 1 and self.Radio_RON == 1 and self.shutdown == 1 and self.record_sleep == 1:
@@ -4290,7 +4291,7 @@ class MP3Player(Frame):
                     self.Button_Radio.config(bg = "green", fg = "black", text = "Repeat Album")
             else:
                 self.Button_Radio.grid_forget()
-            if self.touchscreen == 1:
+            if self.touchscreen == 1 and self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6:
                 self.Button_DELETE_m3u.grid_forget()
             if self.cutdown == 4:
                 self.Button_Track_m3u.grid_forget()
@@ -4599,7 +4600,6 @@ class MP3Player(Frame):
             elif x2 <= 0 and y2 < 0:
                 self.t = (6.12 - math.atan(x2/y2))
                 self.t = int(self.t * 4)
-            #print(math.sqrt((x2*x2)+ (y2*y2)))    
             # if cursor on the wheel position
             if math.sqrt((x2*x2)+ (y2*y2)) > c_min and math.sqrt((x2*x2)+ (y2*y2)) < c_max :
                 if self.gpio_enable == 0 and (self.HP4_backlight == 1 or self.LCD_backlight == 1):
@@ -6901,7 +6901,6 @@ class MP3Player(Frame):
                 
     def Del_Track(self):
         if os.path.exists(self.track) and self.album_start == 0 and self.Radio_ON == 0 and self.volume == 22 and self.stopstart == 0:
-            print("x")
             os.remove(self.track)
             Tracks = []
             with open(self.que_dir,"r") as textobj:
@@ -7764,7 +7763,7 @@ class MP3Player(Frame):
                 self.record_time_min = self.record_time * 60
                 t_minutes = int(self.total_record // 60)
                 t_seconds = int (self.total_record - (t_minutes * 60))
-                self.Disp_track_len.config(text ="%03d:%02d" % (t_minutes, t_seconds % 60))
+                #self.Disp_track_len.config(text ="%03d:%02d" % (t_minutes, t_seconds % 60))
                 self.record_current = int((self.total_record - (time.monotonic() - self.rec_begin))/60)
                 self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
                 now = datetime.datetime.now()
@@ -7809,7 +7808,6 @@ class MP3Player(Frame):
                 self.tname = self.track_nameX[self.counter][:-4]
                 vv = 0
                 if self.oldtrack2 != self.tname and self.trace == 2:
-                    print("1",self.tname)
                     self.oldtrack2 = self.tname
                     vv = 1
                 self.tname = re.sub("[^a-zA-Z0-9- &!()',.]+", '',self.tname)
