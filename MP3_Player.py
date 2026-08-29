@@ -37,8 +37,8 @@ rotary_vol  = 0 # set to 1 if using VOLUME   rotary encoder 1 (see connections.j
 rotary_pos  = 0 # set to 1 if using POSITION rotary encoder 2 (see connections.jpg for wiring details)
 ext_buttons = 0 # set to 1 if using external buttons (see connections.jpg for wiring details)
 touchscreen = 1 # set to 0 if using the rotary encoders and a non-touchscreen (hides non rotary buttons)
-bg_image    = 'backgnd012.jpg' # background image
-btn_color   = 'gray72'      # button default colour
+bg_image    = 'backgnd.jpg' # background image
+btn_color   = 'gray85'      # button default colour
 
 import tkinter as tk
 from tkinter import *
