@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.36
+version = 18.37
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -4049,7 +4049,7 @@ class MP3Player(Frame):
             track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
             if len(track) == 0:
                 self.sr = 0
-                if self.rotary_pos== 0:
+                if self.rotary_pos == 0:
                     self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
                     self.q.kill()
                     self.r.kill()
@@ -4945,14 +4945,14 @@ class MP3Player(Frame):
             track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
             if len(track) == 0:
                 self.sr = 0
-                if self.rotary_pos== 0:
-                    self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
-                    self.q.kill()
-                    self.r.kill()
-                    self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
-                    self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
-                    if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
-                        self.L8.config(text = "")
+                #if self.rotary_pos== 0:
+                self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
+                self.q.kill()
+                self.r.kill()
+                self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
+                if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
+                    self.L8.config(text = "")
             self.Name = self.Radio_Stns[self.Radio]
             if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg") or os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
                 self.imgxon = 0
@@ -5172,6 +5172,7 @@ class MP3Player(Frame):
             time.sleep(1)
             self.sr = 1
             if self.record == 1:
+                print("x")
                 self.Button_Pause.config(fg = "black", bg = "light blue", text = "RECORD")
                 if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                     self.L8.config(text = ".mp3")
@@ -5182,14 +5183,14 @@ class MP3Player(Frame):
             track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
             if len(track) == 0:
                 self.sr = 0
-                if self.rotary_pos== 0:
-                    self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
-                    self.q.kill()
-                    self.r.kill()
-                    self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
-                    self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
-                    if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
-                        self.L8.config(text = "")
+                #if self.rotary_pos== 0:
+                self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
+                self.q.kill()
+                self.r.kill()
+                self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
+                if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
+                    self.L8.config(text = "")
             self.Name = self.Radio_Stns[self.Radio]
             if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg") or os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
                 self.imgxon = 0
@@ -5819,14 +5820,14 @@ class MP3Player(Frame):
             track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
             if len(track) == 0:
                 self.sr = 0
-                if self.rotary_pos== 0:
-                    self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
-                    self.q.kill()
-                    self.r.kill()
-                    self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
-                    self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
-                    if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
-                        self.L8.config(text = "")
+                #if self.rotary_pos== 0:
+                self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
+                self.q.kill()
+                self.r.kill()
+                self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
+                if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
+                    self.L8.config(text = "")
             self.Name = self.Radio_Stns[self.Radio]
             if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg") or os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
                 self.imgxon = 0
@@ -6014,14 +6015,14 @@ class MP3Player(Frame):
             track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
             if len(track) == 0:
                 self.sr = 0
-                if self.rotary_pos== 0:
-                    self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
-                    self.q.kill()
-                    self.r.kill()
-                    self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
-                    self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
-                    if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
-                        self.L8.config(text = "")
+                #if self.rotary_pos== 0:
+                self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
+                self.q.kill()
+                self.r.kill()
+                self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
+                if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
+                    self.L8.config(text = "")
             self.Name = self.Radio_Stns[self.Radio]
             if os.path.exists(self.h_user + "/Documents/" + self.Name + ".jpg") or os.path.exists(self.h_user + "/Documents/" + self.Name + ".png"):
                 self.imgxon = 0
@@ -7644,14 +7645,14 @@ class MP3Player(Frame):
             track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
             if len(track) == 0:
                 self.sr = 0
-                if self.rotary_pos== 0:
-                    self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
-                    self.q.kill()
-                    self.r.kill()
-                    self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
-                    self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
-                    if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
-                        self.L8.config(text = "")
+                #if self.rotary_pos== 0:
+                self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
+                self.q.kill()
+                self.r.kill()
+                self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
+                if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
+                    self.L8.config(text = "")
         # stop recording if record time exceeded or RAM space less than limit (wait for end of track if track names available in stream)
         now = datetime.datetime.now()
         if (self.Radio_RON == 1 and now > self.stop_record and self.record == 1 and self.oldtrack != self.track_nameX[self.counter]) or (self.Radio_RON == 1 and freeram < self.ram_min):
