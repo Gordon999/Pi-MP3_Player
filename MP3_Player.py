@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.37
+version = 18.38
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,6 +27,7 @@ global rotary_vol
 global rotary_pos
 global touchscreen
 global ext_buttons
+global Radio_Stns
 
 # set display cutdown format
 # 0:800x480, 1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist
@@ -39,6 +40,17 @@ ext_buttons = 0 # set to 1 if using external buttons (see connections.jpg for wi
 touchscreen = 1 # set to 0 if using the rotary encoders and a non-touchscreen (hides non rotary buttons)
 bg_image    = 'backgnd.jpg' # background image
 btn_color   = 'gray85'      # button default colour
+
+# Radio Stations List, add to them by adding a "Name","URL",0
+# or you can add more by putting them in a file called '/home/USERNAME/radio_stns.txt'
+Radio_Stns = ["Radio Paradise Rock (192)","http://stream.radioparadise.com/rock-192",0,
+              "Radio Paradise Main (320)","http://stream.radioparadise.com/mp3-320",0,
+              "Radio Paradise Mellow (192)","http://stream.radioparadise.com/mellow-192",0,
+              "Radio Paradise World 192","http://stream.radioparadise.com/world-etc-192",0,
+              "Radio Paradise World","http://stream.radioparadise.com/eclectic-flac",0,
+              "Radio Caroline","http://sc6.radiocaroline.net:10558/",0,
+              "Radio Seagull","http://stream.radioseagull.net:8000/seagull",0
+             ]
 
 import tkinter as tk
 from tkinter import *
@@ -1083,15 +1095,6 @@ class MP3Player(Frame):
         # find user
         self.h_user = "/home/" + os.getlogin( )
         self.m_user = "/media/" + os.getlogin( )
-        # Radio Stations List, add to them by adding a 'name','URL','recordable (yes = 1, no = 0)'
-        # or you can add more by putting them in a file called '/home/USERNAME/radio_stns.txt'
-        self.Radio_Stns = ["Radio Paradise Rock (192)","http://stream.radioparadise.com/rock-192",2,
-                           "Radio Paradise Main (320)","http://stream.radioparadise.com/mp3-320",2,
-                           "Radio Paradise Mellow (192)","http://stream.radioparadise.com/mellow-192",2,
-                           "Radio Paradise World 192","http://stream.radioparadise.com/world-etc-192",2,
-                           "Radio Paradise World","http://stream.radioparadise.com/eclectic-flac",0,
-                           "Radio Caroline","http://sc6.radiocaroline.net:10558/",0
-                          ]
         # settings
         self.Shutdown_exit  = 1  # set to 1 to shutdown the Pi on pressing SHUTDOWN (left mouse button), 0 to only exit script
         self.Button_Radi_on = 1  # show Radio button,set = 1 to enable
@@ -1206,6 +1209,7 @@ class MP3Player(Frame):
         self.rotary_vol     = rotary_vol
         self.touchscreen    = touchscreen
         self.ext_buttons    = ext_buttons
+        self.Radio_Stns     = Radio_Stns
         self.tname          = "Unknown"
         self.auto_rec_set   = 0
         self.auto_play      = 0
@@ -7964,13 +7968,13 @@ class MP3Player(Frame):
                 if self.trace > 0:
                     print(trame)
                 if trame[0:10] != 'Commercial' and trame[0:7] != 'Unknown' and trame[0:6] != ' - AD ' and trame[0:6] != ' - ADS' and trame[0:8] != ' - STOP ' and trame[0:9] != ' - START ' and trame[0:11] != 'BFBS - Edge':
-                    if self.Radio_Stns[self.Radio + 2] == 2 or self.Radio_Stns[self.Radio + 2] == 3:
+                    if self.Radio_Stns[self.Radio + 2] <= 3:
                         count2 = trame.count(' - ')
                         names = trame.split(' - ',count2)
                     elif self.Radio_Stns[self.Radio + 2] == 4:
                         count2 = trame.count(' by ')
                         names = trame.split(' by ',count2)
-                    if self.Radio_Stns[self.Radio + 2] == 2 :
+                    if self.Radio_Stns[self.Radio + 2] <= 2 :
                         artist = names[0]
                         track  = names[count2]
                         mp = track[-4:]
