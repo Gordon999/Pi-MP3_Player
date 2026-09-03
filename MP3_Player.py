@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.38
+version = 18.40
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -3177,14 +3177,14 @@ class MP3Player(Frame):
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
                 if len(track) == 0:
                     self.sr = 0
-                    if self.rotary_pos == 0:
-                        self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
-                        self.q.kill()
-                        self.r.kill()
-                        self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
-                        self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
-                        if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
-                            self.L8.config(text = "")
+                    #if self.rotary_pos == 0:
+                    self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
+                    self.q.kill()
+                    self.r.kill()
+                    self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                    self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
+                    if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
+                        self.L8.config(text = "")
                 self.Name = self.Radio_Stns[self.Radio]
                 self.Disp_artist_name.config(text = self.Name)
                 if self.cutdown != 4 and self.cutdown !=5 and self.cutdown !=1:
@@ -4053,14 +4053,14 @@ class MP3Player(Frame):
             track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
             if len(track) == 0:
                 self.sr = 0
-                if self.rotary_pos == 0:
-                    self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
-                    self.q.kill()
-                    self.r.kill()
-                    self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
-                    self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
-                    if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
-                        self.L8.config(text = "")
+                #if self.rotary_pos== 0:
+                self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
+                self.q.kill()
+                self.r.kill()
+                self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
+                if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
+                    self.L8.config(text = "")
             # check RAM space and set self.max_record
             st = os.statvfs("/run/shm/")
             self.freeram1 = (st.f_bavail * st.f_frsize)/1100000
@@ -7230,7 +7230,6 @@ class MP3Player(Frame):
             with open('Lasttrack3.txt', 'w') as f:
                 f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
             self.menuX()
-
             if self.sr == 0:
                 self.q.kill()
             else:
@@ -7320,6 +7319,7 @@ class MP3Player(Frame):
                 self.Disp_track_name.set(self.track_name)
             self.reload = 1
             self.Show_Track()
+            
         # START RADIO BUTTON
         elif self.paused == 0 and self.album_start == 0 and self.stopstart == 0 and self.Radio_ON == 0 and self.bt_on == 0:
             if self.trace > 0:
@@ -7540,8 +7540,6 @@ class MP3Player(Frame):
                 self.auto_radio  = 1
                 with open('Lasttrack3.txt', 'w') as f:
                     f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
-                #if self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 5 or self.cutdown == 6:
-                #    self.L1.config(text = "RAM: ")
                 out = self.isConnected()
                 rems = glob.glob("/run/shm/music/*/*/*/*/*.mp3")
                 for x in range(0,len(rems)):
@@ -7550,7 +7548,6 @@ class MP3Player(Frame):
                 for x in range(0,len(rems)):
                     os.remove(rems[x])
                 self.playlist ="-nocache"
-                #########################
                 self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
                 time.sleep(1)
                 self.sr = 1
@@ -7565,15 +7562,14 @@ class MP3Player(Frame):
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
                 if len(track) == 0:
                     self.sr = 0
-                    if self.rotary_pos == 0:
-                        self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
-                        self.q.kill()
-                        self.r.kill()
-                        self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
-                        self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
-                        if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
-                             self.L8.config(text = "")
-                ##########################
+                    #if self.rotary_pos == 0:
+                    self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
+                    self.q.kill()
+                    self.r.kill()
+                    self.q = subprocess.Popen(["cvlc", self.Radio_Stns[self.Radio + 1]] , shell=False)
+                    self.Button_Pause.config(fg = "gray", bg = self.btn_color, text = "Pause")
+                    if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
+                         self.L8.config(text = "")
                 st = os.statvfs("/run/shm/")
                 self.freeram1 = (st.f_bavail * st.f_frsize)/1100000
                 self.timer7 = time.monotonic()
@@ -7673,8 +7669,6 @@ class MP3Player(Frame):
         if self.track_nameX[self.counter][0:3] != " - ":
             self.oldtrack = self.track_nameX[self.counter]
         if self.Radio_ON == 1 :
-            #if self.usave == 0:
-            #    self.L1.config(text = "RAM: " + str(int(freeram)))
             self.after(1000, self.Check_Record)
 
     def Copy_Record(self):
@@ -7829,7 +7823,7 @@ class MP3Player(Frame):
         self.tname = re.sub("[^a-zA-Z0-9- &!()',.]+", '',self.tname)
         if self.tname == "":
             self.tname= "Unknown"
-        if self.Radio_ON == 1 and self.sr  > 0:
+        if self.Radio_ON == 1 and self.sr > 0:
             if self.cutdown >= 7:
                 self.Disp_track_name.set(self.tname)
                 if self.imgxon == 0:
@@ -7843,6 +7837,7 @@ class MP3Player(Frame):
             self.copy = 0
             if self.cutdown >= 7:
                 self.Disp_track_name.set(self.tname)
+                self.Disp_album_name.set("Radio")
             else:
                 self.Disp_track_name.config(text = self.tname)
         if len(track) > 0 and self.Radio_ON == 1:
@@ -7860,7 +7855,15 @@ class MP3Player(Frame):
                 if vv == 1 and self.trace == 2:
                     print("2",self.tname)
                 if self.cutdown >= 7:
-                    self.Disp_track_name.set(self.tname)
+                    self.tbits = self.tname.split(" - ")
+                    if self.Radio_Stns[self.Radio + 2] <= 2:
+                        self.Disp_track_name.set(self.tbits[1])
+                        self.Disp_album_name.set(self.tbits[0])
+                    elif self.Radio_Stns[self.Radio + 2] == 3:
+                        self.Disp_track_name.set(self.tbits[0])
+                        self.Disp_album_name.set(self.tbits[1])
+                    else:
+                        self.Disp_track_name.set(self.tname)
                 else:
                     self.Disp_track_name.config(text = self.tname)
                 if self.tname != self.old_tname and self.Radio_RON == 1:
