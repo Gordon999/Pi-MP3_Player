@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.40
+version = 18.41
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -4932,8 +4932,8 @@ class MP3Player(Frame):
             self.Radio -= 3
             if self.Radio < 0:
                 self.Radio = len(self.Radio_Stns) - 3
-            if cutdown == 1:
-                self.Disp_played.config(text = int((self.Radio)/3)+1)
+            #if cutdown == 1:
+            #    self.Disp_played.config(text = int((self.Radio)/3)+1)
             self.playlist = "-nocache"
             self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
             time.sleep(1)
@@ -5169,8 +5169,8 @@ class MP3Player(Frame):
                 self.NewRadio = -1
             if self.Radio > len(self.Radio_Stns) - 1:
                 self.Radio = 0
-            if cutdown == 1:
-                self.Disp_played.config(text = int((self.Radio)/3)+1)
+            #if cutdown == 1:
+            #    self.Disp_played.config(text = int((self.Radio)/3)+1)
             self.playlist = "-nocache"
             self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
             time.sleep(1)
@@ -7840,6 +7840,7 @@ class MP3Player(Frame):
                 self.Disp_album_name.set("Radio")
             else:
                 self.Disp_track_name.config(text = self.tname)
+                self.Disp_album_name.config(text = "Radio")
         if len(track) > 0 and self.Radio_ON == 1:
             self.counter = track[0].count('/')
             self.track_nameX = track[0].split("/",self.counter)
@@ -7865,7 +7866,15 @@ class MP3Player(Frame):
                     else:
                         self.Disp_track_name.set(self.tname)
                 else:
-                    self.Disp_track_name.config(text = self.tname)
+                    self.tbits = self.tname.split(" - ")
+                    if self.Radio_Stns[self.Radio + 2] <= 2:
+                        self.Disp_track_name.config(text = self.tbits[1])
+                        self.Disp_album_name.config(text = self.tbits[0])
+                    elif self.Radio_Stns[self.Radio + 2] == 3:
+                        self.Disp_track_name.config(text = self.tbits[0])
+                        self.Disp_album_name.config(text = self.tbits[1])
+                    else:
+                        self.Disp_track_name.config(text = self.tname)
                 if self.tname != self.old_tname and self.Radio_RON == 1:
                     with open("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt", "a") as f:
                         f.write("%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " " + self.tname + "\n")
