@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.41
+version = 18.42
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -1218,6 +1218,7 @@ class MP3Player(Frame):
         self.auto_record    = 0
         self.auto_rec_time  = 10
         self.usave          = 0
+        self.rmtracks       = 1
         self.minutes        = 0
         self.seconds        = 10
         self.old_tname      = "x"
@@ -4932,10 +4933,8 @@ class MP3Player(Frame):
             self.Radio -= 3
             if self.Radio < 0:
                 self.Radio = len(self.Radio_Stns) - 3
-            #if cutdown == 1:
-            #    self.Disp_played.config(text = int((self.Radio)/3)+1)
             self.playlist = "-nocache"
-            self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
+            self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
             time.sleep(1)
             self.sr = 1
             if self.record == 1:
@@ -5169,14 +5168,11 @@ class MP3Player(Frame):
                 self.NewRadio = -1
             if self.Radio > len(self.Radio_Stns) - 1:
                 self.Radio = 0
-            #if cutdown == 1:
-            #    self.Disp_played.config(text = int((self.Radio)/3)+1)
             self.playlist = "-nocache"
-            self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
+            self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
             time.sleep(1)
             self.sr = 1
             if self.record == 1:
-                print("x")
                 self.Button_Pause.config(fg = "black", bg = "light blue", text = "RECORD")
                 if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                     self.L8.config(text = ".mp3")
@@ -5810,7 +5806,7 @@ class MP3Player(Frame):
                 self.NewRadio = -1
             if cutdown == 1:
                 self.Disp_played.config(text = int((self.Radio)/3)+1)
-            self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
+            self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
             time.sleep(1)
             self.sr = 1
             if self.record == 1:
@@ -6005,7 +6001,7 @@ class MP3Player(Frame):
                 self.NewRadio = -1
             if cutdown == 1:
                 self.Disp_played.config(text = int((self.Radio)/3)+1)
-            self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
+            self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
             time.sleep(1)
             self.sr = 1
             if self.record == 1:
@@ -7548,7 +7544,7 @@ class MP3Player(Frame):
                 for x in range(0,len(rems)):
                     os.remove(rems[x])
                 self.playlist ="-nocache"
-                self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
+                self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
                 time.sleep(1)
                 self.sr = 1
                 if self.record == 1:
@@ -7801,7 +7797,6 @@ class MP3Player(Frame):
                 self.record_time_min = self.record_time * 60
                 t_minutes = int(self.total_record // 60)
                 t_seconds = int (self.total_record - (t_minutes * 60))
-                #self.Disp_track_len.config(text ="%03d:%02d" % (t_minutes, t_seconds % 60))
                 self.record_current = int((self.total_record - (time.monotonic() - self.rec_begin))/60)
                 self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
                 now = datetime.datetime.now()
@@ -7857,20 +7852,20 @@ class MP3Player(Frame):
                     print("2",self.tname)
                 if self.cutdown >= 7:
                     self.tbits = self.tname.split(" - ")
-                    if self.Radio_Stns[self.Radio + 2] <= 2:
+                    if self.Radio_Stns[self.Radio + 2] == 0:
                         self.Disp_track_name.set(self.tbits[1])
                         self.Disp_album_name.set(self.tbits[0])
-                    elif self.Radio_Stns[self.Radio + 2] == 3:
+                    elif self.Radio_Stns[self.Radio + 2] > 0:
                         self.Disp_track_name.set(self.tbits[0])
                         self.Disp_album_name.set(self.tbits[1])
                     else:
                         self.Disp_track_name.set(self.tname)
                 else:
                     self.tbits = self.tname.split(" - ")
-                    if self.Radio_Stns[self.Radio + 2] <= 2:
+                    if self.Radio_Stns[self.Radio + 2] == 0:
                         self.Disp_track_name.config(text = self.tbits[1])
                         self.Disp_album_name.config(text = self.tbits[0])
-                    elif self.Radio_Stns[self.Radio + 2] == 3:
+                    elif self.Radio_Stns[self.Radio + 2] > 0:
                         self.Disp_track_name.config(text = self.tbits[0])
                         self.Disp_album_name.config(text = self.tbits[1])
                     else:
@@ -7920,7 +7915,6 @@ class MP3Player(Frame):
                 os.remove(self.rems3[x])
             if self.Radio_ON == 1 and self.Radio_RON == 1 and self.record == 1:
                 self.Radio_RON = 0
-                #self.L4.config(text = "")
                 if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5:
                     if self.touchscreen == 1:
                         self.L8.config(text = "")
@@ -7980,18 +7974,18 @@ class MP3Player(Frame):
                 if self.trace > 0:
                     print(trame)
                 if trame[0:10] != 'Commercial' and trame[0:7] != 'Unknown' and trame[0:6] != ' - AD ' and trame[0:6] != ' - ADS' and trame[0:8] != ' - STOP ' and trame[0:9] != ' - START ' and trame[0:11] != 'BFBS - Edge':
-                    if self.Radio_Stns[self.Radio + 2] <= 3:
+                    if self.Radio_Stns[self.Radio + 2] == 0:
                         count2 = trame.count(' - ')
                         names = trame.split(' - ',count2)
-                    elif self.Radio_Stns[self.Radio + 2] == 4:
+                    elif self.Radio_Stns[self.Radio + 2] == 2:
                         count2 = trame.count(' by ')
                         names = trame.split(' by ',count2)
-                    if self.Radio_Stns[self.Radio + 2] <= 2 :
+                    if self.Radio_Stns[self.Radio + 2] == 0 :
                         artist = names[0]
                         track  = names[count2]
                         mp = track[-4:]
                         track = track[:-4]
-                    elif self.Radio_Stns[self.Radio + 2] == 3 or self.Radio_Stns[self.Radio + 2] == 4:
+                    elif self.Radio_Stns[self.Radio + 2] > 0 :
                         artist = names[count2][:-4]
                         track  = names[0]
                         mp = names[count2][-4:]
@@ -8052,9 +8046,10 @@ class MP3Player(Frame):
                                 tags.save(self.m_user + "/" + USB_Files[0] + "/" + artist + "/Radio_Recordings/" + track)
  
         # ======================================================================================================================
-        rems = glob.glob("/run/shm/music/*/*/*/*.mp3")
-        for x in range(0,len(rems)):
-            os.remove(rems[x])
+        if self.usave == 1 or self.rmtracks == 1:
+            rems = glob.glob("/run/shm/music/*/*/*/*.mp3")
+            for x in range(0,len(rems)):
+                os.remove(rems[x])
 
     def PopupInfo(self):
         # show info.txt, other .txt or .m3u file
