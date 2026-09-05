@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.42
+version = 18.43
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -3164,7 +3164,7 @@ class MP3Player(Frame):
                 self.Radio = (y_pos -1) * 3
                 if self.Radio > len(self.Radio_Stns) - 1:
                     self.Radio = 0
-                self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
+                self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings"], shell=False)
                 time.sleep(1)
                 self.sr = 1
                 if self.record == 1:
@@ -4043,18 +4043,15 @@ class MP3Player(Frame):
             self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
             time.sleep(1)
             self.sr = 1
-            if self.record == 1:
-                self.Button_Pause.config(fg = "black", bg = "light blue", text = "RECORD")
-                if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
+            if self.record == 1 and self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
                     self.L8.config(text = ".mp3")
             self.q = subprocess.Popen(["mplayer","http://localhost:8000"] , shell=False)
             track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
-            if len(track) == 0:
-               time.sleep(2)
-            track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
+            ttime = time.monotonic()
+            while len(track) == 0 and time.monotonic() - ttime < 2:
+                track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
             if len(track) == 0:
                 self.sr = 0
-                #if self.rotary_pos== 0:
                 self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
                 self.q.kill()
                 self.r.kill()
@@ -4447,7 +4444,6 @@ class MP3Player(Frame):
                 self.Disp_track_name.grid(row = 4, column = 1, columnspan = 3)
             
         if self.cutdown >= 7:
-            #self.shuffle_on = 0
             self.Disp_artist_name.set(self.artist_name)
             self.ac = 0
             self.bc = 1
@@ -4555,7 +4551,6 @@ class MP3Player(Frame):
         y = self.master.winfo_pointery()
         abs_x = self.master.winfo_pointerx() - self.master.winfo_rootx()
         abs_y = self.master.winfo_pointery() - self.master.winfo_rooty()
-        #print(abs_x,abs_y)
         
         # switch backlight on (if enabled)
         if (self.LCD_backlight == 1 or self.HP4_backlight == 1 or self.Pi7_backlight == 1) and (self.old_abs_x != abs_x or self.old_abs_y != abs_y) :
@@ -4934,7 +4929,7 @@ class MP3Player(Frame):
             if self.Radio < 0:
                 self.Radio = len(self.Radio_Stns) - 3
             self.playlist = "-nocache"
-            self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
+            self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings"], shell=False)                      
             time.sleep(1)
             self.sr = 1
             if self.record == 1:
@@ -5169,7 +5164,7 @@ class MP3Player(Frame):
             if self.Radio > len(self.Radio_Stns) - 1:
                 self.Radio = 0
             self.playlist = "-nocache"
-            self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
+            self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings"], shell=False)
             time.sleep(1)
             self.sr = 1
             if self.record == 1:
@@ -5806,7 +5801,7 @@ class MP3Player(Frame):
                 self.NewRadio = -1
             if cutdown == 1:
                 self.Disp_played.config(text = int((self.Radio)/3)+1)
-            self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
+            self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings"], shell=False)
             time.sleep(1)
             self.sr = 1
             if self.record == 1:
@@ -6001,7 +5996,7 @@ class MP3Player(Frame):
                 self.NewRadio = -1
             if cutdown == 1:
                 self.Disp_played.config(text = int((self.Radio)/3)+1)
-            self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
+            self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings"], shell=False)
             time.sleep(1)
             self.sr = 1
             if self.record == 1:
@@ -7544,7 +7539,7 @@ class MP3Player(Frame):
                 for x in range(0,len(rems)):
                     os.remove(rems[x])
                 self.playlist ="-nocache"
-                self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Radio_Stns[self.Radio]], shell=False)
+                self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings"], shell=False)
                 time.sleep(1)
                 self.sr = 1
                 if self.record == 1:
@@ -7558,7 +7553,6 @@ class MP3Player(Frame):
                 track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
                 if len(track) == 0:
                     self.sr = 0
-                    #if self.rotary_pos == 0:
                     self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
                     self.q.kill()
                     self.r.kill()
@@ -7720,8 +7714,8 @@ class MP3Player(Frame):
         self.total_record = 0
         rems = glob.glob("/run/shm/music/*/*/*/*/*.mp3")
         for x in range(0,len(rems)):
-            #if self.usave == 1:
-            #    shutil.copy(rems[x],self.h_user + "/Music/")
+            if self.usave == 1:
+                shutil.copy(rems[x],self.h_user + "/Music/")
             os.remove(rems[x])
         rems = glob.glob("/run/shm/music/*/*/*.cue")
         for x in range(0,len(rems)):
@@ -7883,7 +7877,7 @@ class MP3Player(Frame):
                     self.Disp_track_name.set(self.tname[3:])
                 else:
                     self.Disp_track_name.config(text = self.tname[3:])
-                if self.tname != self.old_tname and self.Radio_RON == 1:
+                if self.tname != self.old_tname and self.Radio_ON == 1: ###
                     with open("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt", "a") as f:
                         f.write("%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " " + self.tname[3:] + "\n")
                     self.old_tname = self.tname
