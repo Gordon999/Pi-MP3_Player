@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.44
+version = 18.45
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -7877,7 +7877,7 @@ class MP3Player(Frame):
                     self.Disp_track_name.set(self.tname[3:])
                 else:
                     self.Disp_track_name.config(text = self.tname[3:])
-                if self.tname != self.old_tname and self.Radio_ON == 1: ###
+                if self.tname != self.old_tname and self.Radio_RON == 1: 
                     with open("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt", "a") as f:
                         f.write("%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " " + self.tname[3:] + "\n")
                     self.old_tname = self.tname
