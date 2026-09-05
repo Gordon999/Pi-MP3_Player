@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.43
+version = 18.44
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -1308,7 +1308,7 @@ class MP3Player(Frame):
                         if a[0:1] != "#":
                             self.Radio_Stns.append(a)
                             self.Radio_Stns.append(b.strip())
-                            self.Radio_Stns.append(2)
+                            self.Radio_Stns.append(0)
                     line = textobj.readline()
                     
         # read radio_stns.csv (Station Name,URL,X,)
