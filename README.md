@@ -3,7 +3,9 @@ Pi-MP3_Player (cutdown 7 shown)
 
 ![screenshot](screenshot.jpg)
 
-v18.37 should recognise which radio stations are recordable.
+v18.44 will use less RAM memory if listening to radio.
+
+v18.37 Will recognise which radio stations are recordable.
 
 v18.35 some fixes, Shuffle on cutdown 7&8, cutdown 6 layout.
 
