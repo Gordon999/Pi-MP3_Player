@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.45
+version = 18.46
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -1049,21 +1049,21 @@ class MP3Player(Frame):
             print( "MENU",self.cutdown)
         if self.cutdown == 0:
             self.menu0()
-        if self.cutdown == 1:
+        elif self.cutdown == 1:
             self.menu1()
-        if self.cutdown == 2:
+        elif self.cutdown == 2:
             self.menu2()
-        if self.cutdown == 3:
+        elif self.cutdown == 3:
             self.menu3()
-        if self.cutdown == 4:
+        elif self.cutdown == 4:
             self.menu4()
-        if self.cutdown == 5:
+        elif self.cutdown == 5:
             self.menu5()
-        if self.cutdown == 6:
+        elif self.cutdown == 6:
             self.menu6()	
-        if self.cutdown == 7:
+        elif self.cutdown == 7:
             self.menu7()   
-        if self.cutdown == 8:
+        elif self.cutdown == 8:
             self.menu8()   
             
         self.Button_Shutdown.bind("<Button-1>", self.left_click)
@@ -7893,7 +7893,6 @@ class MP3Player(Frame):
                 self.Button_Pause.config(fg = "black",bg = "light blue",text = "RECORD")
             else:
                 print("WARNING!","NOT RECORDING")
-                print("x",self.rot_pos)
                 if self.rot_pos == 9:
                     self.Button_Pause.config(fg = "black",bg = "yellow",text = "RECORD")
                 else:
@@ -8047,10 +8046,9 @@ class MP3Player(Frame):
 
     def PopupInfo(self):
         # show info.txt, other .txt or .m3u file
-        if self.Radio_ON == 0 or self.Radio_RON == 1:
+        if self.Radio_ON == 0 or self.Radio_RON == 1 :
             ipath = ""
-            			
-            if self.Radio_RON == 1:
+            if self.Radio_RON == 1 or self.drive_name1 == "run":
                 ipath = "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings"
             elif len(self.tunes) > 0:
                 ipath = "/" + self.drive_name1 + "/" + self.drive_name2 + "/"
@@ -8062,7 +8060,7 @@ class MP3Player(Frame):
             infofile = ""
             
             # show next tracks list           
-            if self.Radio_ON == 0 and self.album_start == 0:
+            if self.Radio_ON == 0 and self.album_start == 0 and self.drive_name1 != "run":
                 temp_list = []
                 end_track = self.track_no + 20
                 if end_track > len(self.tunes):
