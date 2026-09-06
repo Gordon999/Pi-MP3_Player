@@ -3,6 +3,10 @@ Pi-MP3_Player (cutdown 7 shown)
 
 ![screenshot](screenshot.jpg)
 
+v18.48 Right mouse click on RECORD will decrease RECORD time, Right mouse click on SLEEP will turn it OFF.
+
+       Clicking INFO whilst playing Radio will show what has been played whilst listening, if metadata available.
+
 v18.45 will use less RAM memory if listening to radio.
 
 v18.37 Will recognise which radio stations are recordable.
