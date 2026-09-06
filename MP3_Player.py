@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.46
+version = 18.48
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -110,7 +110,44 @@ class MP3Player(Frame):
          
     # DELETE button right click, delete a track (Volume must be 22)
     def right_delete(self,a):
-        self.Del_Track()          
+        self.Del_Track()   
+        
+    # Pause button right click (reduce RECORD time)
+    def reduce_time(self,a): 
+        if self.Radio_ON == 1 and self.Radio_RON == 1 and self.sr > 0 and self.record == 1 and self.record_time > 10:
+            if self.trace > 0:
+                print ("Reduce Record Time")
+            self.record_time = int(self.record_time - self.rec_step)
+            if self.record_time < 10:
+                self.record_time = 10
+            self.old_rs = self.record_time
+            self.total_record -= self.rec_step * 60
+            if self.total_record < 600:
+                self.total_record = 600
+            if self.record_time <= self.max_record:
+                self.stop_record -= timedelta(minutes=self.rec_step)
+            if self.trace == 1:
+                print(self.stop_record)
+            if self.total_record > (self.max_record * 60):
+                self.record_time -= int((self.total_record - (self.max_record * 60))/60)
+                self.total_record = (self.max_record * 60)
+            if self.record_time > self.max_record:
+                self.record_time = self.rec_step
+                self.total_record = self.record_time * 60
+            with open('Lasttrack3.txt', 'w') as f:
+                f.write(str(self.track_no) + "\n" + str(self.auto_play) + "\n" + str(self.Radio) + "\n" + str(self.volume) + "\n" + str(self.auto_radio) + "\n" + str(self.auto_record) + "\n" + str(self.auto_rec_time) + "\n" + str(self.shuffle_on) + "\n" + str(self.auto_album) + "\n")
+            self.record_time_min = self.record_time * 60
+            self.t_minutes = int(self.total_record // 60)
+            self.t_seconds = int (self.total_record - (self.t_minutes * 60))
+            if self.cutdown != 1:
+                self.L1.config(text ="Rec'd: " + "%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " / " + "%03d:%02d" % (self.t_minutes, self.t_seconds % 60) + "  " + "(" + str(self.stop_record)[11:16] + ")",fg = "red")
+            else:
+                self.L3.config(text ="%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " / " + "%03d:%02d" % (self.t_minutes, self.t_seconds % 60),fg = "red")
+            self.record_current = int((self.total_record - (time.monotonic() - self.rec_begin))/60)
+            self.Button_Pause.config(fg = "yellow", bg = "red", text = str(self.stop_record)[11:16])
+            if self.Radio_ON == 1 and self.Radio_RON == 1 and self.shutdown == 1 and self.record_sleep == 1:
+                self.sleep_time_min = (self.record_current *60) + 60
+                self.sleep_time = int(self.sleep_time_min / 60)  
    
     def menu0(self):
             # Pi 7" Display 800 x 480
@@ -1068,6 +1105,8 @@ class MP3Player(Frame):
             
         self.Button_Shutdown.bind("<Button-1>", self.left_click)
         self.Button_Shutdown.bind("<Button-3>", self.right_click)
+        self.Button_Pause.bind("<Button-3>", self.reduce_time)
+        self.Button_Sleep.bind("<Button-3>", self.sleep_off)
         if (self.cutdown == 0 or self.cutdown == 2 or self.cutdown == 3 or self.cutdown == 7 or self.cutdown == 8) and self.touchscreen == 1:
             self.Button_DELETE_m3u.bind("<Button-1>", self.left_delete)
             self.Button_DELETE_m3u.bind("<Button-3>", self.right_delete)
@@ -4916,6 +4955,9 @@ class MP3Player(Frame):
         # Previous Radio Station
         if self.Radio_ON == 1 and self.Radio_RON == 0:
             self.copy = 0
+            rt = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + "*.txt")
+            for x in range(0,len(rt)):
+                os.remove(rt[x])
             if self.cutdown >= 7:
                 self.Disp_track_name.set("  ")
             else:
@@ -5147,6 +5189,9 @@ class MP3Player(Frame):
         # Next Radio Station
         if self.Radio_ON == 1 and self.Radio_RON == 0:
             self.copy = 0
+            rt = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + "*.txt")
+            for x in range(0,len(rt)):
+                os.remove(rt[x])
             if self.cutdown >= 7:
                 self.Disp_track_name.set("  ")
             else:
@@ -5746,7 +5791,7 @@ class MP3Player(Frame):
              self.Show_Track()
 
     def nextAZ(self):
-        if (self.Radio_RON == 1 or self.album_start == 1 or self.stopstart == 1):
+        if (self.Radio_ON == 1 or self.album_start == 1 or self.stopstart == 1):
             self.PopupInfo()
             if self.rotary_pos == 1:
                 self.Button_Next_AZ.config(bg = "yellow")
@@ -6803,7 +6848,7 @@ class MP3Player(Frame):
             elif self.rotary_pos == 1 and self.rot_pos == 10:
                 self.Button_Sleep.config(fg = "black", bg = "yellow", text = str(self.sleep_time)  + " mins")
             
-    def sleep_off(self):
+    def sleep_off(self,a):
         if self.cutdown != 1  and self.cutdown != 5 and self.cutdown != 6:
             if self.touchscreen == 1:
                 self.Disp_Name_m3u.config(background=self.btn_color, foreground="black")
@@ -7315,6 +7360,9 @@ class MP3Player(Frame):
         elif self.paused == 0 and self.album_start == 0 and self.stopstart == 0 and self.Radio_ON == 0 and self.bt_on == 0:
             if self.trace > 0:
                 print ("Start Radio")
+            rt = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + "*.txt")
+            for x in range(0,len(rt)):
+                os.remove(rt[x])
             out = self.isConnected()
             if out == True:
                 self.Radio_ON = 1
@@ -7327,6 +7375,10 @@ class MP3Player(Frame):
                     self.Disp_track_name["values"]  = []
                     self.plist_callback()
                     self.Disp_plist_name.grid_forget()
+                if self.cutdown == 6 or self.cutdown == 4 or self.cutdown == 2 or self.cutdown == 0 or self.cutdown >= 7:
+                    self.Button_Next_AZ.config(text = "Info", bg = "light blue", fg = "black")
+                else:
+                    self.Button_Next_AZ.config(text = "Info",fg = "gray", bg = self.btn_color)
 
                 if self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and self.cutdown != 6 :
                     if self.touchscreen == 1:
@@ -7431,7 +7483,6 @@ class MP3Player(Frame):
                 self.Button_Next_Album.grid_forget()
                 self.Button_Prev_Track.grid_forget()
                 self.Button_Next_Track.grid_forget()
-                self.Button_Next_AZ.config(text = "Info",fg = "gray", bg = self.btn_color)
                 self.Button_Shuffle.grid_forget()
                 if (self.cutdown == 0 or self.cutdown >= 7 or self.cutdown == 3 or self.cutdown == 2) and self.touchscreen == 1:
                     self.Button_Add_to_FAV.grid_forget()
@@ -7868,6 +7919,10 @@ class MP3Player(Frame):
                     with open("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt", "a") as f:
                         f.write("%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " " + self.tname + "\n")
                     self.old_tname = self.tname
+                elif self.tname != self.old_tname and self.Radio_ON == 1 and self.sr == 1: ###
+                    with open("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt", "a") as f:
+                        f.write(self.tname + "\n")
+                    self.old_tname = self.tname
             elif self.track_nameX[self.counter][0:3] == " - " and self.track_nameX[self.counter] != " - .mp3":
                 self.tname = self.track_nameX[self.counter][:-4]
                 self.tname = re.sub("[^a-zA-Z0-9- &!()',.]+", '',self.tname)
@@ -8046,9 +8101,9 @@ class MP3Player(Frame):
 
     def PopupInfo(self):
         # show info.txt, other .txt or .m3u file
-        if self.Radio_ON == 0 or self.Radio_RON == 1 :
+        if self.Radio_ON == 0 or self.Radio_ON == 1 :
             ipath = ""
-            if self.Radio_RON == 1 or self.drive_name1 == "run":
+            if self.Radio_ON == 1 or self.drive_name1 == "run":
                 ipath = "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings"
             elif len(self.tunes) > 0:
                 ipath = "/" + self.drive_name1 + "/" + self.drive_name2 + "/"
