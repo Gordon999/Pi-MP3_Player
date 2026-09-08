@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.48
+version = 18.49
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -1107,6 +1107,7 @@ class MP3Player(Frame):
         self.Button_Shutdown.bind("<Button-3>", self.right_click)
         self.Button_Pause.bind("<Button-3>", self.reduce_time)
         self.Button_Sleep.bind("<Button-3>", self.sleep_off)
+        self.Button_Prev_Artist.bind("<Button-3>", self.read_radio_stations)
         if (self.cutdown == 0 or self.cutdown == 2 or self.cutdown == 3 or self.cutdown == 7 or self.cutdown == 8) and self.touchscreen == 1:
             self.Button_DELETE_m3u.bind("<Button-1>", self.left_delete)
             self.Button_DELETE_m3u.bind("<Button-3>", self.right_delete)
@@ -1129,7 +1130,39 @@ class MP3Player(Frame):
             elif self.cutdown == 4:
                 self.progress=ttk.Progressbar(self.Frame10,style="LabeledProgressbar",orient=HORIZONTAL,length=77,mode='determinate')
                 self.progress.grid(row = 5, column = 4)    
-                         
+    
+    def read_radio_stations(self,a):
+		# read radio_stns.txt (Station Name,URL,X)
+        if os.path.exists ("radio_stns.txt"): 
+            with open("radio_stns.txt","r") as textobj:
+                line = textobj.readline()
+                while line:
+                    if line.count(",") == 2:
+                        a,b,c = line.split(",")
+                        if a[0:1] != "#":
+                            self.Radio_Stns.append(a)
+                            self.Radio_Stns.append(b)
+                            self.Radio_Stns.append(int(c.strip()))
+                    elif line.count(",") == 1:
+                        a,b = line.split(",")
+                        if a[0:1] != "#":
+                            self.Radio_Stns.append(a)
+                            self.Radio_Stns.append(b.strip())
+                            self.Radio_Stns.append(0)
+                    line = textobj.readline()
+                    
+        # read radio_stns.csv (Station Name,URL,X,)
+        elif os.path.exists ("radio_stns.csv"): 
+            with open("radio_stns.csv","r") as textobj:
+                line = textobj.readline()
+                while line:
+                    if line.count(",") == 3:
+                        a,b,c,d = line.split(",")
+                        self.Radio_Stns.append(a)
+                        self.Radio_Stns.append(b)
+                        self.Radio_Stns.append(int(c))
+                    line = textobj.readline()
+                                         
     def initUI(self):
         # find user
         self.h_user = "/home/" + os.getlogin( )
@@ -1331,37 +1364,9 @@ class MP3Player(Frame):
         if self.trace > 0:
             print(self.lver)
 
-        # read radio_stns.txt (Station Name,URL,X)
-        if os.path.exists ("radio_stns.txt"): 
-            with open("radio_stns.txt","r") as textobj:
-                line = textobj.readline()
-                while line:
-                    if line.count(",") == 2:
-                        a,b,c = line.split(",")
-                        if a[0:1] != "#":
-                            self.Radio_Stns.append(a)
-                            self.Radio_Stns.append(b)
-                            self.Radio_Stns.append(int(c.strip()))
-                    elif line.count(",") == 1:
-                        a,b = line.split(",")
-                        if a[0:1] != "#":
-                            self.Radio_Stns.append(a)
-                            self.Radio_Stns.append(b.strip())
-                            self.Radio_Stns.append(0)
-                    line = textobj.readline()
-                    
-        # read radio_stns.csv (Station Name,URL,X,)
-        elif os.path.exists ("radio_stns.csv"): 
-            with open("radio_stns.csv","r") as textobj:
-                line = textobj.readline()
-                while line:
-                    if line.count(",") == 3:
-                        a,b,c,d = line.split(",")
-                        self.Radio_Stns.append(a)
-                        self.Radio_Stns.append(b)
-                        self.Radio_Stns.append(int(c))
-                    line = textobj.readline()
-                    
+        # read Radio Stations file
+        self.read_radio_stations(0)
+                   
         # check Lasttrack3.txt exists, if not then write default values. Used for recalling last Radio Station ,volume etc, and restarting if using a Pi Zero.
         if not os.path.exists('Lasttrack3.txt'):
             with open('Lasttrack3.txt', 'w') as f:
@@ -4079,16 +4084,18 @@ class MP3Player(Frame):
             rems = glob.glob("/run/shm/music/*/*/*.cue")
             for x in range(0,len(rems)):
                 os.remove(rems[x])
-            self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
+            if self.usave < 2:
+                self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings","-a",self.Name], shell=False)
+            else:
+                self.r = subprocess.Popen(["streamripper",self.Radio_Stns[self.Radio + 1],"-r","--xs_offset=-2000","-z","-l","99999","-d","/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings"], shell=False)
             time.sleep(1)
             self.sr = 1
             if self.record == 1 and self.cutdown != 1 and self.cutdown != 4 and  self.cutdown != 5 and  self.cutdown != 6 and self.touchscreen == 1:
-                    self.L8.config(text = ".mp3")
+                self.L8.config(text = ".mp3")
             self.q = subprocess.Popen(["mplayer","http://localhost:8000"] , shell=False)
             track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
-            ttime = time.monotonic()
-            while len(track) == 0 and time.monotonic() - ttime < 2:
-                track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
+            time.sleep(2)
+            track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
             if len(track) == 0:
                 self.sr = 0
                 self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
@@ -4105,6 +4112,7 @@ class MP3Player(Frame):
             free2 = int((self.freeram1 - self.ram_min)/10) * 10
             self.max_record = min(free2,990)
             self.ramtest = 1
+            self.Check_Record() ###
 
         elif self.Radio_ON == 1 and self.Radio_RON == 1 and self.sr  > 0 and self.record == 1:
             if self.trace > 0:
@@ -6877,7 +6885,7 @@ class MP3Player(Frame):
                 self.Button_Sleep.config(fg = "yellow", bg = "red", text = str(int((self.sleep_time_min - (time.monotonic() - self.begin)))) + " s")
             if self.sleep_current < 1:
                 self.Button_Sleep.config(bg = "red")
-        if (time.monotonic() - self.begin > self.sleep_time_min) and self.sleep_time > 0 and self.shutdown == 1 and self.Radio_RON == 0 and self.usave == 1:
+        if (time.monotonic() - self.begin > self.sleep_time_min) and self.sleep_time > 0 and self.shutdown == 1 and self.Radio_RON == 0 and self.usave > 0:
             os.system("shutdown -h now")
         if (time.monotonic() - self.begin > self.sleep_time_min) and self.sleep_time > 0 and self.shutdown == 1 and self.Radio_RON == 0:
             if self.R_Stopped == 0:
@@ -7617,7 +7625,6 @@ class MP3Player(Frame):
                 free2 = int((self.freeram1 - self.ram_min)/10) * 10
                 self.max_record = min(free2,991)
                 self.ramtest = 1
-                
                 self.Check_Record()
 
     def Check_Record(self):
@@ -7639,7 +7646,8 @@ class MP3Player(Frame):
                     self.L3.config(text ="%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " / " + "%03d:%02d" % (self.t_minutes, self.t_seconds % 60),fg = "red")
             self.roldsecs = self.r_seconds
             rec_stat = 0
-            rec_stat = (os.stat("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".mp3").st_size)/1000000
+            if self.usave == 0:
+                rec_stat = (os.stat("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".mp3").st_size)/1000000
             self.record_current = int((self.record_time_min - (time.monotonic() - self.rec_begin))/60)
             if self.record_current > 0:
                 if self.rot_pos == 9:
@@ -7721,24 +7729,26 @@ class MP3Player(Frame):
           USB_Files = (os.listdir(self.m_user + ""))
           if len(USB_Files) > 0:
             st1 = os.statvfs(self.m_user + "/" + USB_Files[0])
-            free1 = (st1.f_bavail * st1.f_frsize)/1100000
+            free1 = st1.f_blocks * st1.f_frsize
             free = free1
             if len(USB_Files) > 1:
                 st2 = os.statvfs(self.m_user + "/" + USB_Files[1])
-                free2 = (st2.f_bavail * st2.f_frsize)/1100000
-                if free2 > free1:
+                free2 = st2.f_blocks * st2.f_frsize
+                if free2 < free1:
                     free = free2
                     del USB_Files[0]
                     if len(USB_Files) > 1:
                         st3 = os.statvfs(self.m_user + "/" + USB_Files[1])
-                        free3 = (st3.f_bavail * st3.f_frsize)/1100000
-                        if free3 > free:
+                        free3 = st2.f_blocks * st2.f_frsize
+                        if free3 < free:
                             free = free3
                             del USB_Files[0]
+            st1 = os.statvfs(self.m_user + "/" + USB_Files[0])
+            freer = (st1.f_bavail * st1.f_frsize)/1100000
             stn1 = self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio]
             stn2 = self.m_user + "/" + USB_Files[0] + "/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/"
             file_size = os.path.getsize("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".mp3")
-            if free * 1000000 > file_size:
+            if freer * 1000000 > file_size:
                 if not os.path.exists(stn1):
                     os.system ("mkdir " + "'" + stn1 + "'")
                     time.sleep(1)
@@ -7765,7 +7775,7 @@ class MP3Player(Frame):
         self.total_record = 0
         rems = glob.glob("/run/shm/music/*/*/*/*/*.mp3")
         for x in range(0,len(rems)):
-            if self.usave == 1:
+            if self.usave > 0:
                 shutil.copy(rems[x],self.h_user + "/Music/")
             os.remove(rems[x])
         rems = glob.glob("/run/shm/music/*/*/*.cue")
@@ -7915,12 +7925,13 @@ class MP3Player(Frame):
                         self.Disp_album_name.config(text = self.tbits[1])
                     else:
                         self.Disp_track_name.config(text = self.tname)
-                if self.tname != self.old_tname and self.Radio_RON == 1:
-                    with open("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt", "a") as f:
+                fname = "/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt"
+                if ((self.tname != self.old_tname and self.Radio_RON == 1) or not os.path.exists(fname)) and self.usave < 2:
+                    with open(fname, "a") as f:
                         f.write("%03d:%02d" % (self.r_minutes, self.r_seconds % 60) + " " + self.tname + "\n")
                     self.old_tname = self.tname
-                elif self.tname != self.old_tname and self.Radio_ON == 1 and self.sr == 1: ###
-                    with open("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt", "a") as f:
+                elif (self.tname != self.old_tname and self.Radio_ON == 1 and self.sr == 1) or not os.path.exists(fname): 
+                    with open(fname, "a") as f:
                         f.write(self.tname + "\n")
                     self.old_tname = self.tname
             elif self.track_nameX[self.counter][0:3] == " - " and self.track_nameX[self.counter] != " - .mp3":
@@ -7985,34 +7996,38 @@ class MP3Player(Frame):
         rems = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/*.mp3" )
         USB_Files = []
         USB_Files = (os.listdir(self.m_user + ""))
-        if len(rems) > 0 and len(USB_Files) > 0 and self.Radio_RON == 1 and self.usave == 1 and self.Radio_Stns[self.Radio + 2] > 1:
+        if len(rems) > 0 and len(USB_Files) > 0 and self.Radio_RON == 1 and self.usave > 0 and self.sr == 1:
             self.copy = 1
             USB_Files = []
             USB_Files = (os.listdir(self.m_user + ""))
             if self.trace > 0:
                 print("usbs",USB_Files)
-            st1 = os.statvfs(self.m_user + "/" + USB_Files[0])
-            free = (st1.f_bavail * st1.f_frsize)/1100000
             try:
-                if len(USB_Files) > 1:
-                    st2 = os.statvfs(self.m_user + "/" + USB_Files[1])
-                    free2 = (st2.f_bavail * st2.f_frsize)/1100000
-                    if free2 > free:
-                        free = free2
-                        del USB_Files[0]
-                        if len(USB_Files) > 1:
-                            st3 = os.statvfs(self.m_user + "/" + USB_Files[1])
-                            free3 = (st3.f_bavail * st3.f_frsize)/1100000
-                            if free3 > free:
-                                free = free3
-                                del USB_Files[0]
+                if len(USB_Files) > 0:
+                    st1 = os.statvfs(self.m_user + "/" + USB_Files[0])
+                    free1 = st1.f_blocks * st1.f_frsize
+                    free = free1
+                    if len(USB_Files) > 1:
+                        st2 = os.statvfs(self.m_user + "/" + USB_Files[1])
+                        free2 = st2.f_blocks * st2.f_frsize
+                        if free2 < free1:
+                            free = free2
+                            del USB_Files[0]
+                            if len(USB_Files) > 1:
+                                st3 = os.statvfs(self.m_user + "/" + USB_Files[1])
+                                free3 = st2.f_blocks * st2.f_frsize
+                                if free3 < free:
+                                    free = free3
+                                    del USB_Files[0]
             except:
                 pass
+            st1 = os.statvfs(self.m_user + "/" + USB_Files[0])
+            freer = (st1.f_bavail * st1.f_frsize)/1100000
             if self.cutdown >= 7:
-                self.L3.config(text = "Drive: " + USB_Files[0] + " - " + str(int(free)) + "MB")
+                self.L3.config(text = "Drive: " + USB_Files[0] + " - " + str(int(freer)) + "MB")
             if self.cutdown != 4 and self.cutdown != 5 and self.cutdown != 6 and self.cutdown != 1 and self.cutdown < 7:
                 self.L5.config(text = "Drive: " + USB_Files[0])
-                self.L6.config(text = "USB: " + str(int(free)) + "MB")
+                self.L6.config(text = "USB: " + str(int(freer)) + "MB")
             if self.trace > 0:
                 print ("Copy Indies")
             for v in range(0,len(rems)):
@@ -8022,7 +8037,7 @@ class MP3Player(Frame):
                 if self.trace > 0:
                     print(trame)
                 if trame[0:10] != 'Commercial' and trame[0:7] != 'Unknown' and trame[0:6] != ' - AD ' and trame[0:6] != ' - ADS' and trame[0:8] != ' - STOP ' and trame[0:9] != ' - START ' and trame[0:11] != 'BFBS - Edge':
-                    if self.Radio_Stns[self.Radio + 2] == 0:
+                    if self.Radio_Stns[self.Radio + 2] < 2:
                         count2 = trame.count(' - ')
                         names = trame.split(' - ',count2)
                     elif self.Radio_Stns[self.Radio + 2] == 2:
@@ -8094,7 +8109,7 @@ class MP3Player(Frame):
                                 tags.save(self.m_user + "/" + USB_Files[0] + "/" + artist + "/Radio_Recordings/" + track)
  
         # ======================================================================================================================
-        if self.usave == 1 or self.rmtracks == 1:
+        if self.usave > 0 or self.rmtracks == 1:
             rems = glob.glob("/run/shm/music/*/*/*/*.mp3")
             for x in range(0,len(rems)):
                 os.remove(rems[x])
@@ -8244,6 +8259,7 @@ def main():
     elif root.winfo_screenwidth() == 640 and root.winfo_screenheight() == 480:
         root.geometry("640x480")
         cutdown = 2
+    root.title("MP3 Player v" + str(version))
     if fullscreen == 1:
         root.wm_attributes('-fullscreen','true')
     scr_width  = root.winfo_screenwidth()
