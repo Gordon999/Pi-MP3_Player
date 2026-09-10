@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.49
+version = 18.51
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -1107,7 +1107,9 @@ class MP3Player(Frame):
         self.Button_Shutdown.bind("<Button-3>", self.right_click)
         self.Button_Pause.bind("<Button-3>", self.reduce_time)
         self.Button_Sleep.bind("<Button-3>", self.sleep_off)
-        self.Button_Prev_Artist.bind("<Button-3>", self.read_radio_stations)
+        self.Button_Sleep.bind("<Button-2>", self.sleep_stop)
+        self.Button_Next_AZ.bind("<Button-3>", self.prevAZ)
+        self.Button_Reload.bind("<Button-3>", self.read_radio_stations)
         if (self.cutdown == 0 or self.cutdown == 2 or self.cutdown == 3 or self.cutdown == 7 or self.cutdown == 8) and self.touchscreen == 1:
             self.Button_DELETE_m3u.bind("<Button-1>", self.left_delete)
             self.Button_DELETE_m3u.bind("<Button-3>", self.right_delete)
@@ -1203,6 +1205,7 @@ class MP3Player(Frame):
         self.dim            = 0.1  # Backlight dim 
         self.bright         = 0.8  # Backlight bright , 1 full brightness
         self.waveshare      = 0    # set to 1 if using a Waveshare 2.8" (A) LCD display with buttons
+        self.shutdown_sleep = 1    # set to 1 to SHUTDOWN at end of SLEEP period
         
         # initial parameters
         self.trace          = 0
@@ -1320,6 +1323,8 @@ class MP3Player(Frame):
         self.sr             = 0
         self.btn_color      = btn_color
         self.bg_image       = bg_image
+        self.r_minutes      = 0
+        self.r_seconds      = 1
         
         # define buttons for rotary encoder
         if self.cutdown == 0 or self.cutdown == 2 or self.cutdown >= 7 or self.cutdown == 8:
@@ -5993,14 +5998,11 @@ class MP3Player(Frame):
             self.ramtest = 1
             self.Check_Record()
 
-
-    def prevAZ(self):
+    def prevAZ(self,a):
         if (self.Radio_RON == 1 or self.album_start == 1 or self.stopstart == 1):
             self.PopupInfo()
             if self.rotary_pos == 1:
                 self.Button_Next_AZ.config(bg = "yellow")
-            #else:
-            #    self.Button_Next_AZ.config(bg = "orange")
         elif self.album_start == 0 and self.stopstart == 0 and len(self.tunes) > 1 and self.Radio_ON == 0:
             stop = 0
             if self.wheel_opt == 0 or self.wheel_opt == 3 or self.rot_mode == 2:
@@ -6063,7 +6065,6 @@ class MP3Player(Frame):
             track = glob.glob("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/*/incomplete/*.mp3")
             if len(track) == 0:
                 self.sr = 0
-                #if self.rotary_pos== 0:
                 self.Button_Pause.config(bg  = "light gray", fg = "gray", text = "Pause")
                 self.q.kill()
                 self.r.kill()
@@ -6816,7 +6817,7 @@ class MP3Player(Frame):
             if self.sleep_time == 0:
                 self.Check_Sleep()
             self.begin = time.monotonic()
-            self.sleep_time = int(self.sleep_time + 15.99)
+            self.sleep_time = int(self.sleep_time + 1.99) ###
             if self.sleep_time > self.max_sleep:
                 self.sleep_time = 0
                 self.album_sleep = 0
@@ -6866,7 +6867,18 @@ class MP3Player(Frame):
             self.sleep_time = 0
             self.sleep_time_min = 0
             self.album_sleep = 0
-            self.Button_Sleep.config(bg = "light blue", text = "SLEEP")
+            if self.shutdown_sleep == 0:
+                self.Button_Sleep.config(bg = "light blue", text = "SLEEP", foreground="black")
+            elif self.shutdown_sleep == 1:
+                self.Button_Sleep.config(bg = "light blue", text = "SLEEP", foreground="red")
+            
+    def sleep_stop(self,a):
+        if self.shutdown_sleep == 1:
+            self.shutdown_sleep = 0
+            self.Button_Sleep.config(bg = "light blue", text = "SLEEP", foreground="red")
+        elif self.shutdown_sleep == 0:
+            self.shutdown_sleep = 1
+            self.Button_Sleep.config(bg = "light blue", text = "SLEEP", foreground="black")
  
     def Check_Sleep(self):
         if self.trace > 0:
@@ -6886,10 +6898,23 @@ class MP3Player(Frame):
             if self.sleep_current < 1:
                 self.Button_Sleep.config(bg = "red")
         if (time.monotonic() - self.begin > self.sleep_time_min) and self.sleep_time > 0 and self.shutdown == 1 and self.Radio_RON == 0 and self.usave > 0:
-            os.system("shutdown -h now")
+            if self.shutdown_sleep == 1:
+                os.system("shutdown -h now")
+            else:
+                self.Stop_Play()
         if (time.monotonic() - self.begin > self.sleep_time_min) and self.sleep_time > 0 and self.shutdown == 1 and self.Radio_RON == 0:
             if self.R_Stopped == 0:
-                os.system("shutdown -h now")
+                if self.shutdown_sleep == 1:
+                    os.system("shutdown -h now")
+                elif self.Radio_ON == 1:
+                    self.RadioX()
+                    self.shutdown = 0
+                    self.sleep_time = 0
+                    self.sleep_time_min = 0
+                    self.album_sleep = 0
+                    self.Button_Sleep.config(bg = "light blue", text = "SLEEP", fg = "black")
+                else:
+                    self.Stop_Play()
             else:
                 self.shutdown = 0
                 self.sleep_time = 0
@@ -6954,7 +6979,6 @@ class MP3Player(Frame):
                                 self.artist_name,self.album_name = self.album_name3.split(" - ")
                                 self.tunes.append(self.artist_name + "^" + self.album_name + "^" + self.track_name + "^" + self.artist_name3 + "^" + self.drive_name2 + "^" + self.drive_name + "^" + self.genre_name)
                     self.Disp_plist_name.config(text=" " + self.que_dir[len(self.m3u_dir):])
-                    #self.Disp_Total_tunes.config(text =len(self.tunes))
                     self.track_no = 0
                     self.shuffle_on = 0
                     self.Button_Shuffle.config(bg = "light blue",fg = "black",text = "Shuffle")
@@ -7836,9 +7860,9 @@ class MP3Player(Frame):
         self.RadioX()
 
     def Get_track(self,x):
-        #get track name, if available.
         if self.trace > 2:
             print ("Get Track")
+            
         # determine max recording time based on stream rate
         if time.monotonic() - self.timer7 >= 30 and self.ramtest == 1 and self.Radio_RON == 1:
             self.ramtest = 0
@@ -7863,7 +7887,8 @@ class MP3Player(Frame):
                 self.LCD_pwm.value = self.dim
             if self.Pi7_backlight == 1:
                 os.system("rpi-backlight -b 0")
-            
+        
+        # get track name    
         self.Radio_Stns2 = self.Radio_Stns[self.Radio]
         track = sorted(glob.glob("/run/shm/music/" + self.Radio_Stns2 + "/Radio_Recordings/*/incomplete/*.mp3"),key = os.path.getmtime, reverse=True)
         if self.trace > 2:
@@ -8002,6 +8027,7 @@ class MP3Player(Frame):
             USB_Files = (os.listdir(self.m_user + ""))
             if self.trace > 0:
                 print("usbs",USB_Files)
+            # find smallest USB stick available
             try:
                 if len(USB_Files) > 0:
                     st1 = os.statvfs(self.m_user + "/" + USB_Files[0])
@@ -8021,6 +8047,7 @@ class MP3Player(Frame):
                                     del USB_Files[0]
             except:
                 pass
+            # find USB stick free space
             st1 = os.statvfs(self.m_user + "/" + USB_Files[0])
             freer = (st1.f_bavail * st1.f_frsize)/1100000
             if self.cutdown >= 7:
