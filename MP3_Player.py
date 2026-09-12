@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.51
+version = 18.52
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -1082,6 +1082,7 @@ class MP3Player(Frame):
             self.Disp_plist_name.config(text=" " + self.que_dir[len(self.m3u_dir):])
     
     def menuX(self):
+        # setup menu
         if self.trace == 1:
             print( "MENU",self.cutdown)
         if self.cutdown == 0:
@@ -1102,14 +1103,16 @@ class MP3Player(Frame):
             self.menu7()   
         elif self.cutdown == 8:
             self.menu8()   
-            
+        
+        #define bind buttons    
         self.Button_Shutdown.bind("<Button-1>", self.left_click)
         self.Button_Shutdown.bind("<Button-3>", self.right_click)
         self.Button_Pause.bind("<Button-3>", self.reduce_time)
         self.Button_Sleep.bind("<Button-3>", self.sleep_off)
         self.Button_Sleep.bind("<Button-2>", self.sleep_stop)
         self.Button_Next_AZ.bind("<Button-3>", self.prevAZ)
-        self.Button_Reload.bind("<Button-3>", self.read_radio_stations)
+        self.Button_Reload.bind("<Button-2>", self.read_radio_stations)
+        self.Button_Reload.bind("<Button-3>", self.SKIP_BACK)
         if (self.cutdown == 0 or self.cutdown == 2 or self.cutdown == 3 or self.cutdown == 7 or self.cutdown == 8) and self.touchscreen == 1:
             self.Button_DELETE_m3u.bind("<Button-1>", self.left_delete)
             self.Button_DELETE_m3u.bind("<Button-3>", self.right_delete)
@@ -1135,6 +1138,7 @@ class MP3Player(Frame):
     
     def read_radio_stations(self,a):
 		# read radio_stns.txt (Station Name,URL,X)
+        self.Radio_Stns = Radio_Stns
         if os.path.exists ("radio_stns.txt"): 
             with open("radio_stns.txt","r") as textobj:
                 line = textobj.readline()
@@ -1284,7 +1288,6 @@ class MP3Player(Frame):
         self.rotary_vol     = rotary_vol
         self.touchscreen    = touchscreen
         self.ext_buttons    = ext_buttons
-        self.Radio_Stns     = Radio_Stns
         self.tname          = "Unknown"
         self.auto_rec_set   = 0
         self.auto_play      = 0
@@ -1324,7 +1327,7 @@ class MP3Player(Frame):
         self.btn_color      = btn_color
         self.bg_image       = bg_image
         self.r_minutes      = 0
-        self.r_seconds      = 1
+        self.r_seconds      = 0
         
         # define buttons for rotary encoder
         if self.cutdown == 0 or self.cutdown == 2 or self.cutdown >= 7 or self.cutdown == 8:
@@ -3709,7 +3712,7 @@ class MP3Player(Frame):
                dtime = names[x][0:6]
                dname = names[x][7:]
                pstime = int(dtime[0:3]) * 60 + int(dtime[4:6])
-               if (self.p_minutes * 60) + self.p_seconds > pstime and dtime != "000:00":
+               if (self.p_minutes * 60) + self.p_seconds > pstime and dtime != "999:99":
                    if self.cutdown >= 7:
                        self.Disp_track_name.set(dname)
                    else:
@@ -6199,6 +6202,46 @@ class MP3Player(Frame):
                      self.track_no = 0
                      stop = 1
         self.Time_Left_Play()
+        
+    def SKIP_BACK(self,a):
+        if self.trace > 0:
+            print ("SKIP Back")
+        if len(self.tunes) > 0 and self.track2 != "":
+            # skip backwards (previous track if .txt file available, eg radio recording)
+            if os.path.exists(self.track2) and self.paused == 0 and (self.album_start == 1 or self.stopstart == 1) and self.Radio_ON == 0:
+               names = []
+               with open(self.track2, "r") as file:
+                   line = file.readline()
+                   while line:
+                       names.append(line.strip())
+                       line = file.readline()
+               x = len(names) - 1
+               stop = 0
+               while x > 0 and stop == 0:
+                   dtime = names[x][0:6]
+                   dname = names[x][7:]
+                   pstime = int(dtime[0:3]) * 60 + int(dtime[4:6])
+                   if (self.p_minutes * 60) + self.p_seconds >= pstime and dtime != "999:99":
+                       dtime = names[x-1][0:6]
+                       dname = names[x-1][7:]
+                       pstime = int(dtime[0:3]) * 60 + int(dtime[4:6])
+                       player.time_pos = pstime
+                       self.start += self.played - pstime
+                       self.total += self.played - pstime
+                       stop = 1
+                   x -=1
+            
+            # skip backwards (1/10 of track)
+            elif self.paused == 0 and (self.album_start == 1 or self.stopstart == 1) and self.Radio_ON == 0:
+               if self.play == 1 and self.version == 2 and self.paused == 0:
+                   self.skip = int(self.track_len/10)
+                   if self.played - self.skip > self.skip:
+                       self.start += self.skip
+                       self.total += self.skip
+                       if self.sleep_time_min > self.skip and self.shutdown == 1 and self.album_start == 1:
+                           self.sleep_time_min -= self.skip
+                       if self.BT == 0:
+                           player.time_pos = self.played - self.skip
       
     def RELOAD_List(self):
         if self.trace > 0:
@@ -6218,7 +6261,7 @@ class MP3Player(Frame):
                    dtime = names[x][0:6]
                    dname = names[x][7:]
                    pstime = int(dtime[0:3]) * 60 + int(dtime[4:6])
-                   if (self.p_minutes * 60) + self.p_seconds < pstime and dtime != "000:00":
+                   if (self.p_minutes * 60) + self.p_seconds <= pstime and dtime != "999:99":
                        player.time_pos = pstime
                        self.start -= pstime - self.played
                        self.total -= pstime - self.played
@@ -8063,7 +8106,7 @@ class MP3Player(Frame):
                 trame = data[count]
                 if self.trace > 0:
                     print(trame)
-                if trame[0:10] != 'Commercial' and trame[0:7] != 'Unknown' and trame[0:6] != ' - AD ' and trame[0:6] != ' - ADS' and trame[0:8] != ' - STOP ' and trame[0:9] != ' - START ' and trame[0:11] != 'BFBS - Edge':
+                if trame[0:10] != 'Commercial' and trame[0:7] != 'Unknown' and trame[0:3] != ' - ' and trame[0:6] != ' - AD ' and trame[0:6] != ' - ADS' and trame[0:8] != ' - STOP ' and trame[0:9] != ' - START ' and trame[0:11] != 'BFBS - Edge':
                     if self.Radio_Stns[self.Radio + 2] < 2:
                         count2 = trame.count(' - ')
                         names = trame.split(' - ',count2)
@@ -8115,7 +8158,7 @@ class MP3Player(Frame):
                                 with open(self.m3u_dir + self.m3u_def + ".m3u", 'a') as f:
                                     f.write(upath + "\n")
                                 with open("/run/shm/music/" + self.Radio_Stns[self.Radio] + "/Radio_Recordings/" + self.Name + ".txt", "a") as f:
-                                    f.write("000:00 SAVED!: " + artist + "/Radio_Recordings/" + track + "\n")
+                                    f.write("999:99 SAVED!: " + artist + "/Radio_Recordings/" + track + "\n")
                                 self.tunes.sort()
                                 time.sleep(1)
                                 tcount = len(glob.glob(self.m_user + "/" + USB_Files[0] + "/" + artist + "/Radio_Recordings/*.mp3"))
