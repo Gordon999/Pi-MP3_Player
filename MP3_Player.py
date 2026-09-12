@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.52
+version = 18.53
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -3712,7 +3712,7 @@ class MP3Player(Frame):
                dtime = names[x][0:6]
                dname = names[x][7:]
                pstime = int(dtime[0:3]) * 60 + int(dtime[4:6])
-               if (self.p_minutes * 60) + self.p_seconds > pstime and dtime != "999:99":
+               if (self.p_minutes * 60) + self.p_seconds >= pstime and dtime != "999:99":
                    if self.cutdown >= 7:
                        self.Disp_track_name.set(dname)
                    else:
@@ -6213,7 +6213,8 @@ class MP3Player(Frame):
                with open(self.track2, "r") as file:
                    line = file.readline()
                    while line:
-                       names.append(line.strip())
+                       if line[0:6] != "999:99":
+                           names.append(line.strip())
                        line = file.readline()
                x = len(names) - 1
                stop = 0
@@ -6253,7 +6254,8 @@ class MP3Player(Frame):
                with open(self.track2, "r") as file:
                    line = file.readline()
                    while line:
-                       names.append(line.strip())
+                       if line[0:6] != "999:99":
+                           names.append(line.strip())
                        line = file.readline()
                x = 0
                stop = 0
