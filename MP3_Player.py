@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.56
+version = 18.57
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -1862,7 +1862,7 @@ class MP3Player(Frame):
                 if self.rot_mode == 2 and self.rot_pos == 2:
                     self.wheel_opt = 0
                     self.Prev_Artist()
-                elif self.rot_pos == 11 and self.rot_mode == 1:###
+                elif self.rot_mode == 1 and self.rot_pos == 11:
                     self.SKIP_BACK(0)
                 elif self.rot_mode == 1 and self.rot_pos == 1:
                     self.wheel_opt = 1
@@ -1874,7 +1874,7 @@ class MP3Player(Frame):
                     self.nextAZ()
                 elif self.rot_mode == 1 and self.rot_pos == 2:
                     self.wheel_opt = 0
-                    self.prevAZ(0)
+                    self.Prev_Artist()
                 elif self.rot_mode == 1 and self.rot_pos == 12:
                     self.wheel_opt = 3
                     self.Next_m3u()
@@ -2111,7 +2111,7 @@ class MP3Player(Frame):
                     self.nextAZ()
                 elif self.rot_mode == 1 and self.rot_pos == 2:
                     self.wheel_opt = 0
-                    self.nextAZ()
+                    self.Next_Artist()
                 elif self.rot_mode == 1 and self.rot_pos == 12:
                     self.wheel_opt = 3
                     self.Next_m3u()
@@ -5818,7 +5818,7 @@ class MP3Player(Frame):
              self.Show_Track()
 
     def nextAZ(self):
-        if (self.Radio_ON == 1 or self.album_start == 1 or self.stopstart == 1):
+        if (self.Radio_ON == 1 or self.album_start == 1 or self.stopstart == 1) and self.rotary_pos == 0:
             self.PopupInfo()
             if self.rotary_pos == 1:
                 self.Button_Next_AZ.config(bg = "yellow")
@@ -6013,11 +6013,11 @@ class MP3Player(Frame):
             self.Check_Record()
 
     def prevAZ(self,a):
-        if (self.Radio_RON == 1 or self.album_start == 1 or self.stopstart == 1):
+        if (self.Radio_RON == 1 or self.album_start == 1 or self.stopstart == 1) and self.rotary_pos == 0:
             self.PopupInfo()
             if self.rotary_pos == 1:
                 self.Button_Next_AZ.config(bg = "yellow")
-        elif self.album_start == 0 and self.stopstart == 0 and len(self.tunes) > 1 and self.Radio_ON == 0:
+        if self.album_start == 0 and self.stopstart == 0 and len(self.tunes) > 1 and self.Radio_ON == 0:
             stop = 0
             if self.wheel_opt == 0 or self.wheel_opt == 3 or self.rot_mode == 2:
                 while (self.tunes[self.track_no].split('^')[0][0]) == self.artist_name[0] and stop == 0:
