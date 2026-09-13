@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.55
+version = 18.56
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -6873,7 +6873,7 @@ class MP3Player(Frame):
             if self.sleep_time == 0:
                 self.Check_Sleep()
             self.begin = time.monotonic()
-            self.sleep_time = int(self.sleep_time + 1.99) ###
+            self.sleep_time = int(self.sleep_time + 15.99) 
             if self.sleep_time > self.max_sleep:
                 self.sleep_time = 0
                 self.album_sleep = 0
