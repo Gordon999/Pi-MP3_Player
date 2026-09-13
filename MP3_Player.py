@@ -5818,7 +5818,7 @@ class MP3Player(Frame):
              self.Show_Track()
 
     def nextAZ(self):
-        if (self.Radio_ON == 1 or self.album_start == 1 or self.stopstart == 1) and self.rotary_pos == 0:
+        if (self.Radio_ON == 1 or self.album_start == 1 or self.stopstart == 1):
             self.PopupInfo()
             if self.rotary_pos == 1:
                 self.Button_Next_AZ.config(bg = "yellow")
@@ -6013,7 +6013,7 @@ class MP3Player(Frame):
             self.Check_Record()
 
     def prevAZ(self,a):
-        if (self.Radio_RON == 1 or self.album_start == 1 or self.stopstart == 1) and self.rotary_pos == 0:
+        if (self.Radio_RON == 1 or self.album_start == 1 or self.stopstart == 1):
             self.PopupInfo()
             if self.rotary_pos == 1:
                 self.Button_Next_AZ.config(bg = "yellow")
