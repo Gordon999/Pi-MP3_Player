@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.53
+version = 18.55
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -1862,6 +1862,8 @@ class MP3Player(Frame):
                 if self.rot_mode == 2 and self.rot_pos == 2:
                     self.wheel_opt = 0
                     self.Prev_Artist()
+                elif self.rot_pos == 11 and self.rot_mode == 1:###
+                    self.SKIP_BACK(0)
                 elif self.rot_mode == 1 and self.rot_pos == 1:
                     self.wheel_opt = 1
                     self.Prev_Album()
@@ -1869,11 +1871,10 @@ class MP3Player(Frame):
                     self.wheel_opt = 2
                     self.Prev_Track()
                 elif self.rot_mode == 1 and self.rot_pos == 6:
-                    #self.wheel_opt = 0
                     self.nextAZ()
                 elif self.rot_mode == 1 and self.rot_pos == 2:
                     self.wheel_opt = 0
-                    self.prevAZ()
+                    self.prevAZ(0)
                 elif self.rot_mode == 1 and self.rot_pos == 12:
                     self.wheel_opt = 3
                     self.Next_m3u()
@@ -2098,6 +2099,8 @@ class MP3Player(Frame):
                 if self.rot_mode == 2 and self.rot_pos == 2:
                     self.wheel_opt = 0
                     self.Next_Artist()
+                elif self.rot_pos == 11 and self.rot_mode == 1:###
+                    self.RELOAD_List()
                 elif self.rot_mode == 1 and self.rot_pos == 1:
                     self.wheel_opt = 1
                     self.Next_Album()
@@ -2268,9 +2271,8 @@ class MP3Player(Frame):
             elif self.rot_pos == 10:
                 self.rot_mode = 0
                 self.sleep()
-            elif self.rot_pos == 11: # skip forward
-                self.rot_mode = 0
-                self.RELOAD_List()
+            elif self.rot_pos == 11: # skip forward / backwards
+                self.Button_Reload.config(bg = '#c5c')
             elif self.rot_pos == 12:
                 self.Button_Prev_PList.config(bg = 'red')
             elif self.rot_pos == 13:
@@ -2290,6 +2292,14 @@ class MP3Player(Frame):
             if self.Pi7_backlight == 1:
                 os.system("rpi-backlight -b 100")
             self.Button_Prev_Artist.config(bg = 'red')
+            
+        elif self.gpio_enable == 2 and self.rotary_pos == 1 and self.button_next.is_pressed and self.rot_mode == 1 and self.rot_pos == 11 and (self.stopstart == 1 or self.album_start == 1) and self.Radio_ON == 0:
+            # Exit SKIP mode
+            self.rot_mode = 0
+            self.light_on = time.monotonic()
+            if self.Pi7_backlight == 1:
+                os.system("rpi-backlight -b 100")
+            self.Button_Reload.config(bg = 'yellow')
 
         elif self.gpio_enable == 2 and self.rotary_pos == 1 and self.button_next.is_pressed and self.rot_mode == 2 and self.rot_pos == 2 and self.stopstart == 0 and self.album_start == 0: # and self.Radio_ON == 0:
             # Exit Artist mode
@@ -3704,7 +3714,8 @@ class MP3Player(Frame):
            with open(self.track2, "r") as file:
                line = file.readline()
                while line:
-                   names.append(line.strip())
+                   if line[0:6] != "999:99":
+                       names.append(line.strip())
                    line = file.readline()
            x = len(names) - 1
            stop = 0
@@ -3712,7 +3723,7 @@ class MP3Player(Frame):
                dtime = names[x][0:6]
                dname = names[x][7:]
                pstime = int(dtime[0:3]) * 60 + int(dtime[4:6])
-               if (self.p_minutes * 60) + self.p_seconds >= pstime and dtime != "999:99":
+               if (self.p_minutes * 60) + self.p_seconds >= pstime:
                    if self.cutdown >= 7:
                        self.Disp_track_name.set(dname)
                    else:
@@ -6222,7 +6233,7 @@ class MP3Player(Frame):
                    dtime = names[x][0:6]
                    dname = names[x][7:]
                    pstime = int(dtime[0:3]) * 60 + int(dtime[4:6])
-                   if (self.p_minutes * 60) + self.p_seconds >= pstime and dtime != "999:99":
+                   if (self.p_minutes * 60) + self.p_seconds >= pstime:
                        dtime = names[x-1][0:6]
                        dname = names[x-1][7:]
                        pstime = int(dtime[0:3]) * 60 + int(dtime[4:6])
@@ -6263,7 +6274,7 @@ class MP3Player(Frame):
                    dtime = names[x][0:6]
                    dname = names[x][7:]
                    pstime = int(dtime[0:3]) * 60 + int(dtime[4:6])
-                   if (self.p_minutes * 60) + self.p_seconds <= pstime and dtime != "999:99":
+                   if (self.p_minutes * 60) + self.p_seconds <= pstime:
                        player.time_pos = pstime
                        self.start -= pstime - self.played
                        self.total -= pstime - self.played
@@ -7844,8 +7855,8 @@ class MP3Player(Frame):
         self.total_record = 0
         rems = glob.glob("/run/shm/music/*/*/*/*/*.mp3")
         for x in range(0,len(rems)):
-            if self.usave > 0:
-                shutil.copy(rems[x],self.h_user + "/Music/")
+            #if self.usave > 0:
+            #    shutil.copy(rems[x],self.h_user + "/Music/")
             os.remove(rems[x])
         rems = glob.glob("/run/shm/music/*/*/*.cue")
         for x in range(0,len(rems)):
