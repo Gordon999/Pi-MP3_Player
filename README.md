@@ -3,6 +3,8 @@ Pi-MP3_Player (cutdown 7 shown)
 
 ![screenshot](screenshot.jpg)
 
+v18.55 Skip Fwd & Back added for rotaries. Press encoder button then rotate, press again to exit.
+
 v18.52 Right mouse click on 'Skip Fwd' will skip BACKWARDS
 
 v18.48 Right mouse click on RECORD will decrease RECORD time, Right mouse click on SLEEP will turn it OFF.
