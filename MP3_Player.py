@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.59
+version = 18.61
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -1493,7 +1493,7 @@ class MP3Player(Frame):
                 self.button_start_next  = Button(self.start_next)
             if self.rotary_vol == 1:
                 from gpiozero import RotaryEncoder
-                self.rotor1 = RotaryEncoder(26,16, wrap=True, max_steps=99)
+                self.rotor1 = RotaryEncoder(20,16, wrap=True, max_steps=99)
                 self.mute               = 12  # external mute
                 self.button_mute        = Button(self.mute)
                 if self.ext_buttons == 1 and self.rotary_pos == 0:
