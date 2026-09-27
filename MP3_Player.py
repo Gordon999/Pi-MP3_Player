@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.61
+version = 18.62
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -3806,10 +3806,6 @@ class MP3Player(Frame):
                 self.stopstart  = 0
                 self.plist_trig = 0
                 self.album_trig = 0
-                #if self.cutdown != 1  and self.cutdown != 5 and self.model != 0 and self.cutdown != 6:
-                #    self.L9.config(text= "   ")
-                #    self.s.configure("LabeledProgressbar", text="0 %      ", background='red')
-                #    self.progress['value'] = 0
                 self.wheel_opt   = 0
                 self.album_start = 0
                 self.album_time  = 0 
@@ -3956,7 +3952,6 @@ class MP3Player(Frame):
                         self.s.configure("LabeledProgressbar", text="{0} %      ".format(int((self.played/self.track_len)*100)), background='blue')
                         self.progress['value'] = (self.played/self.track_len)*100
                 if self.p_seconds != self.oldsecs:
-                    #self.Disp_played.config(text ="%03d:%02d" % (self.p_minutes, self.p_seconds % 60),fg = "red")
                     minutes = int(self.track_len // 60)
                     seconds = int (self.track_len - (minutes * 60))
                     if self.cutdown != 1:
@@ -4025,9 +4020,10 @@ class MP3Player(Frame):
             else:
                 self.synced = 0
             USB_Files = []
-            USB_Files = (os.listdir(self.m_user + ""))
-            if self.trace > 0:
-                print("usbs",USB_Files)
+            if self.usave == 1:
+                USB_Files = (os.listdir(self.m_user + ""))
+                if self.trace > 0:
+                    print("usbs",USB_Files)
             self.rems2 = glob.glob("/run/shm/music/*/*/*/*/*.mp3")
             for x in range(0,len(self.rems2)):
                 os.remove(self.rems2[x])
