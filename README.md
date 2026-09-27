@@ -3,8 +3,6 @@ Pi-MP3_Player (cutdown 7 shown)
 
 ![screenshot](screenshot.jpg)
 
-v18.61 removed hidden buttons to suit updated tkinter
-
 v18.55 Skip Fwd & Back added for rotaries. Press encoder button then rotate, press again to exit.
 
 v18.52 Right mouse click on 'Skip Fwd' will skip BACKWARDS
