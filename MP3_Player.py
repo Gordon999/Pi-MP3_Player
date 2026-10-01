@@ -2,7 +2,7 @@
 
 # Pi_MP3_Player
 
-version = 18.62
+version = 18.64
 
 """Copyright (c) 2026
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,6 +28,7 @@ global rotary_pos
 global touchscreen
 global ext_buttons
 global Radio_Stns
+global rot1_clk
 
 # set display cutdown format
 # 0:800x480, 1:320x240,2:640x480,3:480x800,4:480x320,5:800x480 SIMPLE LAYOUT,only default Playlist
@@ -40,8 +41,9 @@ ext_buttons = 0 # set to 1 if using external buttons (see connections.jpg for wi
 touchscreen = 1 # set to 0 if using the rotary encoders and a non-touchscreen (hides non rotary buttons)
 bg_image    = 'backgnd.jpg' # background image
 btn_color   = 'grey85'      # button default colour
+rot1_clk    = 20 # set GPIO used for rotary_vol, set to 26 if using the Pi DAC Pro HAT, and change your wiring connection.       
 
-# Radio Stations List, add to them by adding a "Name","URL",0
+# Radio Stations List, add to them by adding a "Name","URL",0 or 1 (1 will swap Artist/Track Names)
 # or you can add more by putting them in a file called '/home/USERNAME/radio_stns.txt'
 Radio_Stns = ["Radio Paradise Rock (192)","http://stream.radioparadise.com/rock-192",0,
               "Radio Paradise Main (320)","http://stream.radioparadise.com/mp3-320",0,
@@ -49,7 +51,8 @@ Radio_Stns = ["Radio Paradise Rock (192)","http://stream.radioparadise.com/rock-
               "Radio Paradise World 192","http://stream.radioparadise.com/world-etc-192",0,
               "Radio Paradise World","http://stream.radioparadise.com/eclectic-flac",0,
               "Radio Caroline","http://sc6.radiocaroline.net:10558/",0,
-              "Radio Seagull","http://stream.radioseagull.net:8000/seagull",0
+              "Radio Seagull","http://stream.radioseagull.net:8000/seagull",0,
+              "Xenon Radio","http://uksoutha.streaming.broadcast.radio:21491/xenon-radio",0
              ]
 
 import tkinter as tk
@@ -1288,6 +1291,7 @@ class MP3Player(Frame):
         self.rotary_vol     = rotary_vol
         self.touchscreen    = touchscreen
         self.ext_buttons    = ext_buttons
+        self.rot1_clk       = rot1_clk
         self.tname          = "Unknown"
         self.auto_rec_set   = 0
         self.auto_play      = 0
@@ -1481,7 +1485,7 @@ class MP3Player(Frame):
             if self.rotary_pos == 0 and self.rotary_vol == 0 and self.ext_buttons == 1:
                 self.voldn              = 16 # external volume down gpio input
                 self.volup              = 12 # external volume up gpio input
-                self.mute               = 20  # external mute gpio input
+                self.mute               = self.rot1_clk  # external mute gpio input
                 self.button_voldn       = Button(self.voldn)
                 self.button_mute        = Button(self.mute)
                 self.button_volup       = Button(self.volup)
@@ -1493,7 +1497,7 @@ class MP3Player(Frame):
                 self.button_start_next  = Button(self.start_next)
             if self.rotary_vol == 1:
                 from gpiozero import RotaryEncoder
-                self.rotor1 = RotaryEncoder(20,16, wrap=True, max_steps=99)
+                self.rotor1 = RotaryEncoder(self.rot1_clk,16, wrap=True, max_steps=99)
                 self.mute               = 12  # external mute
                 self.button_mute        = Button(self.mute)
                 if self.ext_buttons == 1 and self.rotary_pos == 0:
@@ -1512,7 +1516,7 @@ class MP3Player(Frame):
                 if self.ext_buttons == 1 and self.rotary_vol == 0:
                     self.voldn              = 16 # external volume down gpio input
                     self.volup              = 12 # external volume up gpio input
-                    self.mute               = 20 # external mute gpio input
+                    self.mute               = self.rot1_clk # external mute gpio input
                     self.button_voldn       = Button(self.voldn)
                     self.button_mute        = Button(self.mute)
                     self.button_volup       = Button(self.volup)
